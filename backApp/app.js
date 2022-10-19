@@ -22,6 +22,11 @@ app.use('/admin', adminsRouter);
 app.use('/course', coursesRouter);
 app.use('/instructor', instructorsRouter);
 
+app.get('/', function(req,res) {
+  res.render("index", {
+    title: "Learning System"
+  })
+})
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
@@ -38,5 +43,5 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-app.listen(process.env.PORT || 8080);
+app.listen(process.env.PORT || 3001);
 module.exports = app;
