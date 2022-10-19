@@ -8,8 +8,8 @@ const client = new MongoClient(DB_URL, {
   useUnifiedTopology: true,
 });
 
-/* GET users listing. */
-router.get('/', function(req, res) {
+/* GET Courses listing. */
+router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
 
