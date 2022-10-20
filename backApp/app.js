@@ -1,6 +1,8 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
+const mongoose = require('mongoose')
+require('dotenv').config()
 
 var adminsRouter = require('./routes/admin');
 var usersRouter = require('./routes/users');
@@ -43,5 +45,10 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-app.listen(process.env.PORT || 3001);
+mongoose.connect(process.env.DB_URL).then(() => {
+  var port = process.env.PORT || 3000
+  app.listen(port)
+  console.log(`Listening to requests on http://localhost:${port}`)
+})
+
 module.exports = app;
