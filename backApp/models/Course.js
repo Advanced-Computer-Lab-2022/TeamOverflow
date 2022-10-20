@@ -5,8 +5,8 @@ var courseSchema = new mongoose.Schema({
     subtitle: String,
     subject: String,
     summary: String,
-    instructorId: Number,
+    instructorId: String,
 })
 
 var Course = mongoose.model("Course",courseSchema);
-module.exports(Course)
+module.exports = Course
