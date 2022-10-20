@@ -1,4 +1,4 @@
 {
     "BASE_URL" : "localhost",
-    "DB_URL" : "mongodb+srv://admin:admin@back-data.sueiu8x.mongodb.net/test"
+    "DB_URL" : "mongodb+srv://admin:admin@back-data.sueiu8x.mongodb.net/?retryWrites=true&w=majority"
 }
