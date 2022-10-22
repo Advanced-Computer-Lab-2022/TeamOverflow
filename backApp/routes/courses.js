@@ -23,7 +23,7 @@ router.get('/search/instructor', async function(req, res) {
 // View course
 router.get('/view', async function(req, res) {
   try{
-    var results = await Course.findOne({courseId: parseInt(req.query.courseId)})
+    var results = await Course.findById(req.query.id)
     res.status(200).json(results)
   }catch(err){
     res.status(400).json({message: err.message}) 
