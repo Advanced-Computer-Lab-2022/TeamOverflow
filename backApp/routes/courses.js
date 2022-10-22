@@ -60,6 +60,16 @@ router.get('/filter/instructor', async function(req, res) {
   }
 });
 
+//filter course by price
+router.get('/filter', async function(req, res) {
+  try{
+    var results = await filterCourseByPrice(req.query)
+    res.status(200).json(results)
+  }catch(err){
+    res.status(400).json({message: err.message}) 
+  }
+});
+
 // Creating a new Course
 router.post('/create', async function(req, res) {
   const course = new Course({
@@ -94,6 +104,15 @@ async function filterCourse(data){
   var max = maxPrice||10000
   const mongoQuery = { $and: [{instructorId: instructorId},{subject: sub}, {price: { $gte : min, $lt : max}}]}
   var results = await Course.find(mongoQuery)
+  return results
+}
+
+async function filterCourseByPrice(data){
+  var {minPrice, maxPrice} = data
+  var min = minPrice||0
+  var max = maxPrice||10000
+  const mongoQuery2 = { $and: [{price: { $gte : min, $lt : max}}]}
+  var results = await Course.find(mongoQuery2)
   return results
 }
 
