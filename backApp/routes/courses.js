@@ -111,8 +111,8 @@ async function filterCourseByPrice(data){
   var {minPrice, maxPrice} = data
   var min = minPrice||0
   var max = maxPrice||10000
-  const mongoQuery2 = { $and: [{price: { $gte : min, $lt : max}}]}
-  var results = await Course.find(mongoQuery2)
+  const mongoQuery = { $and: [{price: { $gte : min, $lt : max}}]}
+  var results = await Course.find(mongoQuery)
   return results
 }
 
