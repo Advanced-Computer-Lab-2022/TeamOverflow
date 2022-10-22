@@ -2,27 +2,21 @@ var router = express.Router();
 const mongoose = require("mongoose");
 const Course = require('../models/Course');
 
-/* GET Courses listing. */
+// GET Courses listing
 router.get('/', async function(req, res) {
   const courses = await Course.find()
   res.send(courses)
+})
 
+// Search for course
 router.get('/search/instructor', async function(req, res) {
-  var data = req.query
-  var results = await searchCourse(data)
-  res.writeHead(200,{"Content-Type": "application/json"})
-  res.write(JSON.stringify(results))
-  res.end()
+  try{
+    var results = await searchCourse(req.query)
+    res.status(201).json(results)
+  }catch(err){
+    res.status(400).json({message: err.message}) 
+  }
 });
-
-/* Functions */
-
-async function searchCourse(data){
-  var query = ".*"+data.query+".*"
-  const mongoQuery = { $and: [{instructorId: data.instructorId},{$or: [{subject: {$regex: new RegExp(query, 'i')}}, {title: {$regex: new RegExp(query, 'i')}}]}]}
-  var results = await Course.find(mongoQuery)
-  return results
-}
 
 // Creating a new Course
 router.post('/create', async function(req, res) {
@@ -35,10 +29,21 @@ router.post('/create', async function(req, res) {
     instructorId: req.body.instructorId
   })
   try{
-     const newCourse =  await course.save() // saves course to database
+     const newCourse =  await course.save()
      res.status(201).json(newCourse)
   }catch(err){
-    res.status(400).json({message: err.message}) // returns an error message
+    res.status(400).json({message: err.message}) 
   }
 });
+
+/* Functions */
+
+async function searchCourse(data){
+  var query = ".*"+data.query+".*"
+  const mongoQuery = { $and: [{instructorId: data.instructorId},{$or: [{subject: {$regex: new RegExp(query, 'i')}}, {title: {$regex: new RegExp(query, 'i')}}]}]}
+  var results = await Course.find(mongoQuery)
+  return results
+}
+
+
 module.exports = router;
