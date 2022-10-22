@@ -40,6 +40,16 @@ router.get('/view/instructor', async function(req, res) {
   }
 });
 
+//view course price
+router.get('/viewPrices', async function(req, res) {
+  try{
+    var results = await Course.find({}, {title : 1, price : 1})
+    res.status(200).json(results)
+  }catch(err){
+    res.status(400).json({message: err.message}) 
+  }
+});
+
 // Search for course
 router.get('/filter/instructor', async function(req, res) {
   try{
