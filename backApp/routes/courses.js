@@ -1,12 +1,11 @@
-var express = require('express');
 var router = express.Router();
 const mongoose = require("mongoose");
 const Course = require('../models/Course');
 
 /* GET Courses listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+router.get('/', async function(req, res) {
+  const courses = await Course.find()
+  res.send(courses)
 
 router.get('/search/instructor', async function(req, res) {
   var data = req.query
@@ -25,4 +24,21 @@ async function searchCourse(data){
   return results
 }
 
+// Creating a new Course
+router.post('/create', async function(req, res) {
+  const course = new Course({
+    title: req.body.title,
+    subtitle: req.body.subtitle,
+    subject: req.body.subject,
+    summary: req.body.summary,
+    price: req.body.price,
+    instructorId: req.body.instructorId
+  })
+  try{
+     const newCourse =  await course.save() // saves course to database
+     res.status(201).json(newCourse)
+  }catch(err){
+    res.status(400).json({message: err.message}) // returns an error message
+  }
+});
 module.exports = router;
