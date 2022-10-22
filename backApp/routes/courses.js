@@ -1,7 +1,9 @@
 const express = require("express");
+const express = require("express");
 var router = express.Router();
 const mongoose = require("mongoose");
 const Course = require('../models/Course');
+router.use(express.json())
 
 // GET Courses listing
 router.get('/', async function(req, res) {
@@ -14,6 +16,16 @@ router.get('/search/instructor', async function(req, res) {
   try{
     var results = await searchCourse(req.query)
     res.status(201).json(results)
+  }catch(err){
+    res.status(400).json({message: err.message}) 
+  }
+});
+
+// View course
+router.get('/view', async function(req, res) {
+  try{
+    var results = await Course.findById(req.query.id)
+    res.status(200).json(results)
   }catch(err){
     res.status(400).json({message: err.message}) 
   }
