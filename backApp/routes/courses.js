@@ -14,7 +14,7 @@ router.get('/', async function(req, res) {
 router.get('/search/instructor', async function(req, res) {
   try{
     var results = await searchCourse(req.query)
-    res.status(201).json(results)
+    res.status(200).json(results)
   }catch(err){
     res.status(400).json({message: err.message}) 
   }
