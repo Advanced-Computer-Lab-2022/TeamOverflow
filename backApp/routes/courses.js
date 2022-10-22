@@ -1,3 +1,4 @@
+const express = require("express");
 var router = express.Router();
 const mongoose = require("mongoose");
 const Course = require('../models/Course');
@@ -13,6 +14,16 @@ router.get('/search/instructor', async function(req, res) {
   try{
     var results = await searchCourse(req.query)
     res.status(201).json(results)
+  }catch(err){
+    res.status(400).json({message: err.message}) 
+  }
+});
+
+// Search for course
+router.get('/filter/instructor', async function(req, res) {
+  try{
+    var results = await filterCourse(req.query)
+    res.status(200).json(results)
   }catch(err){
     res.status(400).json({message: err.message}) 
   }
@@ -45,5 +56,14 @@ async function searchCourse(data){
   return results
 }
 
+async function filterCourse(data){
+  var {instructorId, subject, minPrice, maxPrice} = data
+  var sub = subject||{$regex: ".*"}
+  var min = minPrice||0
+  var max = maxPrice||10000
+  const mongoQuery = { $and: [{instructorId: instructorId},{subject: sub}, {price: { $gte : min, $lt : max}}]}
+  var results = await Course.find(mongoQuery)
+  return results
+}
 
 module.exports = router;
