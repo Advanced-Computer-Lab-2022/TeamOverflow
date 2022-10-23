@@ -51,7 +51,8 @@ router.post('/addInstructor', async function(req, res) {
 router.post('/addTrainee', async function(req, res) {
   const add = new CorporateTrainee({
     username:req.body.username,
-    password:req.body.password
+    password:req.body.password,
+    corporation:req.body.corporation
   })
   try{
     if(await Admin.findById(req.body.adminId)){
