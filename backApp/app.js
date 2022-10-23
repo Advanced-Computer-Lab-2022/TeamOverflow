@@ -46,7 +46,7 @@ app.use(function(err, req, res, next) {
 });
 
 mongoose.connect(process.env.DB_URL).then(() => {
-  var port = process.env.PORT || 3000
+  var port = process.env.PORT || 8000
   app.listen(port)
   console.log(`Listening to requests on http://localhost:${port}`)
 })
