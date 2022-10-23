@@ -3,6 +3,7 @@ var router = express.Router();
 const mongoose = require("mongoose");
 const { title } = require("process");
 const Course = require('../models/Course');
+const Subtitle = require("../models/Subtitle");
 router.use(express.json())
 
 // GET Courses listing
@@ -11,7 +12,7 @@ router.get('/', async function(req, res) {
   res.send(courses)
 })
 
-// Search for course
+// Instructor Search for course
 router.get('/search/instructor', async function(req, res) {
   try{
     var results = await searchCourse(req.query)
@@ -24,13 +25,14 @@ router.get('/search/instructor', async function(req, res) {
 // View course
 router.get('/view', async function(req, res) {
   try{
-    var results = await Course.findById(req.query.id)
-    res.status(200).json(results)
+    var result = await findCourseAndSubtitles(req.query.id)
+    res.status(200).json(result)
   }catch(err){
     res.status(400).json({message: err.message}) 
   }
 });
-//view course instructor
+
+// instructor view course
 router.get('/view/instructor', async function(req, res) {
   try{
     var results = await Course.find({instructorId : req.query.instructorId}, {title : 1, _id: 0})
@@ -50,7 +52,7 @@ router.get('/viewPrices', async function(req, res) {
   }
 });
 
-// Search for course
+// Instructor filter for course
 router.get('/filter/instructor', async function(req, res) {
   try{
     var results = await filterCourse(req.query)
@@ -61,7 +63,7 @@ router.get('/filter/instructor', async function(req, res) {
 });
 
 // Search for all courses
-router.get('/filter/course', async function(req, res) {
+router.get('/search/course', async function(req, res) {
   try{
     var results = await searchforcourse(req.query)
     res.status(200).json(results)
@@ -131,6 +133,14 @@ async function filterCourseByPrice(data){
   const mongoQuery = { $and: [{price: { $gte : min, $lt : max}}]}
   var results = await Course.find(mongoQuery)
   return results
+}
+
+async function findCourseAndSubtitles(id){
+  var course = await Course.findById(id)
+  var subtitles = await Subtitle.find({courseId: id})
+  var courseObj = JSON.parse(JSON.stringify(course))
+  courseObj.subtitles = JSON.parse(JSON.stringify(subtitles))
+  return courseObj
 }
 
 module.exports = router;
