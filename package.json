@@ -1,0 +1,6 @@
+{
+    "scripts": {
+        "back": "cd backApp && npm start",
+        "front": "cd front-app && npm start"
+    }
+}
