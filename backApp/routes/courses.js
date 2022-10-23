@@ -60,6 +60,16 @@ router.get('/filter/instructor', async function(req, res) {
   }
 });
 
+// Search for all courses
+router.get('/filter/course', async function(req, res) {
+  try{
+    var results = await searchforcourse(req.query)
+    res.status(200).json(results)
+  }catch(err){
+    res.status(400).json({message: err.message}) 
+  }
+});
+
 //filter course by price
 router.get('/filter', async function(req, res) {
   try{
@@ -93,6 +103,13 @@ router.post('/create', async function(req, res) {
 async function searchCourse(data){
   var query = ".*"+data.query+".*"
   const mongoQuery = { $and: [{instructorId: data.instructorId},{$or: [{subject: {$regex: new RegExp(query, 'i')}}, {title: {$regex: new RegExp(query, 'i')}}]}]}
+  var results = await Course.find(mongoQuery)
+  return results
+}
+
+async function searchforcourse(data){
+  var query = ".*"+data.query+".*"
+  const mongoQuery = { $or : [{instructorId:  {$regex: new RegExp(query, 'i')}},{subject: {$regex: new RegExp(query, 'i')}}, {title: {$regex: new RegExp(query, 'i')}}]}
   var results = await Course.find(mongoQuery)
   return results
 }
