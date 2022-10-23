@@ -1,0 +1,17 @@
+{
+   "admin":{
+      "add":"admin/addAdmin"
+   },
+   "instructor":{
+      "add":"admin/addInstructor"
+   },
+   "corporatetrainee":{
+      "add":"admin/addCorporateTrainee"
+   },
+   "trainee": {
+
+   },
+   "course":{
+
+   }
+}
