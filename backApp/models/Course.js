@@ -6,7 +6,8 @@ var courseSchema = new mongoose.Schema({
     summary: {type: String, required: true},
     price: {type: Number, required: true},
     discount: {type: Number, required: true},
-    instructorId: {type: String, required: true}
+    instructorId: {type: String, required: true},
+    rating: {type: Number},
 })
 
 var Course = mongoose.model("Course",courseSchema);
