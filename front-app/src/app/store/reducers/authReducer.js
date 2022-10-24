@@ -3,7 +3,6 @@ import { LOGIN, LOGIN_FAIL, LOGIN_SUCCESS, LOGOUT_SUCCESS } from "../actions/typ
 const initialState = {
   user: null,
   token: null,
-  role: null,
   isLoading: false,
   isError: false,
 };
@@ -24,7 +23,6 @@ export default function store(state = initialState, action) {
         ...state,
         user: payload,
         token: action.token,
-        role: action.token.split(' ')[0],
         isLoading: false,
         isError: false,
       };
@@ -35,7 +33,6 @@ export default function store(state = initialState, action) {
         ...state,
         user: null,
         token: null,
-        role: null,
         isLoading: false,
         isError: true,
       };
@@ -44,7 +41,6 @@ export default function store(state = initialState, action) {
         ...state,
         user: null,
         token: null,
-        role: null,
         isLoading: false,
         isError: false,
       }
