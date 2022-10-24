@@ -1,17 +1,34 @@
 {
+   "auth": {
+      "admin":{
+         "add":"admin/addAdmin",
+         "login":"admin/login"
+      },
+      "instructor":{
+         "add":"admin/addInstructor",
+         "login":"instructor/login"
+      },
+      "corporatetrainee":{
+         "add":"admin/addTrainee",
+         "login":"corpTrainee/login"
+      },
+      "trainee": {
+         "login":"trainee/login"
+      }
+   },
    "admin":{
-      "add":"admin/addAdmin"
+      
    },
    "instructor":{
-      "add":"admin/addInstructor"
+
    },
    "corporatetrainee":{
-      "add":"admin/addCorporateTrainee"
+
    },
    "trainee": {
 
    },
    "course":{
-
+   
    }
 }

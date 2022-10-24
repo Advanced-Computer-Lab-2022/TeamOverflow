@@ -1,3 +1,4 @@
-import { Index } from "./IndexPage";
+import Index from "./IndexPage";
+import { AddUsers } from "./AdminPages";
 
-export {Index};
+export {Index, AddUsers};

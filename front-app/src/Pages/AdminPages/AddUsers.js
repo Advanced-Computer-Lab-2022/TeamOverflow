@@ -7,11 +7,21 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem} from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
-import { LoginUser } from '../../app/store/actions/authActions';
+import { addUser } from '../../app/store/actions/adminActions';
 
 const theme = createTheme();
 
-export const Index = ({LoginUser}) => {
+export const AddUsers = ({addUser, auth}) => {
+
+  const [isCorporate, setIsCorporate] = React.useState(false)
+
+  const onUserTypeChange = (event) => {
+    if(event.target.value === "Corporate") {
+        setIsCorporate(true);
+    } else {
+        setIsCorporate(false);
+    }
+  }
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -19,9 +29,11 @@ export const Index = ({LoginUser}) => {
     var details = {
       username: data.get('username'),
       password: data.get('password'),
-      type: data.get('type')
+      corporation: data.get('corporation'),
+      type: data.get('type'),
+      token: auth.token
     }
-    LoginUser(details)
+    addUser(details)
   };
 
   return (
@@ -40,7 +52,7 @@ export const Index = ({LoginUser}) => {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            Create a user
           </Typography>
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
             <TextField
@@ -63,6 +75,16 @@ export const Index = ({LoginUser}) => {
               id="password"
               autoComplete="current-password"
             />
+            {isCorporate && (
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="corporation"
+              label="Corporation"
+              type="corporation"
+              id="corporation"
+            />) }
             <Select
               margin="normal"
               required
@@ -71,11 +93,11 @@ export const Index = ({LoginUser}) => {
               id="type"
               label="User Type"
               name="type"
+              onChange={onUserTypeChange}
             >
               <MenuItem value={"Admin"}>Admin</MenuItem>
               <MenuItem value={"Instructor"}>Instructor</MenuItem>
               <MenuItem value={"Corporate"}>Corporate Trainee</MenuItem>
-              <MenuItem value={"Trainee"}>Individual Trainee</MenuItem>
             </Select>
             <Button
               type="submit"
@@ -83,20 +105,8 @@ export const Index = ({LoginUser}) => {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign In
+              Create
             </Button>
-            {/* <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link href="#" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
-            </Grid> */}
           </Box>
         </Box>
       </Container>
@@ -105,8 +115,9 @@ export const Index = ({LoginUser}) => {
 }
 
 const mapStateToProps = (state) => ({
+    auth: state?.auth
 });
 
-const mapDispatchToProps = {LoginUser};
+const mapDispatchToProps = {addUser};
 
-export default connect(mapStateToProps, mapDispatchToProps)(Index);
+export default connect(mapStateToProps, mapDispatchToProps)(AddUsers);

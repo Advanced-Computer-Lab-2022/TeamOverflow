@@ -3,12 +3,12 @@ import ReactDOM from 'react-dom';
 import 'antd/dist/antd.css';
 import App from './App';
 import store from './app/store/store';
-// import { loadUser } from "./app/store/actions/authActions";
+import { loadUser } from "./app/store/actions/authActions";
 import 'bootstrap/dist/css/bootstrap.css';
 import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
 
-// store.dispatch(loadUser());
+store.dispatch(loadUser());
 
 ReactDOM.render(
   <React.StrictMode>

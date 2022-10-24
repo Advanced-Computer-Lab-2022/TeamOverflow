@@ -1,13 +1,14 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Routes, Route } from "react-router-dom";
-import { Index } from "./Pages";
-import ProtectedRoute from "./ProtectedRoute";
+import { Index, AddUsers } from "./Pages";
+import AdminRoute from "./ProtectedRoute/AdminRoute";
 
 export const Router = () => {
   return (
     <Routes>
       <Route path="/" exact element={<Index/>}/>
+      <Route path="/addUsers" exact element={<AddUsers/>} />
     </Routes>
   );
 };
