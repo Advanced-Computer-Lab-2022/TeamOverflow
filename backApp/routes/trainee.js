@@ -21,7 +21,7 @@ router.post("/login", async (req,res) => {
         {expiresIn: 86400},
         (err, token) => {
           if(err) return res.json({message: err})
-          return res.status(200).json({message: "Success", token: "Trainee "+token})
+          return res.status(200).json({message: "Success", payload: payload ,token: "Trainee "+token})
         }
       )
     } else {

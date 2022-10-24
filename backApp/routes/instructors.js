@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var Instructor = require("../models/Instructor");
+var jwt = require("jsonwebtoken");
 
 /* GET instructors listing. */
 router.get('/', function(req, res) {
@@ -19,7 +20,7 @@ router.post("/login", async (req,res) => {
         {expiresIn: 86400},
         (err, token) => {
           if(err) return res.json({message: err})
-          return res.status(200).json({message: "Success", token: "Instructor "+token})
+          return res.status(200).json({message: "Success", payload: payload ,token: "Instructor "+token})
         }
       )
     } else {

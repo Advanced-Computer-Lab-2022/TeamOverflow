@@ -1,15 +1,16 @@
 import axios from "axios";
 
-const baseURL = "localhost:8000";
+const baseURL = "http://localhost:8000";
 
-const postRequest = async (body, query, params, endPoint) => {
+const postRequest = async (body, query, params, token, endPoint) => {
   return await axios.post(
     `${baseURL}/${endPoint}/${params ? params : ""}`,
     body,
     {
       params: query,
       headers:{
-        "Accept":"json"
+        "Accept":"json",
+        "x-access-token":token
       }
     },
   );
