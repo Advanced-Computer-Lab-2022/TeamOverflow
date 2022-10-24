@@ -151,7 +151,7 @@ async function filterCourseBySubjRating(data){
   var min = minRating||0
   var max = maxRating||5
   var subj = subject || {$regex:".*"}
-  const mongoQuery = { $and: [{rating: { $gte : min, $lt : max}},{subject:subj}]}
+  const mongoQuery = { $and: [{rating: { $gte : min, $lte : max}},{subject:subj}]}
   var results = await Course.find(mongoQuery)
   return results
 }
