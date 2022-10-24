@@ -5,7 +5,7 @@ const { title } = require("process");
 const Course = require('../models/Course');
 const Subtitle = require("../models/Subtitle");
 router.use(express.json())
-
+const {verifyAllUsers, verifyInstructor, verifyAllUsersCorp} = require("../auth/jwt-auth")
 // GET Courses listing
 router.get('/', async function(req, res) {
   const courses = await Course.find()
@@ -13,7 +13,7 @@ router.get('/', async function(req, res) {
 })
 
 // Instructor Search for course
-router.get('/search/instructor', async function(req, res) {
+router.get('/search/instructor', verifyInstructor ,async function(req, res) {
   try{
     var results = await searchCourse(req.query)
     res.status(200).json(results)
@@ -23,7 +23,7 @@ router.get('/search/instructor', async function(req, res) {
 });
 
 // View course
-router.get('/view', async function(req, res) {
+router.get('/view', verifyAllUsers ,async function(req, res) {
   try{
     var result = await findCourseAndSubtitles(req.query.id)
     res.status(200).json(result)
@@ -33,7 +33,7 @@ router.get('/view', async function(req, res) {
 });
 
 // instructor view course
-router.get('/view/instructor', async function(req, res) {
+router.get('/view/instructor', verifyInstructor ,async function(req, res) {
   try{
     var results = await Course.find({instructorId : req.query.instructorId}, {title : 1, _id: 0})
     res.status(200).json(results)
@@ -43,7 +43,7 @@ router.get('/view/instructor', async function(req, res) {
 });
 
 //view course price
-router.get('/viewPrices', async function(req, res) {
+router.get('/viewPrices', verifyAllUsers ,async function(req, res) {
   try{
     var results = await Course.find({}, {title : 1, price : 1})
     res.status(200).json(results)
@@ -53,7 +53,7 @@ router.get('/viewPrices', async function(req, res) {
 });
 
 // Instructor filter for course
-router.get('/filter/instructor', async function(req, res) {
+router.get('/filter/instructor', verifyInstructor ,async function(req, res) {
   try{
     var results = await filterCourse(req.query)
     res.status(200).json(results)
@@ -63,7 +63,7 @@ router.get('/filter/instructor', async function(req, res) {
 });
 
 // Search for all courses
-router.get('/search/course', async function(req, res) {
+router.get('/search/course', verifyAllUsersCorp ,async function(req, res) {
   try{
     var results = await searchforcourse(req.query)
     res.status(200).json(results)
@@ -73,7 +73,7 @@ router.get('/search/course', async function(req, res) {
 });
 
 //filter course by price
-router.get('/filter', async function(req, res) {
+router.get('/filter', verifyAllUsers ,async function(req, res) {
   try{
     var results = await filterCourseByPrice(req.query)
     res.status(200).json(results)
@@ -83,7 +83,7 @@ router.get('/filter', async function(req, res) {
 });
 
 //filter course by subject and/or rating
-router.get('/filter/subjrate', async function(req, res) {
+router.get('/filter/subjrate', verifyAllUsersCorp ,async function(req, res) {
   try{
     var results = await filterCourseBySubjRating(req.query)
     res.status(200).json(results)
@@ -94,7 +94,7 @@ router.get('/filter/subjrate', async function(req, res) {
 
 
 // Creating a new Course
-router.post('/create', async function(req, res) {
+router.post('/create', verifyInstructor ,async function(req, res) {
   const course = new Course({
     title: req.body.title,
     subtitle: req.body.subtitle,
