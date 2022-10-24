@@ -5,7 +5,8 @@ const mongoose = require('mongoose')
 require('dotenv').config()
 
 var adminsRouter = require('./routes/admin');
-var usersRouter = require('./routes/users');
+var traineesRouter = require('./routes/trainee');
+var corporateRouter = require('./routes/corporate-trainee');
 var coursesRouter = require('./routes/courses');
 var instructorsRouter = require('./routes/instructors');
 
@@ -19,7 +20,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/users', usersRouter);
+app.use('/trainee', traineesRouter);
+app.use('/corpTrainee', corporateRouter);
 app.use('/admin', adminsRouter);
 app.use('/course', coursesRouter);
 app.use('/instructor', instructorsRouter);
