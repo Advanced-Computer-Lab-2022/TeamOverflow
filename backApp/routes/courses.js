@@ -1,7 +1,5 @@
 const express = require("express");
 var router = express.Router();
-const mongoose = require("mongoose");
-const { title } = require("process");
 const Course = require('../models/Course');
 const Subtitle = require("../models/Subtitle");
 router.use(express.json())
