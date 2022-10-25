@@ -17,7 +17,7 @@ router.post("/login", async (req,res) => {
       jwt.sign(
         payload,
         process.env.JWT_SECRET,
-        {expiresIn: 86400},
+        //{expiresIn: 86400},
         (err, token) => {
           if(err) return res.json({message: err})
           return res.status(200).json({message: "Success", payload: payload ,token: "Instructor "+token})

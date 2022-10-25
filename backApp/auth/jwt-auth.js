@@ -5,9 +5,10 @@ function verifyAdmin (req,res,next) {
     const role = header[0]
     const token = header[1]
     if(role == "Admin" && token){
-        jwt.verify(token, process.env.PASSPORTSECRET, (decoded, err) => {
+        jwt.verify(token, process.env.PASSPORTSECRET, (err, decoded) => {
+            console.log(err)
             if(err){
-                return res.json({message: "Failed to authenticate", isValid: false})
+                return res.json({message: err, isValid: false})
             }
             req.isValid = true
             next()
@@ -22,7 +23,7 @@ function verifyInstructor (req,res,next) {
     const role = header[0]
     const token = header[1]
     if(role == "Instructor" && token){
-        jwt.verify(token, process.env.PASSPORTSECRET, (decoded, err) => {
+        jwt.verify(token, process.env.PASSPORTSECRET, (err, decoded) => {
             if(err){
                 return res.json({message: "Failed to authenticate", isValid: false})
             }
@@ -39,7 +40,7 @@ function verifyAllUsers (req,res,next) {
     const role = header[0]
     const token = header[1]
     if((role == "Instructor" || role == "Trainee") && token){
-        jwt.verify(token, process.env.PASSPORTSECRET, (decoded, err) => {
+        jwt.verify(token, process.env.PASSPORTSECRET, (err, decoded) => {
             if(err){
                 return res.json({message: "Failed to authenticate", isValid: false})
             }
@@ -58,7 +59,7 @@ function verifyAllUsersCorp (req,res,next) {
     const role = header[0]
     const token = header[1]
     if((role == "Instructor" || role == "Trainee" || role == "Corporate") && token){
-        jwt.verify(token, process.env.PASSPORTSECRET, (decoded, err) => {
+        jwt.verify(token, process.env.PASSPORTSECRET, (err, decoded) => {
             if(err){
                 return res.json({message: "Failed to authenticate", isValid: false})
             }

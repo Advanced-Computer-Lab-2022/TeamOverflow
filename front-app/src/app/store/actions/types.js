@@ -11,3 +11,9 @@ export const LOGOUT = "LOGOUT";
 export const CREATE_SUCCESS = "CREATE_SUCCESS";
 export const CREATE_FAIL = "CREATE_FAIL";
 export const CREATE = "CREATE";
+
+//Courses
+export const COURSE_SUCCESS = "COURSE_SUCCESS";
+export const SINGLE_COURSE_SUCCESS = "SINGLE_COURSE_SUCCESS";
+export const COURSE_FAIL = "COURSE_FAIL";
+export const COURSE = "COURSE";
