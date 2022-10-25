@@ -10,7 +10,7 @@ function verifyAdmin (req,res,next) {
             if(err){
                 return res.json({message: err, isValid: false})
             }
-            req.isValid = true
+            req.reqId = decoded._id
             next()
         })
     } else {
@@ -27,7 +27,7 @@ function verifyInstructor (req,res,next) {
             if(err){
                 return res.json({message: "Failed to authenticate", isValid: false})
             }
-            req.isValid = true
+            req.reqId = decoded._id
             next()
         })
     } else {
@@ -44,7 +44,7 @@ function verifyAllUsers (req,res,next) {
             if(err){
                 return res.json({message: "Failed to authenticate", isValid: false})
             }
-            req.isValid = true
+            req.reqId = decoded._id
             next()
         })
     } else if(role == "Guest"){
@@ -63,7 +63,7 @@ function verifyAllUsersCorp (req,res,next) {
             if(err){
                 return res.json({message: "Failed to authenticate", isValid: false})
             }
-            req.isValid = true
+            req.reqId = decoded._id
             next()
         })
     } else if(role == "Guest"){

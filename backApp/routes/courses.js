@@ -1,7 +1,12 @@
 const express = require("express");
 var router = express.Router();
+const axios = require("axios");
 const Course = require('../models/Course');
 const Subtitle = require("../models/Subtitle");
+const Trainee = require("../models/Trainee");
+const Corporate = require("../models/CorporateTrainee");
+const Instructor = require("../models/Instructor");
+
 router.use(express.json())
 const {verifyAllUsers, verifyInstructor, verifyAllUsersCorp} = require("../auth/jwt-auth")
 // GET Courses listing
@@ -23,7 +28,7 @@ router.get('/search/instructor', verifyInstructor ,async function(req, res) {
 // View course
 router.get('/view', verifyAllUsers ,async function(req, res) {
   try{
-    var result = await findCourseAndSubtitles(req.query.id)
+    var result = await findCourseAndSubtitles(req.query.id, req.reqId)
     res.status(200).json(result)
   }catch(err){
     res.status(400).json({message: err.message}) 
@@ -154,10 +159,14 @@ async function filterCourseBySubjRating(data){
   return results
 }
 
-async function findCourseAndSubtitles(id){
+async function findCourseAndSubtitles(id, reqId){
+  var user = await (Trainee.findById(reqId) || Corporate.findById(reqId) || Instructor.findById(reqId))
   var course = await Course.findById(id)
   var subtitles = await Subtitle.find({courseId: id})
   var courseObj = JSON.parse(JSON.stringify(course))
+  var price = courseObj.price
+  var exchange = await axios.get("https://v6.exchangerate-api.com/v6/76b74834bd41f9920042f73c/pair/USD/"+user.country+"/"+price)
+  courseObj.price = exchange.data.conversion_result
   courseObj.subtitles = JSON.parse(JSON.stringify(subtitles))
   return courseObj
 }
