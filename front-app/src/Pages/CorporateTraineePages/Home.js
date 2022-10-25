@@ -18,8 +18,8 @@ export const Home = ({auth, logout}) => {
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xl">
         <CssBaseline/>
-        <Typography>Admin Home Page</Typography>
-        <NavLink to="/Admin/addUsers">Create System Users</NavLink><br/>
+        <Typography>Corporate Trainee Home Page</Typography>
+        <NavLink to="/courses">Courses Page</NavLink><br/>
         <Button onClick={logout}>Log Out</Button>
       </Container>
     </ThemeProvider>

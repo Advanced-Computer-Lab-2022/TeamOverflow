@@ -15,13 +15,13 @@ router.get('/', function(req, res) {
 //Admin Login
 router.post("/login", async (req,res) => {
   const adminLogin = req.body
-  await Admin.findOne({username: adminLogin.username, password: adminLogin.password}).then( admin => {
+  await Admin.findOne({username: adminLogin.username, password: adminLogin.password}, {password: 0}).then( admin => {
     if(admin) {
       const payload = JSON.parse(JSON.stringify(admin))
       jwt.sign(
         payload,
         process.env.JWT_SECRET,
-        {expiresIn: 86400},
+        //{expiresIn: 86400},
         (err, token) => {
           if(err) return res.json({message: err})
           return res.status(200).json({message: "Success", payload: payload ,token: "Admin "+token})

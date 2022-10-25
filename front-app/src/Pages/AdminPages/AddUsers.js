@@ -3,8 +3,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import {Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem} from '@mui/material';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import {Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, InputLabel, FormHelperText} from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { addUser } from '../../app/store/actions/adminActions';
@@ -49,7 +49,7 @@ export const AddUsers = ({addUser, auth}) => {
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
+            <AccountCircleIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             Create a user
@@ -85,11 +85,13 @@ export const AddUsers = ({addUser, auth}) => {
               type="corporation"
               id="corporation"
             />) }
+            <InputLabel id="select-label">User Type</InputLabel>
             <Select
               margin="normal"
               required
               fullWidth
               autoFocus
+              labelId='select-label'
               id="type"
               label="User Type"
               name="type"
@@ -99,6 +101,7 @@ export const AddUsers = ({addUser, auth}) => {
               <MenuItem value={"Instructor"}>Instructor</MenuItem>
               <MenuItem value={"Corporate"}>Corporate Trainee</MenuItem>
             </Select>
+            <FormHelperText>Choose user type to create</FormHelperText>
             <Button
               type="submit"
               fullWidth

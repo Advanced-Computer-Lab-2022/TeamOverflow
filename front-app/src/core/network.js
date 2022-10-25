@@ -16,9 +16,13 @@ const postRequest = async (body, query, params, token, endPoint) => {
   );
 };
 
-const getRequest = async (query, params, endPoint) => {
+const getRequest = async (query, params, token, endPoint) => {
   return await axios.get(`${baseURL}/${endPoint}${params ? params : ""}`, {
     params: query,
+    headers:{
+      "Accept":"json",
+      "x-access-token":token
+    }
   });
 };
 

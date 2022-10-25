@@ -12,13 +12,13 @@ router.get('/', function(req, res) {
 //Trainee Login
 router.post("/login", async (req,res) => {
   const traineeLogin = req.body
-  await Trainee.findOne({username: traineeLogin.username, password: traineeLogin.password}).then( trainee => {
+  await Trainee.findOne({username: traineeLogin.username, password: traineeLogin.password}, {password: 0}).then( trainee => {
     if(trainee) {
       const payload = JSON.parse(JSON.stringify(trainee))
       jwt.sign(
         payload,
         process.env.JWT_SECRET,
-        {expiresIn: 86400},
+        //{expiresIn: 86400},
         (err, token) => {
           if(err) return res.json({message: err})
           return res.status(200).json({message: "Success", payload: payload ,token: "Trainee "+token})

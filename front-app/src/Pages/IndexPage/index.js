@@ -4,14 +4,15 @@ import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import {Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem} from '@mui/material';
+import {Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, FormHelperText, InputLabel} from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { LoginUser } from '../../app/store/actions/authActions';
+import {Navigate, Route, Routes} from "react-router-dom";
 
 const theme = createTheme();
 
-export const Index = ({LoginUser}) => {
+export const Index = ({LoginUser, user, token}) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -23,6 +24,10 @@ export const Index = ({LoginUser}) => {
     }
     LoginUser(details)
   };
+
+  if(user){
+    return (<Navigate to={`/${token.split(" ")[0]}`} replace/>)
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -68,6 +73,7 @@ export const Index = ({LoginUser}) => {
               required
               fullWidth
               autoFocus
+              labelId='select-label'
               id="type"
               label="User Type"
               name="type"
@@ -77,6 +83,7 @@ export const Index = ({LoginUser}) => {
               <MenuItem value={"Corporate"}>Corporate Trainee</MenuItem>
               <MenuItem value={"Trainee"}>Individual Trainee</MenuItem>
             </Select>
+            <FormHelperText>User type to log in as</FormHelperText>
             <Button
               type="submit"
               fullWidth
@@ -85,18 +92,18 @@ export const Index = ({LoginUser}) => {
             >
               Sign In
             </Button>
-            {/* <Grid container>
-              <Grid item xs>
+            <Grid container>
+              {/* <Grid item xs>
                 <Link href="#" variant="body2">
                   Forgot password?
                 </Link>
-              </Grid>
+              </Grid> */}
               <Grid item>
                 <Link href="#" variant="body2">
-                  {"Don't have an account? Sign Up"}
+                  {"Continue as guest?"}
                 </Link>
               </Grid>
-            </Grid> */}
+            </Grid>
           </Box>
         </Box>
       </Container>
@@ -105,6 +112,8 @@ export const Index = ({LoginUser}) => {
 }
 
 const mapStateToProps = (state) => ({
+  user : state?.auth?.user,
+  token : state?.auth?.token
 });
 
 const mapDispatchToProps = {LoginUser};
