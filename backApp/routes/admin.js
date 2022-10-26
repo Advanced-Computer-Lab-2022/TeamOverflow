@@ -35,6 +35,10 @@ router.post("/login", async (req,res) => {
 
 //add admin
 router.post('/addAdmin', verifyAdmin, async function(req, res) {
+  var found = await Admin.findOne({username: req.body.username})
+  if(found){
+    return res.status(400).json({message: "Admin username already exists"})
+  }
   const add = new Admin({
     username:req.body.username,
     password:req.body.password
@@ -49,6 +53,10 @@ router.post('/addAdmin', verifyAdmin, async function(req, res) {
 
 //add instructor
 router.post('/addInstructor', verifyAdmin, async function(req, res) {
+  var found = await Instructor.findOne({username: req.body.username})
+  if(found){
+    return res.status(400).json({message: "Instructor username already exists"})
+  }
   const add = new Instructor({
     username:req.body.username,
     password:req.body.password
@@ -63,6 +71,10 @@ router.post('/addInstructor', verifyAdmin, async function(req, res) {
 
 //add corporate trainee
 router.post('/addTrainee', verifyAdmin, async function(req, res) {
+  var found = await CorporateTrainee.findOne({username: req.body.username})
+  if(found){
+    return res.status(400).json({message: "Corporate Trainee username already exists"})
+  }
   const add = new CorporateTrainee({
     username:req.body.username,
     password:req.body.password,

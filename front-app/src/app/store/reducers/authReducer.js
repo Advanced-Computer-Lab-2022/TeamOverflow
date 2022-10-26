@@ -1,4 +1,4 @@
-import { LOGIN, LOGIN_FAIL, LOGIN_SUCCESS, LOGOUT_SUCCESS } from "../actions/types";
+import { LOGIN, LOGIN_FAIL, LOGIN_SUCCESS, LOGOUT_SUCCESS, GUEST } from "../actions/types";
 
 const initialState = {
   user: null,
@@ -26,6 +26,14 @@ export default function store(state = initialState, action) {
         isLoading: false,
         isError: false,
       };
+      case GUEST:
+        return {
+          ...state,
+          user: {type: "Guest User"},
+          token: "Guest x",
+          isLoading: false,
+          isError: false,
+        };
     case LOGIN_FAIL:
       localStorage.removeItem("learningAppUser");
       localStorage.removeItem("learningAppToken");

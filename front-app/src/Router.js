@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Routes, Route } from "react-router-dom";
-import { Index, AddUsers, AdminHome, AllCourses, CorporateHome, IndividualHome } from "./Pages";
+import { Index, AddUsers, AdminHome, AllCourses, CorporateHome, IndividualHome, InstructorCourses, InstructorHome } from "./Pages";
 import ProtectedRoute from "./ProtectedRoute";
 
 export const Router = () => {
@@ -13,7 +13,8 @@ export const Router = () => {
         <Route path="/Admin/addUsers" exact element={<AddUsers/>}/>
       </Route>
       <Route exact element={<ProtectedRoute allowed={["Instructor"]}/>}>
-
+        <Route path="/Instructor" exact element={<InstructorHome/>}/>
+        <Route path="/courses/instructor" exact element={<InstructorCourses/>}/>
       </Route>
       <Route exact element={<ProtectedRoute allowed={["Trainee"]}/>}>
         <Route path="/Trainee" exact element={<IndividualHome/>}/>
@@ -21,7 +22,7 @@ export const Router = () => {
       <Route exact element={<ProtectedRoute allowed={["Corporate"]}/>}>
         <Route path="/Corporate" exact element={<CorporateHome/>}/>
       </Route>
-      <Route exact element={<ProtectedRoute allowed={["Corporate", "Trainee", "Guest"]}/>}>
+      <Route exact element={<ProtectedRoute allowed={["Corporate", "Trainee", "Guest", "Instructor"]}/>}>
         <Route path="/courses" exact element={<AllCourses/>}/>
       </Route>
       <Route exact element={<ProtectedRoute allowed={["Guest"]}/>}>

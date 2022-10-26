@@ -19,16 +19,17 @@ export const Home = ({auth, logout}) => {
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xl">
         <CssBaseline/>
-        <Typography>Trainee Home Page</Typography>
+        <Typography>Instructor Home Page</Typography>
         <Typography>Welcome {auth.user.username}</Typography>
-        <NavLink to="/courses">Courses Page</NavLink><br/>
+        <NavLink to="/courses">All Courses</NavLink><br/>
+        <NavLink to="/courses/instructor">My Courses</NavLink><br/>
         <Select 
           defaultValue={auth.user.country}
           label="User Country"
           fullWidth        
         >
-          {countryList.map((country) => {return (
-            <MenuItem value={country.country}>
+          {countryList.map((country, i) => {return (
+            <MenuItem key={i} value={country.country}>
               {country.country}
             </MenuItem>
           )})}

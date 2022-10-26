@@ -36,6 +36,7 @@
       "filterUsers":"course/filter/subjrate",
       "filterInstructor":"course/filter/instructor",
       "viewInstructor":"course/view/instructor",
-      "viewSingleCourse":"course/view"
+      "viewSingleCourse":"course/view",
+      "getSubjects":"course/allSubj"
    }
 }

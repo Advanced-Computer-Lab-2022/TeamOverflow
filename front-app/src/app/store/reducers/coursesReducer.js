@@ -1,4 +1,4 @@
-import { COURSE, COURSE_FAIL, COURSE_SUCCESS, SINGLE_COURSE_SUCCESS } from "../actions/types";
+import { COURSE, COURSE_FAIL, COURSE_SUCCESS, SINGLE_COURSE_SUCCESS, SUBJECT_SUCCESS } from "../actions/types";
 
 const initialState = {
     results: null,
@@ -28,6 +28,13 @@ export default function store(state = initialState, action) {
                 ...state,
                 results: payload,
                 single: null,
+                isLoading: false,
+                isError: false,
+            };
+        case SUBJECT_SUCCESS:
+            return {
+                ...state,
+                subjects: payload,
                 isLoading: false,
                 isError: false,
             };

@@ -15,5 +15,9 @@ export const CREATE = "CREATE";
 //Courses
 export const COURSE_SUCCESS = "COURSE_SUCCESS";
 export const SINGLE_COURSE_SUCCESS = "SINGLE_COURSE_SUCCESS";
+export const SUBJECT_SUCCESS = "SUBJECT_SUCCESS";
 export const COURSE_FAIL = "COURSE_FAIL";
 export const COURSE = "COURSE";
+
+//Guest Dispatch
+export const GUEST = "GUEST";

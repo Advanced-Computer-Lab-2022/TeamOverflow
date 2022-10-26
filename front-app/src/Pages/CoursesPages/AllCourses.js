@@ -1,14 +1,18 @@
 import * as React from 'react';
-import { Typography, Box, Container, TextField, CssBaseline, Button, Slider, Select, MenuItem, Card } from '@mui/material';
+import { Typography, Box, Container, TextField, CssBaseline, Button, Slider, Select, MenuItem, Card, FormHelperText } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
-import { searchCoursesUsers, viewCourse, viewPrices, filterCoursesAll, filterCoursesPrice } from '../../app/store/actions/coursesActions';
+import { searchCoursesUsers, viewCourse, viewPrices, filterCoursesAll, filterCoursesPrice, getSubjects } from '../../app/store/actions/coursesActions';
 
 const theme = createTheme();
 
-export const AllCourses = ({ auth, courses, searchCoursesUsers, viewCourse, viewPrices, filterCoursesAll, filterCoursesPrice }) => {
+export const AllCourses = ({ auth, courses, getSubjects, searchCoursesUsers, viewCourse, viewPrices, filterCoursesAll, filterCoursesPrice }) => {
 
   const role = auth.token.split(" ")[0];
+
+  React.useEffect(() => {
+    getSubjects()
+  },[])
 
   const onView = (id) => {
     if (role !== "Corporate") viewCourse({ id: id, token: auth.token })
@@ -76,7 +80,7 @@ export const AllCourses = ({ auth, courses, searchCoursesUsers, viewCourse, view
           <Typography>Filters</Typography>
           {role !== "Corporate" && (
             <>
-            Price:
+            Price (USD):
             <Slider
               step={10}
               max={1000}
@@ -86,20 +90,26 @@ export const AllCourses = ({ auth, courses, searchCoursesUsers, viewCourse, view
               valueLabelDisplay="auto"
             />
             <br/>
-            <Button variant="contained" onClick={handleFilterPrice}>Apply price filter</Button>
+            <Button variant="contained" onClick={handleFilterPrice}>Apply price filter</Button><br/>
             </>
             )
           }
-          <TextField
-            margin="normal"
-            fullWidth
+          <Select
+            label="Subject"
             id="Subject"
-            label="Type a certain subject"
             name="subj"
-            autoComplete="search"
             onChange={(event) => setSubject(event.target.value)}
-            autoFocus
-          />
+            fullWidth
+          >
+            {courses?.subjects?.map((subject, i) => {
+              return (
+                <MenuItem key={i} value={subject}>
+                  {subject}
+                </MenuItem>
+              )
+            })}
+          </Select>
+          <FormHelperText>Select subject to filter</FormHelperText>
           Rating: 
           <Slider
               step={1}
@@ -158,6 +168,6 @@ const mapStateToProps = (state) => ({
   courses: state?.courses
 });
 
-const mapDispatchToProps = { searchCoursesUsers, viewCourse, viewPrices, filterCoursesAll, filterCoursesPrice };
+const mapDispatchToProps = { searchCoursesUsers, viewCourse, viewPrices, filterCoursesAll, filterCoursesPrice, getSubjects };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AllCourses);

@@ -9,6 +9,7 @@
     "@mui/material": "^5.10.10",
     "antd": "^4.23.6",
     "bootstrap": "^5.2.2",
+    "country-json": "^1.1.2",
     "cra-template-redux": "2.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
