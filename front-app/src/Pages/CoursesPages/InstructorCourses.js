@@ -2,11 +2,11 @@ import * as React from 'react';
 import { Typography, Box, Container, TextField, CssBaseline, Button, Slider, Select, MenuItem, Card } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
-import { searchCoursesUsers, viewCourse, viewPrices, filterCoursesAll, filterCoursesPrice } from '../../app/store/actions/coursesActions';
+import { viewTitlesInstructor, viewCourse, searchCoursesInstructor, filterCoursesInstructor} from '../../app/store/actions/coursesActions';
 
 const theme = createTheme();
 
-export const AllCourses = ({ auth, courses, searchCoursesUsers, viewCourse, viewPrices, filterCoursesAll, filterCoursesPrice }) => {
+export const InstructorCourses = ({ auth, courses, viewTitlesInstructor, viewCourse, searchCoursesInstructor, filterCoursesInstructor}) => {
 
   const role = auth.token.split(" ")[0];
 
@@ -21,26 +21,17 @@ export const AllCourses = ({ auth, courses, searchCoursesUsers, viewCourse, view
       searchQuery: data.get('search'),
       token: auth.token
     }
-    searchCoursesUsers(details);
+    searchCoursesInstructor(details);
   };
-
-  const handleFilterPrice = (event) => {
-    filterCoursesPrice({token: auth.token, minPrice: priceRange[0], maxPrice: priceRange[1]})
-  }
 
   const [priceRange, setPriceRange] = React.useState([10, 100])
   const handlePriceChange = (event) => {
     setPriceRange(event.target.value)
   }
 
-  const [ratingRange, setRatingRange] = React.useState([2, 4])
-  const handleRatingChange = (event) => {
-    setRatingRange(event.target.value)
-  }
-
   const [subject, setSubject] = React.useState(null)
   const handleFilter = (event) => {
-    filterCoursesAll({token: auth.token, subject: subject, minRating: ratingRange[0], maxRating: ratingRange[1]});
+    filterCoursesInstructor({token: auth.token, subject: subject, minPrice: priceRange[0], maxPrice: priceRange[1]});
   }
 
   return (
@@ -49,15 +40,14 @@ export const AllCourses = ({ auth, courses, searchCoursesUsers, viewCourse, view
         <CssBaseline />
         <Typography>All System Courses</Typography>
         <Box>
-          <Button variant="contained">View all available courses</Button>
-          {role !== "Corporate" && <Button onClick={() => viewPrices({ token: auth.token })}>View all courses prices</Button>}
+          <Button variant="contained" onClick={() => viewTitlesInstructor({token: auth.token})}>View all available courses</Button>
         </Box>
         <Box component="form" onSubmit={handleSearch} sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             fullWidth
             id="search"
-            label="Search for courses by subject, title or instructor"
+            label="Search for my courses by subject or title"
             name="search"
             autoComplete="search"
             autoFocus
@@ -74,8 +64,6 @@ export const AllCourses = ({ auth, courses, searchCoursesUsers, viewCourse, view
         <hr/>
         <Box>
           <Typography>Filters</Typography>
-          {role !== "Corporate" && (
-            <>
             Price (USD):
             <Slider
               step={10}
@@ -85,11 +73,6 @@ export const AllCourses = ({ auth, courses, searchCoursesUsers, viewCourse, view
               onChange={handlePriceChange}
               valueLabelDisplay="auto"
             />
-            <br/>
-            <Button variant="contained" onClick={handleFilterPrice}>Apply price filter</Button>
-            </>
-            )
-          }
           <TextField
             margin="normal"
             fullWidth
@@ -100,16 +83,7 @@ export const AllCourses = ({ auth, courses, searchCoursesUsers, viewCourse, view
             onChange={(event) => setSubject(event.target.value)}
             autoFocus
           />
-          Rating: 
-          <Slider
-              step={1}
-              max={5}
-              value={ratingRange}
-              aria-label="Rating"
-              onChange={handleRatingChange}
-              valueLabelDisplay="auto"
-            />
-          <Button variant="contained" onClick={handleFilter}>Apply Rating/Subject Filter</Button>
+          <Button variant="contained" onClick={handleFilter}>Apply Price/Subject Filter</Button>
         </Box>
         <hr/>
         <Box>
@@ -158,6 +132,6 @@ const mapStateToProps = (state) => ({
   courses: state?.courses
 });
 
-const mapDispatchToProps = { searchCoursesUsers, viewCourse, viewPrices, filterCoursesAll, filterCoursesPrice };
+const mapDispatchToProps = { viewTitlesInstructor, viewCourse, searchCoursesInstructor, filterCoursesInstructor};
 
-export default connect(mapStateToProps, mapDispatchToProps)(AllCourses);
+export default connect(mapStateToProps, mapDispatchToProps)(InstructorCourses);
