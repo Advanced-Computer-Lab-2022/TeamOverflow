@@ -1,14 +1,18 @@
 const express = require("express");
 var router = express.Router();
 const axios = require("axios");
+const moment = require("moment");
 const Course = require('../models/Course');
 const Subtitle = require("../models/Subtitle");
 const Trainee = require("../models/Trainee");
 const Corporate = require("../models/CorporateTrainee");
 const Instructor = require("../models/Instructor");
-
+var exchange
 router.use(express.json())
 const {verifyAllUsers, verifyInstructor, verifyAllUsersCorp} = require("../auth/jwt-auth")
+
+
+
 // GET Courses listing
 router.get('/', async function(req, res) {
   const courses = await Course.find()
@@ -18,7 +22,7 @@ router.get('/', async function(req, res) {
 // Instructor Search for course
 router.get('/search/instructor', verifyInstructor ,async function(req, res) {
   try{
-    var results = await searchCourse(req.query)
+    var results = await searchCourseInstructor(req.query, req.reqId)
     res.status(200).json(results)
   }catch(err){
     res.status(400).json({message: err.message}) 
@@ -116,9 +120,9 @@ router.post('/create', verifyInstructor ,async function(req, res) {
 
 /* Functions */
 
-async function searchCourse(data){
+async function searchCourseInstructor(data, instructorId){
   var query = ".*"+data.query+".*"
-  const mongoQuery = { $and: [{instructorId: data.instructorId},{$or: [{subject: {$regex: new RegExp(query, 'i')}}, {title: {$regex: new RegExp(query, 'i')}}]}]}
+  const mongoQuery = { $and: [{instructorId: instructorIds},{$or: [{subject: {$regex: new RegExp(query, 'i')}}, {title: {$regex: new RegExp(query, 'i')}}]}]}
   var results = await Course.find(mongoQuery)
   return results
 }
@@ -160,15 +164,25 @@ async function filterCourseBySubjRating(data){
 }
 
 async function findCourseAndSubtitles(id, reqId){
+  updateRates()
+
   var user = await (Trainee.findById(reqId) || Corporate.findById(reqId) || Instructor.findById(reqId))
   var course = await Course.findById(id)
   var subtitles = await Subtitle.find({courseId: id})
   var courseObj = JSON.parse(JSON.stringify(course))
   var price = courseObj.price
-  var exchange = await axios.get("https://v6.exchangerate-api.com/v6/76b74834bd41f9920042f73c/pair/USD/"+user.country+"/"+price)
-  courseObj.price = exchange.data.conversion_result
+  courseObj.price = price * exchange.rates["EGP"]
   courseObj.subtitles = JSON.parse(JSON.stringify(subtitles))
   return courseObj
+}
+
+//API call to update exchange rates
+async function updateRates() {
+  if(!exchange || moment(exchange.lastUpdate).add(1, "day").isBefore(moment())){
+    console.log("Exchange rates updated")
+    var ex = await axios.get("https://v6.exchangerate-api.com/v6/76b74834bd41f9920042f73c/latest/USD")
+    exchange = {lastUpdate: ex.data.time_last_update_utc, rates: ex.data.conversion_rates}
+  }
 }
 
 module.exports = router;
