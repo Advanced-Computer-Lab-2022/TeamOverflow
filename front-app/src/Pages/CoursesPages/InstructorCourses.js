@@ -1,14 +1,18 @@
 import * as React from 'react';
-import { Typography, Box, Container, TextField, CssBaseline, Button, Slider, Select, MenuItem, Card } from '@mui/material';
+import { Typography, Box, Container, TextField, CssBaseline, Button, Slider, Select, MenuItem ,FormHelperText, Card } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
-import { viewTitlesInstructor, viewCourse, searchCoursesInstructor, filterCoursesInstructor} from '../../app/store/actions/coursesActions';
+import { viewTitlesInstructor, viewCourse, searchCoursesInstructor, filterCoursesInstructor, getSubjects } from '../../app/store/actions/coursesActions';
 
 const theme = createTheme();
 
-export const InstructorCourses = ({ auth, courses, viewTitlesInstructor, viewCourse, searchCoursesInstructor, filterCoursesInstructor}) => {
+export const InstructorCourses = ({ auth, getSubjects ,courses, viewTitlesInstructor, viewCourse, searchCoursesInstructor, filterCoursesInstructor }) => {
 
   const role = auth.token.split(" ")[0];
+
+  React.useEffect(() => {
+    getSubjects()
+  },[])
 
   const onView = (id) => {
     if (role !== "Corporate") viewCourse({ id: id, token: auth.token })
@@ -31,16 +35,16 @@ export const InstructorCourses = ({ auth, courses, viewTitlesInstructor, viewCou
 
   const [subject, setSubject] = React.useState(null)
   const handleFilter = (event) => {
-    filterCoursesInstructor({token: auth.token, subject: subject, minPrice: priceRange[0], maxPrice: priceRange[1]});
+    filterCoursesInstructor({ token: auth.token, subject: subject, minPrice: priceRange[0], maxPrice: priceRange[1] });
   }
 
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xl">
         <CssBaseline />
-        <Typography>All System Courses</Typography>
+        <Typography>Your Courses</Typography>
         <Box>
-          <Button variant="contained" onClick={() => viewTitlesInstructor({token: auth.token})}>View all available courses</Button>
+          <Button variant="contained" onClick={() => viewTitlesInstructor({ token: auth.token })}>View all my courses</Button>
         </Box>
         <Box component="form" onSubmit={handleSearch} sx={{ mt: 1 }}>
           <TextField
@@ -61,31 +65,37 @@ export const InstructorCourses = ({ auth, courses, viewTitlesInstructor, viewCou
             Search
           </Button>
         </Box>
-        <hr/>
+        <hr />
         <Box>
           <Typography>Filters</Typography>
-            Price (USD):
-            <Slider
-              step={10}
-              max={1000}
-              value={priceRange}
-              getAriaLabel={() => 'Price range'}
-              onChange={handlePriceChange}
-              valueLabelDisplay="auto"
-            />
-          <TextField
-            margin="normal"
-            fullWidth
-            id="Subject"
-            label="Type a certain subject"
-            name="subj"
-            autoComplete="search"
-            onChange={(event) => setSubject(event.target.value)}
-            autoFocus
+          Price (USD):
+          <Slider
+            step={10}
+            max={1000}
+            value={priceRange}
+            getAriaLabel={() => 'Price range'}
+            onChange={handlePriceChange}
+            valueLabelDisplay="auto"
           />
+          <Select
+            label="Subject"
+            id="Subject"
+            name="subj"
+            onChange={(event) => setSubject(event.target.value)}
+            fullWidth
+          >
+            {courses?.subjects?.map((subject, i) => {
+              return (
+                <MenuItem key={i} value={subject}>
+                  {subject}
+                </MenuItem>
+              )
+            })}
+          </Select>
+          <FormHelperText>Select subject to filter</FormHelperText>
           <Button variant="contained" onClick={handleFilter}>Apply Price/Subject Filter</Button>
         </Box>
-        <hr/>
+        <hr />
         <Box>
           <Typography>Results</Typography>
           <Box>
@@ -95,26 +105,26 @@ export const InstructorCourses = ({ auth, courses, viewTitlesInstructor, viewCou
                   <Card onClick={() => onView(course._id)}>
                     Title: {course.title}
                     <br />
-                    {course.subject && 
-                    <>
-                    Subject: {course.subject}
-                    <br />
-                    </>}
-                    {course.summary && 
-                    <>
-                    Summary: {course.summary}
-                    <br />
-                    </>}
-                    {course.rating && 
-                    <>
-                    Rating: {course.rating}/5
-                    <br />
-                    </>}
-                    {course.price && 
-                    <>
-                    Price: {course.price}
-                    <br />
-                    </>}
+                    {course.subject &&
+                      <>
+                        Subject: {course.subject}
+                        <br />
+                      </>}
+                    {course.summary &&
+                      <>
+                        Summary: {course.summary}
+                        <br />
+                      </>}
+                    {course.rating &&
+                      <>
+                        Rating: {course.rating}/5
+                        <br />
+                      </>}
+                    {course.price &&
+                      <>
+                        Price: {course.price}
+                        <br />
+                      </>}
                   </Card>
                   {courses.single?._id === course._id && JSON.stringify(courses.single)}
                 </Box>
@@ -132,6 +142,6 @@ const mapStateToProps = (state) => ({
   courses: state?.courses
 });
 
-const mapDispatchToProps = { viewTitlesInstructor, viewCourse, searchCoursesInstructor, filterCoursesInstructor};
+const mapDispatchToProps = { viewTitlesInstructor, getSubjects, viewCourse, searchCoursesInstructor, filterCoursesInstructor };
 
 export default connect(mapStateToProps, mapDispatchToProps)(InstructorCourses);

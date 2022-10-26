@@ -1,4 +1,4 @@
-import { COURSE, SINGLE_COURSE_SUCCESS, COURSE_SUCCESS, COURSE_FAIL } from "./types";
+import { COURSE, SINGLE_COURSE_SUCCESS, COURSE_SUCCESS, COURSE_FAIL, SUBJECT_SUCCESS } from "./types";
 import { getRequest, postRequest } from "../../../core/network";
 import endpoints from "../../../constants/endPoints.json";
 import { notification } from "antd";
@@ -208,3 +208,23 @@ export const searchCoursesInstructor = (data) => (dispatch) => {
     });
 };
 
+export const getSubjects = (data) => (dispatch) => {
+  dispatch({ type: COURSE });
+
+  getRequest(undefined, undefined, undefined, endpoints.course.getSubjects)
+    .then((response) => {
+      console.log(response)
+      const { data } = response;
+      return dispatch({
+        type: SUBJECT_SUCCESS,
+        payload: data
+      });
+    })
+    .catch((err) => {
+      notification.error({ message: "Something Went Wrong" })
+      console.log(err);
+      return dispatch({
+        type: COURSE_FAIL,
+      });
+    });
+};

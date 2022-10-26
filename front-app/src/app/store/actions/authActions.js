@@ -1,4 +1,4 @@
-import { LOGIN, LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT_SUCCESS } from "./types";
+import { LOGIN, LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT_SUCCESS, GUEST } from "./types";
 import { getRequest, postRequest } from "../../../core/network";
 import endpoints from "../../../constants/endPoints.json";
 import { notification } from "antd";
@@ -65,3 +65,7 @@ export const LoginUser = (data) => (dispatch) => {
       });
     });
 };
+
+export const guestVisit = (data) => (dispatch) => {
+  dispatch({ type: GUEST });
+}

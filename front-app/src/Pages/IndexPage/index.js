@@ -7,12 +7,12 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, FormHelperText, InputLabel} from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
-import { LoginUser } from '../../app/store/actions/authActions';
-import {Navigate, Route, Routes} from "react-router-dom";
+import { LoginUser, guestVisit } from '../../app/store/actions/authActions';
+import {Navigate, NavLink, Route, Routes} from "react-router-dom";
 
 const theme = createTheme();
 
-export const Index = ({LoginUser, user, token}) => {
+export const Index = ({LoginUser, user, token, guestVisit}) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -25,7 +25,9 @@ export const Index = ({LoginUser, user, token}) => {
     LoginUser(details)
   };
 
-  if(user){
+  if(user?.type === "Guest User"){
+    return (<Navigate to={"/courses"} replace/>)
+  } else if(user) {
     return (<Navigate to={`/${token.split(" ")[0]}`} replace/>)
   }
 
@@ -99,9 +101,9 @@ export const Index = ({LoginUser, user, token}) => {
                 </Link>
               </Grid> */}
               <Grid item>
-                <Link href="#" variant="body2">
+                <NavLink onClick={guestVisit}>
                   {"Continue as guest?"}
-                </Link>
+                </NavLink>
               </Grid>
             </Grid>
           </Box>
@@ -116,6 +118,6 @@ const mapStateToProps = (state) => ({
   token : state?.auth?.token
 });
 
-const mapDispatchToProps = {LoginUser};
+const mapDispatchToProps = {LoginUser, guestVisit};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Index);
