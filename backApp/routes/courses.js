@@ -8,6 +8,7 @@ const Trainee = require("../models/Trainee");
 const Corporate = require("../models/CorporateTrainee");
 const Instructor = require("../models/Instructor");
 var exchange
+var currencies = require("country-json/src/country-by-currency-code.json")
 router.use(express.json())
 const {verifyAllUsers, verifyInstructor, verifyAllUsersCorp} = require("../auth/jwt-auth")
 
@@ -164,14 +165,15 @@ async function filterCourseBySubjRating(data){
 }
 
 async function findCourseAndSubtitles(id, reqId){
-  updateRates()
-
   var user = await (Trainee.findById(reqId) || Corporate.findById(reqId) || Instructor.findById(reqId))
   var course = await Course.findById(id)
   var subtitles = await Subtitle.find({courseId: id})
   var courseObj = JSON.parse(JSON.stringify(course))
+  var curr = currencies.filter((elem) => elem.country === user.country)[0]?.currency_code
+  await updateRates()
   var price = courseObj.price
-  courseObj.price = price * exchange.rates["EGP"]
+  var rate = exchange.rates[curr] || exchange.rates.USD
+  courseObj.price = price * rate
   courseObj.subtitles = JSON.parse(JSON.stringify(subtitles))
   return courseObj
 }
