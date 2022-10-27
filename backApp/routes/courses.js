@@ -11,7 +11,8 @@ var exchange
 var currencies = require("country-json/src/country-by-currency-code.json")
 var subjects = require("../public/jsons/subjects.json")
 router.use(express.json())
-const {verifyAllUsers, verifyInstructor, verifyAllUsersCorp} = require("../auth/jwt-auth")
+const {verifyAllUsers, verifyInstructor, verifyAllUsersCorp} = require("../auth/jwt-auth");
+const { default: mongoose } = require("mongoose");
 
 // General Purpose endpoints
 router.get('/', async function(req, res) {
@@ -46,7 +47,7 @@ router.get('/view', verifyAllUsers ,async function(req, res) {
 // instructor view course
 router.get('/view/instructor', verifyInstructor ,async function(req, res) {
   try{
-    var results = await Course.find({instructorId : req.reqId}, {title : 1, _id: 1})
+    var results = await Course.find({instructorId : mongoose.Types.ObjectId(req.reqId)}, {title : 1, _id: 1})
     res.status(200).json(results)
   }catch(err){
     res.status(400).json({message: err.message}) 
@@ -126,7 +127,7 @@ router.post('/create', verifyInstructor ,async function(req, res) {
 
 async function searchCourseInstructor(data, instructorId){
   var query = ".*"+data.query+".*"
-  const mongoQuery = { $and: [{instructorId: instructorId},{$or: [{subject: {$regex: new RegExp(query, 'i')}}, {title: {$regex: new RegExp(query, 'i')}}]}]}
+  const mongoQuery = { $and: [{instructorId: mongoose.Types.ObjectId(instructorId)},{$or: [{subject: {$regex: new RegExp(query, 'i')}}, {title: {$regex: new RegExp(query, 'i')}}]}]}
   var results = await Course.find(mongoQuery)
   return results
 }
@@ -143,7 +144,7 @@ async function filterCourse(data, instructorId){
   var sub = subject||{$regex: ".*"}
   var min = minPrice||0
   var max = maxPrice||10000
-  const mongoQuery = { $and: [{instructorId: instructorId},{subject: sub}, {price: { $gte : min, $lt : max}}]}
+  const mongoQuery = { $and: [{instructorId: mongoose.Types.ObjectId(instructorId)},{subject: sub}, {price: { $gte : min, $lt : max}}]}
   var results = await Course.find(mongoQuery)
   return results
 }
