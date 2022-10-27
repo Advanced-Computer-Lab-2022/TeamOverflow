@@ -134,7 +134,9 @@ async function searchCourseInstructor(data, instructorId){
 
 async function searchforcourse(data){
   var query = ".*"+data.query+".*"
-  const mongoQuery = { $or : [{instructorId:  {$regex: new RegExp(query, 'i')}},{subject: {$regex: new RegExp(query, 'i')}}, {title: {$regex: new RegExp(query, 'i')}}]}
+  var instructors = await Instructor.find({name: {$regex: new RegExp(query, 'i')}},{_id: 1})
+  var instructorIds = instructors.map((instructor) => instructor._id.toString())
+  const mongoQuery = { $or : [{instructorId: {$in: instructorIds}  },{subject: {$regex: new RegExp(query, 'i')}}, {title: {$regex: new RegExp(query, 'i')}}]}
   var results = await Course.find(mongoQuery)
   return results
 }
