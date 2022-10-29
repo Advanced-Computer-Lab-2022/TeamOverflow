@@ -8,5 +8,6 @@ var instructorSchema = new mongoose.Schema({
     email: {type: String}
 })
 
+
 var Instructor = mongoose.model("Instructor",instructorSchema);
 module.exports = Instructor

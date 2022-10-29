@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var Instructor = require("../models/Instructor");
 var jwt = require("jsonwebtoken");
+const { verifyAllUsersCorp } = require('../auth/jwt-auth');
 
 /* GET instructors listing. */
 router.get('/', function(req, res) {
@@ -28,6 +29,15 @@ router.post("/login", async (req,res) => {
     }
   })
 })
+router.post("/selectCountry",verifyAllUsersCorp , async (req,res) => {
+  try{
+    await Instructor.updateOne({_id:req.reqId},{country: req.body.country})
+  var user= await Instructor.findById(req.reqId)
+  return res.status(200).json(user)
+  } catch(err){
+    return res.status(400).json({message: "Update Failed"})
+  }
+  })
 
 /* Functions */
 
