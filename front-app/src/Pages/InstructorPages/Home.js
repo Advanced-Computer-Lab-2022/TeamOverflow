@@ -10,11 +10,16 @@ import { connect } from "react-redux";
 import { NavLink } from 'react-router-dom';
 import { logout } from '../../app/store/actions/authActions';
 import countryList from 'country-json/src/country-by-name.json'
-
+import { selectCountry } from '../../app/store/actions/instructorActions';
 const theme = createTheme();
 
-export const Home = ({auth, logout}) => {
-  console.log(countryList)
+export const Home = ({auth, logout, selectCountry}) => {
+  
+  const [country, setCountry] = React.useState(auth.user.country)
+  const handleCountryChange = (event) => {
+    setCountry(event.target.value)
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xl">
@@ -24,9 +29,10 @@ export const Home = ({auth, logout}) => {
         <NavLink to="/courses">All Courses</NavLink><br/>
         <NavLink to="/courses/instructor">My Courses</NavLink><br/>
         <Select 
-          defaultValue={auth.user.country}
+          defaultValue={country}
           label="User Country"
-          fullWidth        
+          fullWidth
+          onChange={handleCountryChange}        
         >
           {countryList.map((country, i) => {return (
             <MenuItem key={i} value={country.country}>
@@ -35,7 +41,7 @@ export const Home = ({auth, logout}) => {
           )})}
         </Select>
         <FormHelperText>Select your country</FormHelperText>
-        <Button>Set Country</Button><br/>
+        <Button onClick={() => selectCountry({token: auth.token, country: country})}>Set Country</Button><br/>
         <Button onClick={logout}>Log Out</Button>
       </Container>
     </ThemeProvider>
@@ -46,6 +52,6 @@ const mapStateToProps = (state) => ({
     auth: state?.auth
 });
 
-const mapDispatchToProps = {logout};
+const mapDispatchToProps = {logout, selectCountry};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
