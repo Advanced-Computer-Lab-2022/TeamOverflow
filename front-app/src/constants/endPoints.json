@@ -20,13 +20,13 @@
       
    },
    "instructor":{
-
+      "setCountry":"instructor/selectCountry"
    },
    "corporatetrainee":{
-
+      "setCountry":"corpTrainee/selectCountry"
    },
    "trainee": {
-
+      "setCountry":"trainee/selectCountry"
    },
    "course":{
       "searchUsers":"course/search/course",
