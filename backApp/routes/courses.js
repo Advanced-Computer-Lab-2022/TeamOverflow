@@ -44,6 +44,16 @@ router.get('/view', verifyAllUsers ,async function(req, res) {
   }
 });
 
+//view courses available
+router.get('/viewAvailableCourses', verifyAllUsersCorp ,async function(req, res) {
+  try{
+    var results = await Course.find({}, {title : 1, totalHours : 1, rating : 1})
+    res.status(200).json(results)
+  }catch(err){
+    res.status(400).json({message: err.message}) 
+  }
+});
+
 // instructor view course
 router.get('/view/instructor', verifyInstructor ,async function(req, res) {
   try{
