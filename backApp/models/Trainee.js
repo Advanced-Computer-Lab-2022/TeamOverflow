@@ -8,5 +8,6 @@ var traineeSchema = new mongoose.Schema({
     email: {type: String}
 })
 
+
 var Trainee = mongoose.model("Trainee",traineeSchema);
 module.exports = Trainee
