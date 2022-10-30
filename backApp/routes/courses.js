@@ -119,12 +119,13 @@ router.get('/filter/subjrate', verifyAllUsersCorp ,async function(req, res) {
 router.post('/create', verifyInstructor ,async function(req, res) {
   const course = new Course({
     title: req.body.title,
-    subtitle: req.body.subtitle,
     subject: req.body.subject,
     summary: req.body.summary,
     price: req.body.price,
-    instructorId: req.body.instructorId
-  })
+    discount: req.body.discount,
+    instructorId: req.body.instructorId,
+    rating: req.body.rating,
+    totalHours: req.body.totalHours})
   try{
      const newCourse =  await course.save()
      res.status(201).json(newCourse)
@@ -132,6 +133,21 @@ router.post('/create', verifyInstructor ,async function(req, res) {
     res.status(400).json({message: err.message}) 
   }
 });
+
+// Create several subtitles for a specific course
+router.post('/createSub/:id', async function(req, res) {
+  var subs = req.body
+  for(var i = 0; i < subs.length; i++){
+    subs[i].courseId = req.params.id
+  }
+  try{
+    const newSubs = await Subtitle.insertMany(subs)
+    res.status(201).json(newSubs)
+  }catch(err){
+    res.status(400).json({message: err.message}) 
+  }
+})
+
 
 /* Functions */
 
