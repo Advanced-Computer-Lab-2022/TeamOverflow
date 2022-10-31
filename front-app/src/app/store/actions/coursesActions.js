@@ -110,6 +110,28 @@ export const viewCourse = (data) => (dispatch) => {
     });
 };
 
+export const viewTitles = (data) => (dispatch) => {
+  dispatch({ type: COURSE });
+  var { token } = data
+
+  getRequest(undefined, undefined, token, endpoints.course.viewAll)
+    .then((response) => {
+      console.log(response)
+      const { data } = response;
+      return dispatch({
+        type: COURSE_SUCCESS,
+        payload: data
+      });
+    })
+    .catch((err) => {
+      notification.error({ message: "Something Went Wrong" })
+      console.log(err);
+      return dispatch({
+        type: COURSE_FAIL,
+      });
+    });
+};
+
 export const viewPrices = (data) => (dispatch) => {
   dispatch({ type: COURSE });
   var { token } = data

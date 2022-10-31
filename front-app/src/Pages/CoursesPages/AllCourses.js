@@ -2,11 +2,11 @@ import * as React from 'react';
 import { Typography, Box, Container, TextField, CssBaseline, Button, Slider, Select, MenuItem, Card, FormHelperText } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
-import { searchCoursesUsers, viewCourse, viewPrices, filterCoursesAll, filterCoursesPrice, getSubjects } from '../../app/store/actions/coursesActions';
+import { searchCoursesUsers, viewTitles, viewCourse, viewPrices, filterCoursesAll, filterCoursesPrice, getSubjects } from '../../app/store/actions/coursesActions';
 
 const theme = createTheme();
 
-export const AllCourses = ({ auth, courses, getSubjects, searchCoursesUsers, viewCourse, viewPrices, filterCoursesAll, filterCoursesPrice }) => {
+export const AllCourses = ({ auth, courses, getSubjects, searchCoursesUsers, viewTitles,viewCourse, viewPrices, filterCoursesAll, filterCoursesPrice }) => {
 
   const role = auth.token.split(" ")[0];
 
@@ -53,7 +53,7 @@ export const AllCourses = ({ auth, courses, getSubjects, searchCoursesUsers, vie
         <CssBaseline />
         <Typography>All System Courses</Typography>
         <Box>
-          <Button variant="contained">View all available courses</Button>
+          <Button variant="contained" onClick={() => viewTitles({ token: auth.token })}>View all available courses</Button>
           {role !== "Corporate" && <Button onClick={() => viewPrices({ token: auth.token })}>View all courses prices</Button>}
         </Box>
         <Box component="form" onSubmit={handleSearch} sx={{ mt: 1 }}>
@@ -151,8 +151,18 @@ export const AllCourses = ({ auth, courses, getSubjects, searchCoursesUsers, vie
                     Price: {course.price}
                     <br />
                     </>}
+                    {course.discount && 
+                    <>
+                    Discount: {course.discount}
+                    <br />
+                    </>}
+                    {course.totalHours && 
+                    <>
+                    Total Hours: {course.totalHours}
+                    <br />
+                    </>}
                   </Card>
-                  {courses.single?._id === course._id && JSON.stringify(courses.single)}
+                  <pre>{courses.single?._id === course._id && JSON.stringify(courses.single)}</pre>
                 </Box>
               )
             })}
@@ -168,6 +178,6 @@ const mapStateToProps = (state) => ({
   courses: state?.courses
 });
 
-const mapDispatchToProps = { searchCoursesUsers, viewCourse, viewPrices, filterCoursesAll, filterCoursesPrice, getSubjects };
+const mapDispatchToProps = { searchCoursesUsers,viewTitles, viewCourse, viewPrices, filterCoursesAll, filterCoursesPrice, getSubjects };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AllCourses);

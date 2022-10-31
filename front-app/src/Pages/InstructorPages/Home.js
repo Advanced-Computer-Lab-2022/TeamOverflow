@@ -28,6 +28,7 @@ export const Home = ({auth, logout, selectCountry}) => {
         <Typography>Welcome {auth.user.username}</Typography>
         <NavLink to="/courses">All Courses</NavLink><br/>
         <NavLink to="/courses/instructor">My Courses</NavLink><br/>
+        <NavLink to="/courses/create">Add Courses</NavLink><br/>
         <Select 
           defaultValue={country}
           label="User Country"

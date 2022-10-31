@@ -117,36 +117,43 @@ router.get('/filter/subjrate', verifyAllUsersCorp ,async function(req, res) {
 
 // Creating a new Course
 router.post('/create', verifyInstructor ,async function(req, res) {
+  var subtitles = req.body.subtitles
+  var totalTime = 0
+  for(var i = 0; i < subtitles.length; i++){
+    totalTime += parseInt(subtitles[i].time)
+  }
   const course = new Course({
     title: req.body.title,
     subject: req.body.subject,
     summary: req.body.summary,
     price: req.body.price,
     discount: req.body.discount,
-    instructorId: req.body.instructorId,
-    rating: req.body.rating,
-    totalHours: req.body.totalHours})
+    instructorId: req.reqId,
+    totalHours: totalTime})
   try{
-     const newCourse =  await course.save()
-     res.status(201).json(newCourse)
+    const newCourse =  await course.save()
+    subtitles.map((subtitle) => subtitle.courseId = newCourse._id)
+    console.log(subtitles)
+    const newSubs = await Subtitle.insertMany(subtitles)
+    res.status(201).json(newCourse)
   }catch(err){
     res.status(400).json({message: err.message}) 
   }
 });
 
 // Create several subtitles for a specific course
-router.post('/createSub/:id', async function(req, res) {
-  var subs = req.body
-  for(var i = 0; i < subs.length; i++){
-    subs[i].courseId = req.params.id
-  }
-  try{
-    const newSubs = await Subtitle.insertMany(subs)
-    res.status(201).json(newSubs)
-  }catch(err){
-    res.status(400).json({message: err.message}) 
-  }
-})
+// router.post('/createSub/:id', async function(req, res) {
+//   var subs = req.body
+//   for(var i = 0; i < subs.length; i++){
+//     subs[i].courseId = req.params.id
+//   }
+//   try{
+//     const newSubs = await Subtitle.insertMany(subs)
+//     res.status(201).json(newSubs)
+//   }catch(err){
+//     res.status(400).json({message: err.message}) 
+//   }
+// })
 
 
 /* Functions */
