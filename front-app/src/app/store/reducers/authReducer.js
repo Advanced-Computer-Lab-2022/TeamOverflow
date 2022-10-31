@@ -54,9 +54,10 @@ export default function store(state = initialState, action) {
         isError: false,
       }
     case UPDATE_USER_SUCCESS:
+      localStorage.setItem("learningAppUser", JSON.stringify(action.payload));
       return {
         ...state,
-        user: action.payload,
+        user: payload,
         isLoading: false,
         isError: false
       }

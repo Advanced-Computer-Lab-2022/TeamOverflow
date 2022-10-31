@@ -11,12 +11,11 @@ export const selectCountry = (data) => (dispatch) => {
 
   postRequest({country: country}, undefined, undefined, token, endpoints.instructor.setCountry)
     .then((response) => {
-      console.log(response)
       const { data } = response;
       notification.success({message: `${country} selected`})
       return dispatch({
         type: UPDATE_USER_SUCCESS,
-        payload: data.payload
+        payload: data
       });
     })
     .catch((err) => {
