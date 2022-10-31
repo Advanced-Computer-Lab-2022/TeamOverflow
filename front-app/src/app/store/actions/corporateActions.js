@@ -14,7 +14,7 @@ export const selectCountry = (data) => (dispatch) => {
       notification.success({message: `${country} selected`})
       return dispatch({
         type: UPDATE_USER_SUCCESS,
-        payload: data.payload
+        payload: data
       });
     })
     .catch((err) => {
