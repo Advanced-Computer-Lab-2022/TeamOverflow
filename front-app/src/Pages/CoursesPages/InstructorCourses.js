@@ -102,31 +102,41 @@ export const InstructorCourses = ({ auth, getSubjects ,courses, viewTitlesInstru
             {courses.results?.map((course) => {
               return (
                 <Box className='m-2'>
-                  <Card onClick={() => onView(course._id)}>
+                <Card onClick={() => onView(course._id)}>
                     Title: {course.title}
                     <br />
-                    {course.subject &&
-                      <>
-                        Subject: {course.subject}
-                        <br />
-                      </>}
-                    {course.summary &&
-                      <>
-                        Summary: {course.summary}
-                        <br />
-                      </>}
-                    {course.rating &&
-                      <>
-                        Rating: {course.rating}/5
-                        <br />
-                      </>}
-                    {course.price &&
-                      <>
-                        Price: {course.price}
-                        <br />
-                      </>}
+                    {course.subject && 
+                    <>
+                    Subject: {course.subject}
+                    <br />
+                    </>}
+                    {course.summary && 
+                    <>
+                    Summary: {course.summary}
+                    <br />
+                    </>}
+                    {course.rating && 
+                    <>
+                    Rating: {course.rating}/5
+                    <br />
+                    </>}
+                    {course.price && 
+                    <>
+                    Price: {course.price}
+                    <br />
+                    </>}
+                    {course.discount && 
+                    <>
+                    Discount: {course.discount}
+                    <br />
+                    </>}
+                    {course.totalHours && 
+                    <>
+                    Total Hours: {course.totalHours}
+                    <br />
+                    </>}
                   </Card>
-                  {courses.single?._id === course._id && JSON.stringify(courses.single)}
+                  <pre>{courses.single?._id === course._id && JSON.stringify(courses.single)}</pre>
                 </Box>
               )
             })}

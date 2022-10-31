@@ -120,7 +120,7 @@ router.post('/create', verifyInstructor ,async function(req, res) {
   var subtitles = req.body.subtitles
   var totalTime = 0
   for(var i = 0; i < subtitles.length; i++){
-    totalTime += subtitles[i].time
+    totalTime += parseInt(subtitles[i].time)
   }
   const course = new Course({
     title: req.body.title,
