@@ -133,7 +133,6 @@ router.post('/create', verifyInstructor ,async function(req, res) {
   try{
     const newCourse =  await course.save()
     subtitles.map((subtitle) => subtitle.courseId = newCourse._id)
-    console.log(subtitles)
     const newSubs = await Subtitle.insertMany(subtitles)
     res.status(201).json(newCourse)
   }catch(err){
@@ -204,7 +203,7 @@ async function filterCourseBySubjRating(data){
 }
 
 async function findCourseAndSubtitles(id, reqId){
-  var user = await (Trainee.findById(reqId) || Corporate.findById(reqId) || Instructor.findById(reqId))
+  var user = (await Trainee.findById(reqId) || await Corporate.findById(reqId) || await Instructor.findById(reqId))
   var course = await Course.findById(id)
   var subtitles = await Subtitle.find({courseId: id})
   var courseObj = JSON.parse(JSON.stringify(course))
