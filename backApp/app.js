@@ -10,6 +10,7 @@ var traineesRouter = require('./routes/trainee');
 var corporateRouter = require('./routes/corporate-trainee');
 var coursesRouter = require('./routes/courses');
 var instructorsRouter = require('./routes/instructors');
+var authenticationRouter = require('./routes/authentication');
 
 var app = express();
 
@@ -28,6 +29,7 @@ app.use('/corpTrainee', corporateRouter);
 app.use('/admin', adminsRouter);
 app.use('/course', coursesRouter);
 app.use('/instructor', instructorsRouter);
+app.use('/auth', authenticationRouter);
 
 app.get('/', function(req,res) {
   res.render("index", {

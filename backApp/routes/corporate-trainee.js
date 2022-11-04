@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var CorporateTrainee = require("../models/CorporateTrainee")
 const jwt = require("jsonwebtoken");
-const { verifyAllUsersCorp } = require('../auth/jwt-auth');
+const { verifyAllUsersCorp, verifyCorpTrainee } = require('../auth/jwt-auth');
 
 /* GET corporate trainees listing. */
 router.get('/', function(req, res) {
@@ -30,6 +30,7 @@ router.post("/login", async (req,res) => {
     }
   })
 })
+
 router.post("/selectCountry",verifyAllUsersCorp , async (req,res) => {
   try{
     await CorporateTrainee.updateOne({_id:req.reqId},{country: req.body.country})
@@ -39,6 +40,38 @@ router.post("/selectCountry",verifyAllUsersCorp , async (req,res) => {
     return res.status(400).json({message: "Update Failed"})
   }
   })
+
+//add instructor review
+router.post('/rate/instructor', verifyCorpTrainee, async function(req, res) {
+  const review = new InstructorRating({
+    rating:req.body.rating,
+    review:req.body.review,
+    courseId:req.body.courseId,
+    userId: req.reqId
+  })
+  try{
+    const newReview =  await review.save()
+    res.status(200).json(newReview)
+  }catch(err){
+    res.status(400).json({message: err.message}) 
+  }
+});
+
+//add course review
+router.post('/rate/course', verifyCorpTrainee, async function(req, res) {
+  const review = new CourseRating({
+    rating:req.body.rating,
+    review:req.body.review,
+    courseId:req.body.courseId,
+    userId: req.reqId
+  })
+  try{
+    const newReview =  await review.save()
+    res.status(200).json(newReview)
+  }catch(err){
+    res.status(400).json({message: err.message}) 
+  }
+});
 
 /* Functions */
 
