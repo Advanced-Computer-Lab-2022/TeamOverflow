@@ -6,7 +6,7 @@ var traineeSchema = new mongoose.Schema({
     country: {type: String},
     name: {type: String},
     email: {type: String}
-})
+}, {timestamps})
 
 
 var Trainee = mongoose.model("Trainee",traineeSchema);

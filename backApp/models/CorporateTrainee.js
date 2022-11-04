@@ -7,7 +7,7 @@ var corptrainSchema = new mongoose.Schema({
     country: {type: String},
     name: {type: String},
     email: {type: String}
-})
+}, {timestamps})
 
 var CorporateTrainee = mongoose.model("CorporateTrainee",corptrainSchema);
 module.exports = CorporateTrainee

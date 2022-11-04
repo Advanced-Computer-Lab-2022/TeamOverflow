@@ -9,7 +9,7 @@ var courseSchema = new mongoose.Schema({
     instructorId: {type: mongoose.Types.ObjectId, ref:"Instructor" ,required: true},
     rating: {type: Number},
     totalHours: {type: Number, required: true}
-})
+}, {timestamps})
 
 var Course = mongoose.model("Course",courseSchema);
 module.exports = Course
