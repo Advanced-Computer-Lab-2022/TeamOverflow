@@ -45,10 +45,14 @@ router.post("/selectCountry",verifyAllUsersCorp , async (req,res) => {
 
 //add instructor review
 router.post('/rate/instructor', verifyTrainee, async function(req, res) {
+  var ratingBefore = await InstructorRating.findOne({userId: req.reqId, instructorId: req.body.instructorId})
+  if(ratingBefore){
+    return res.status(200).json({message: "You have rated this instructor before"})
+  }
   const review = new InstructorRating({
     rating:req.body.rating,
     review:req.body.review,
-    courseId:req.body.courseId,
+    instructorId:req.body.instructorId,
     userId: req.reqId
   })
   try{
@@ -61,6 +65,10 @@ router.post('/rate/instructor', verifyTrainee, async function(req, res) {
 
 //add course review
 router.post('/rate/course', verifyTrainee, async function(req, res) {
+  var ratingBefore = await CourseRating.findOne({userId: req.reqId, courseId: req.body.courseId})
+  if(ratingBefore){
+    return res.status(200).json({message: "You have rated this course before"})
+  }
   const review = new CourseRating({
     rating:req.body.rating,
     review:req.body.review,
