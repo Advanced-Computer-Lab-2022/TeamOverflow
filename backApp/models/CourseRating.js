@@ -5,7 +5,7 @@ var courseRateSchema = new mongoose.Schema({
     review: {type: String},
     courseId: {type: mongoose.Types.ObjectId, ref:"Course" , required: true},
     userId: {type: mongoose.Types.ObjectId, required: true},
-}, {timestamps})
+}, {timestamps: true})
 
 var CourseRating = mongoose.model("CourseRating",courseRateSchema);
 module.exports = CourseRating

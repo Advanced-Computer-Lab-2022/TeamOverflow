@@ -5,7 +5,7 @@ var subtitleSchema = new mongoose.Schema({
     time: {type: Number, required: true},
     exercises: {type: Array, required: true},
     courseId: {type: mongoose.Types.ObjectId, ref:"Course" ,required: true},
-}, {timestamps})
+}, {timestamps: true})
 
 var Subtitle = mongoose.model("Subtitle",subtitleSchema);
 module.exports = Subtitle
