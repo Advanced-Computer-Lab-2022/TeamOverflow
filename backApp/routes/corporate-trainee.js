@@ -5,6 +5,8 @@ const jwt = require("jsonwebtoken");
 const { verifyAllUsersCorp, verifyCorpTrainee } = require('../auth/jwt-auth');
 const CourseRating = require('../models/CourseRating');
 const InstructorRating = require("../models/InstructorRating");
+const Course = require('../models/Course');
+const Instructor = require("../models/Instructor");
 
 /* GET corporate trainees listing. */
 router.get('/', function(req, res) {
@@ -57,6 +59,9 @@ router.post('/rate/instructor', verifyCorpTrainee, async function(req, res) {
   })
   try{
     const newReview =  await review.save()
+    var instructor = await Instructor.findById(req.body.instructorId);
+    var newRate = ((instructor.rating || newReview.rating) + newReview.rating)/2
+    await instructor.updateOne({rating: newRate})
     res.status(200).json(newReview)
   }catch(err){
     res.status(400).json({message: err.message}) 
@@ -67,7 +72,7 @@ router.post('/rate/instructor', verifyCorpTrainee, async function(req, res) {
 router.post('/rate/course', verifyCorpTrainee, async function(req, res) {
   var ratingBefore = await CourseRating.findOne({userId: req.reqId, courseId: req.body.courseId})
   if(ratingBefore){
-    return res.status(200).json({message: "You have rated this instructor before"})
+    return res.status(200).json({message: "You have rated this course before"})
   }
   const review = new CourseRating({
     rating:req.body.rating,
@@ -77,6 +82,9 @@ router.post('/rate/course', verifyCorpTrainee, async function(req, res) {
   })
   try{
     const newReview =  await review.save()
+    var course = await Course.findById(req.body.courseId);
+    var newRate = ((course.rating || newReview.rating) + newReview.rating)/2
+    await course.updateOne({rating: newRate})
     res.status(200).json(newReview)
   }catch(err){
     res.status(400).json({message: err.message}) 
