@@ -5,8 +5,9 @@ var instructorSchema = new mongoose.Schema({
     password: {type: String, required: true},
     country: {type: String},
     name: {type: String},
-    email: {type: String}
-})
+    email: {type: String},
+    rating: {type: Number}
+}, {timestamps: true})
 
 
 var Instructor = mongoose.model("Instructor",instructorSchema);

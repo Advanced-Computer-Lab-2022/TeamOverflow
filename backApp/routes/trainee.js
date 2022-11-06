@@ -1,8 +1,12 @@
 var express = require('express');
 var router = express.Router();
-var Trainee = require("../models/Trainee")
+const Trainee = require("../models/Trainee");
+const CourseRating = require("../models/CourseRating");
+const InstructorRating = require("../models/InstructorRating");
+const Course = require("../models/Course");
+const Instructor = require("../models/Instructor");
 const jwt = require("jsonwebtoken");
-const { verifyAllUsersCorp } = require('../auth/jwt-auth');
+const { verifyAllUsersCorp, verifyTrainee } = require('../auth/jwt-auth');
 
 /* GET trainees listing. */
 router.get('/', function(req, res) {
@@ -30,6 +34,7 @@ router.post("/login", async (req,res) => {
     }
   })
 })
+
 router.post("/selectCountry",verifyAllUsersCorp , async (req,res) => {
   try{
     await Trainee.updateOne({_id:req.reqId},{country: req.body.country})
@@ -39,6 +44,52 @@ router.post("/selectCountry",verifyAllUsersCorp , async (req,res) => {
     return res.status(400).json({message: "Update Failed"})
   }
   })
+
+//add instructor review
+router.post('/rate/instructor', verifyTrainee, async function(req, res) {
+  var ratingBefore = await InstructorRating.findOne({userId: req.reqId, instructorId: req.body.instructorId})
+  if(ratingBefore){
+    return res.status(200).json({message: "You have rated this instructor before"})
+  }
+  const review = new InstructorRating({
+    rating:req.body.rating,
+    review:req.body.review,
+    instructorId:req.body.instructorId,
+    userId: req.reqId
+  })
+  try{
+    const newReview =  await review.save();
+    var instructor = await Instructor.findById(req.body.instructorId);
+    var newRate = ((instructor.rating || newReview.rating) + newReview.rating)/2
+    await instructor.updateOne({rating: newRate});
+    res.status(200).json(newReview)
+  }catch(err){
+    res.status(400).json({message: err.message}) 
+  }
+});
+
+//add course review
+router.post('/rate/course', verifyTrainee, async function(req, res) {
+  var ratingBefore = await CourseRating.findOne({userId: req.reqId, courseId: req.body.courseId})
+  if(ratingBefore){
+    return res.status(200).json({message: "You have rated this course before"})
+  }
+  const review = new CourseRating({
+    rating:req.body.rating,
+    review:req.body.review,
+    courseId:req.body.courseId,
+    userId: req.reqId
+  })
+  try{
+    const newReview =  await review.save();
+    var course = await Course.findById(req.body.courseId);
+    var newRate = ((course.rating || newReview.rating) + newReview.rating)/2
+    await course.updateOne({rating: newRate});
+    res.status(200).json(newReview)
+  }catch(err){
+    res.status(400).json({message: err.message}) 
+  }
+});
 
 /* Functions */
 

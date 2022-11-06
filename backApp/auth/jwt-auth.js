@@ -35,6 +35,40 @@ function verifyInstructor (req,res,next) {
     }
 }
 
+function verifyTrainee (req,res,next) {
+    const header = req.headers['x-access-token']?.split(' ')
+    const role = header[0]
+    const token = header[1]
+    if(role == "Trainee" && token){
+        jwt.verify(token, process.env.PASSPORTSECRET, (err, decoded) => {
+            if(err){
+                return res.json({message: "Failed to authenticate", isValid: false})
+            }
+            req.reqId = decoded._id
+            next()
+        })
+    } else {
+        res.json({message: "Incorrect Token", isValid: false})
+    }
+}
+
+function verifyCorpTrainee (req,res,next) {
+    const header = req.headers['x-access-token']?.split(' ')
+    const role = header[0]
+    const token = header[1]
+    if(role == "Corporate" && token){
+        jwt.verify(token, process.env.PASSPORTSECRET, (err, decoded) => {
+            if(err){
+                return res.json({message: "Failed to authenticate", isValid: false})
+            }
+            req.reqId = decoded._id
+            next()
+        })
+    } else {
+        res.json({message: "Incorrect Token", isValid: false})
+    }
+}
+
 function verifyAllUsers (req,res,next) {
     const header = req.headers['x-access-token']?.split(' ')
     const role = header[0]
@@ -73,4 +107,4 @@ function verifyAllUsersCorp (req,res,next) {
     }
 }
 
-module.exports = {verifyAdmin, verifyInstructor, verifyAllUsers, verifyAllUsersCorp}
+module.exports = {verifyAdmin, verifyInstructor, verifyAllUsers, verifyAllUsersCorp, verifyTrainee, verifyCorpTrainee}
