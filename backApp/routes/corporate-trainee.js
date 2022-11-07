@@ -60,8 +60,8 @@ router.post('/rate/instructor', verifyCorpTrainee, async function(req, res) {
   try{
     const newReview =  await review.save()
     var instructor = await Instructor.findById(req.body.instructorId);
-    var newRate = ((instructor.rating || newReview.rating) + newReview.rating)/2
-    await instructor.updateOne({rating: newRate})
+    var newRate = instructor.rating ? ((instructor.numberOfRatings*instructor.rating) + req.body.rating)/(instructor.numberOfRatings+1) : req.body.rating;
+    await instructor.updateOne({rating: newRate, numberOfRatings: instructor.numberOfRatings+1});
     res.status(200).json(newReview)
   }catch(err){
     res.status(400).json({message: err.message}) 
@@ -83,8 +83,8 @@ router.post('/rate/course', verifyCorpTrainee, async function(req, res) {
   try{
     const newReview =  await review.save()
     var course = await Course.findById(req.body.courseId);
-    var newRate = ((course.rating || newReview.rating) + newReview.rating)/2
-    await course.updateOne({rating: newRate})
+    var newRate = course.rating ? ((course.numberOfRatings*course.rating) + req.body.rating)/(course.numberOfRatings+1) : req.body.rating;
+    await course.updateOne({rating: newRate, numberOfRatings: course.numberOfRatings+1});
     res.status(200).json(newReview)
   }catch(err){
     res.status(400).json({message: err.message}) 

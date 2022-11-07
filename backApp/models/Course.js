@@ -8,6 +8,7 @@ var courseSchema = new mongoose.Schema({
     discount: {type: Number, required: true},
     instructorId: {type: mongoose.Types.ObjectId, ref:"Instructor" ,required: true},
     rating: {type: Number},
+    numberOfRatings: {type: Number, default: 0},
     totalHours: {type: Number, required: true}
 }, {timestamps: true})
 
