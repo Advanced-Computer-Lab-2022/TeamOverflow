@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const Trainee = require("../models/Trainee");
+const TraineeCourses = require("../models/TraineeCourses");
 const CourseRating = require("../models/CourseRating");
 const InstructorRating = require("../models/InstructorRating");
 const Course = require("../models/Course");
@@ -90,6 +91,23 @@ router.post('/rate/course', verifyTrainee, async function(req, res) {
     res.status(400).json({message: err.message}) 
   }
 });
+
+//register trainee to a course
+router.post('/register/course', async function(req, res) {
+  var course = await Course.findById(req.body.courseId);
+  var trainee = await Trainee.findById(req.body.traineeId);
+  const traineeCourse = new TraineeCourses({
+    traineeId: trainee,
+    courseId: course
+  });
+  try{
+    const newTraineeCourse =  await traineeCourse.save();
+    res.status(200).json(newTraineeCourse)
+    res.status(200).json({message: "Registered Successfully"})
+  }catch(err){
+    res.status(400).json({message: err.message}) 
+  }
+});  
 
 /* Functions */
 
