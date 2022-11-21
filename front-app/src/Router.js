@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Routes, Route } from "react-router-dom";
-import { Index, AddUsers, AdminHome, AllCourses, CorporateHome, IndividualHome, InstructorCourses, InstructorHome, CreateCourse } from "./Pages";
+import { Index, AddUsers, AdminHome, AllCourses, CorporateHome, IndividualHome, InstructorCourses, InstructorHome, CreateCourse, RatingPage } from "./Pages";
 import ProtectedRoute from "./ProtectedRoute";
 
 export const Router = () => {
@@ -26,8 +26,9 @@ export const Router = () => {
       <Route exact element={<ProtectedRoute allowed={["Corporate", "Trainee", "Guest", "Instructor"]}/>}>
         <Route path="/courses" exact element={<AllCourses/>}/>
       </Route>
-      <Route exact element={<ProtectedRoute allowed={["Guest"]}/>}>
-      
+      <Route exact element={<ProtectedRoute allowed={["Corporate", "Trainee"]}/>}>
+        <Route path="/Rate/Instructor/:id" exact element={<RatingPage toRate={"Instructor"}/>}/>
+        <Route path="/Rate/Course/:id" exact element={<RatingPage toRate={"Course"}/>}/>
       </Route>
       <Route path="*" exact element={<Index/>}/>
     </Routes>
