@@ -7,6 +7,8 @@ const Subtitle = require("../models/Subtitle");
 const Trainee = require("../models/Trainee");
 const Corporate = require("../models/CorporateTrainee");
 const Instructor = require("../models/Instructor");
+const Exercise = require("../models/Exercise");
+const Video = require("../models/Video");
 var exchange
 var currencies = require("country-json/src/country-by-currency-code.json")
 var subjects = require("../public/jsons/subjects.json")
@@ -140,20 +142,37 @@ router.post('/create', verifyInstructor ,async function(req, res) {
   }
 });
 
-// Create several subtitles for a specific course
-// router.post('/createSub/:id', async function(req, res) {
-//   var subs = req.body
-//   for(var i = 0; i < subs.length; i++){
-//     subs[i].courseId = req.params.id
-//   }
-//   try{
-//     const newSubs = await Subtitle.insertMany(subs)
-//     res.status(201).json(newSubs)
-//   }catch(err){
-//     res.status(400).json({message: err.message}) 
-//   }
-// })
+// create exercise
+router.post('/createExercise' ,async function(req, res) {
+  const exercise = new Exercise({
+    title: req.body.title,
+    courseId: req.body.courseId,
+    question: req.body.question,
+    answer: req.body.answer
+  })
+  try{
+    const newExercise =  await exercise.save()
+    res.status(201).json(newExercise)
+  }catch(err){
+    res.status(400).json({message: err.message}) 
+  }
+});
 
+// create video
+router.post('/createVideo' ,async function(req, res) {
+  const video = new Video({
+    title: req.body.title,
+    description: req.body.description,
+    url: req.body.url,
+    courseId: req.body.courseId
+  })
+  try{
+    const newVideo =  await video.save()
+    res.status(201).json(newVideo)
+  }catch(err){
+    res.status(400).json({message: err.message}) 
+  }
+});
 
 /* Functions */
 
