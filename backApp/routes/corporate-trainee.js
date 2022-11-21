@@ -10,6 +10,7 @@ const Instructor = require("../models/Instructor");
 const Exercise = require("../models/Exercise");
 const Answer = require("../models/StudentAnswer");
 const Video = require("../models/Video");
+const TraineeCourses = require("../models/TraineeCourses");
 
 
 /* GET corporate trainees listing. */
@@ -95,22 +96,22 @@ router.post('/rate/course', verifyCorpTrainee, async function(req, res) {
   }
 });
 
-//register trainee to a course
-router.post('/registerCourse', async function(req, res) {
-  var course = await Course.findById(req.body.courseId);
-  var trainee = await CorporateTrainee.findById(req.body.traineeId);
-  const traineeCourse = new TraineeCourses({
-    traineeId: trainee,
-    courseId: course
-  });
-  try{
-    const newTraineeCourse =  await traineeCourse.save();
-    res.status(200).json(newTraineeCourse)
-    res.status(200).json({message: "Registered Successfully"})
-  }catch(err){
-    res.status(400).json({message: err.message}) 
-  }
-});  
+// //register corporate-trainee to a course
+// router.post('/registerCourse', async function(req, res) {
+//   var course = await Course.findById(req.body.courseId);
+//   var trainee = await CorporateTrainee.findById(req.body.traineeId);
+//   const traineeCourse = new TraineeCourses({
+//     traineeId: trainee,
+//     courseId: course
+//   });
+//   try{
+//     const newTraineeCourse =  await traineeCourse.save();
+//     res.status(200).json(newTraineeCourse)
+//     res.status(200).json({message: "Registered Successfully"})
+//   }catch(err){
+//     res.status(400).json({message: err.message}) 
+//   }
+// });  
 
 //submit the answers to the exercise after completing it
 router.post('/submitExercise', async function(req, res) {
