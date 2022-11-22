@@ -5,6 +5,8 @@ var subtitleSchema = new mongoose.Schema({
     time: {type: Number, required: true},
     exercises: {type: Array, required: true},
     courseId: {type: mongoose.Types.ObjectId, ref:"Course" ,required: true},
+    videoId: {type: mongoose.Types.ObjectId, ref:"Video" ,required: true},
+    exerciseId: {type: mongoose.Types.ObjectId, ref:"Exercise" ,required: true}
 }, {timestamps: true})
 
 var Subtitle = mongoose.model("Subtitle",subtitleSchema);
