@@ -3,6 +3,7 @@ var router = express.Router();
 var Instructor = require("../models/Instructor");
 var jwt = require("jsonwebtoken");
 const { verifyAllUsersCorp } = require('../auth/jwt-auth');
+const InstructorRating = require('../models/InstructorRating');
 
 /* GET instructors listing. */
 router.get('/', function(req, res) {
@@ -40,5 +41,16 @@ router.post("/selectCountry",verifyAllUsersCorp , async (req,res) => {
   })
 
 /* Functions */
+
+//view ratings and reviews
+router.get('/viewRatingsReviews', async function(req, res) {
+  try{
+    var ratingreview = await InstructorRating.find({instructorId: req.body.id});
+    res.status(200).json(ratingreview);
+  }catch(err){
+    res.status(400).json({message: err.message}) 
+  }
+
+});
 
 module.exports = router;
