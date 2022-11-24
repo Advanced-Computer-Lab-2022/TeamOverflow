@@ -1,3 +1,4 @@
+const {verifyInstructor} = require('../auth/jwt-auth'); 
 var express = require('express');
 var router = express.Router();
 var Instructor = require("../models/Instructor");
@@ -6,6 +7,7 @@ var jwt = require("jsonwebtoken");
 const { verifyAllUsersCorp } = require('../auth/jwt-auth');
 const InstructorRating = require('../models/InstructorRating');
 const Subtitle = require('../models/Subtitle');
+
 
 /* GET instructors listing. */
 router.get('/', function(req, res) {
