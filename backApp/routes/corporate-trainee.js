@@ -11,6 +11,7 @@ const Exercise = require("../models/Exercise");
 const Answer = require("../models/StudentAnswer");
 const Video = require("../models/Video");
 const TraineeCourses = require("../models/TraineeCourses");
+var CorporateTraineeCourses = require("../models/CorporateTraineeCourses")
 
 
 /* GET corporate trainees listing. */
@@ -203,6 +204,19 @@ router.get('/watchVideo', async function(req, res) {
     var course = await Course.findById(req.body.courseId);
     var video = await Video.findOne({courseId: req.body.courseId});
     res.status(200).json(video)
+  }catch(err){
+    res.status(400).json({message: err.message}) 
+  }
+});
+
+router.get('/openItems' ,async function(req, res) {
+  try{
+    var courseIds = await CorporateTraineeCourses.find({_id:req.reqId})
+    var videoIds = await Course.find({courseId: {$in: courseIds}}).select(["videoId"]);
+    var exerciseIds = await Course.find({courseId: {$in: courseIds}}).select(["exerciseId"]);
+    var results = await Course.find({courseId: {$in: courseIds}}) && await Video.find({videoId: {$in: videoIds}}) 
+    && await Exercise.find({exerciseId: {$in: exerciseIds}});
+    res.status(200).json(results)
   }catch(err){
     res.status(400).json({message: err.message}) 
   }
