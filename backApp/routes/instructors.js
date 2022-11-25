@@ -1,9 +1,11 @@
 var express = require('express');
 var router = express.Router();
 var Instructor = require("../models/Instructor");
+var Course = require("../models/Course");
 var jwt = require("jsonwebtoken");
 const { verifyAllUsersCorp } = require('../auth/jwt-auth');
 const InstructorRating = require('../models/InstructorRating');
+const Subtitle = require('../models/Subtitle');
 
 /* GET instructors listing. */
 router.get('/', function(req, res) {
@@ -52,5 +54,45 @@ router.get('/viewRatingsReviews', async function(req, res) {
   }
 
 });
+
+//view ratings and reviews of instructors' courses
+router.get('/viewRatings&ReviewsofCourse', verifyInstructor ,async function(req, res) {
+  
+  try{
+    var results = await Course.find({instructorId : mongoose.Types.ObjectId(req.reqId)}, {title : 1, rating: 1,  numberOfRatings: 1})
+    res.status(200).json(results)
+  }catch(err){
+    res.status(400).json({message: err.message}) 
+  }
+})
+
+//define discount and for how long
+router.put('/discountLong', verifyInstructor ,async function(req, res) {  
+  try{
+    var results = await Course.findByIdAndUpdate({instructorId : mongoose.Types.ObjectId(req.reqId)},{$set: {discount:req.body.discount,period:req.body.period}},{new: true})
+    res.status(200).json(results)
+  }catch(err){
+    res.status(400).json({message: err.message}) 
+  }
+})
+router.put('/youtubePreview', verifyInstructor ,async function(req, res) {  
+  try{
+    var results = await Course.findByIdAndUpdate({instructorId : mongoose.Types.ObjectId(req.reqId)},{$set: {urlyoutubepreview:req.body.urlyoutubepreview}},{new: true})
+    res.status(200).json(results)
+  }catch(err){
+    res.status(400).json({message: err.message}) 
+  }
+})
+router.put('/youtubePreview', verifyInstructor ,async function(req, res) {  
+  try{
+    var results = await Subtitle.findByIdAndUpdate({instructorId : mongoose.Types.ObjectId(req.reqId)},{$set: {urlyoutubesub:req.body.urlyoutubesub, ytDescription:req.body.ytDescription}},{new: true})
+    res.status(200).json(results)
+  }catch(err){
+    res.status(400).json({message: err.message}) 
+  }
+})
+
+;
+
 
 module.exports = router;
