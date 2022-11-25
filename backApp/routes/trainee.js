@@ -199,8 +199,7 @@ router.get('/viewExercise', async function(req, res) {
 //watch a video from a course he/she is registered for
 router.get('/watchVideo', async function(req, res) {
   try{
-    var course = await Course.findById(req.body.courseId);
-    var video = await Video.findOne({courseId: req.body.courseId});
+    var video = await Video.findOne({courseId: req.query.courseId});
     res.status(200).json(video)
   }catch(err){
     res.status(400).json({message: err.message}) 
