@@ -53,4 +53,14 @@ router.get('/viewRatingsReviews', async function(req, res) {
 
 });
 
+//edit minibiography or email
+router.post("/editMinibiographyorEmail" , async (req,res) => {
+  try{
+    await Instructor.updateOne({_id:req.reqId},{minibiography: req.body.minibiography, email: req.body.email});
+  var user= await Instructor.findById(req. instructorId)
+  return res.status(200).json(user)
+  } catch(err){
+    return res.status(400).json({message: "Edit Failed"})
+  }
+  })
 module.exports = router;
