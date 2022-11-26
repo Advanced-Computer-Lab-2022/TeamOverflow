@@ -11,8 +11,7 @@ var courseSchema = new mongoose.Schema({
     rating: {type: Number},
     numberOfRatings: {type: Number, default: 0},
     totalHours: {type: Number, required: true},
-    videoId: {type: mongoose.Types.ObjectId, ref:"Video" ,required: true},
-    exerciseId: {type: mongoose.Types.ObjectId, ref:"Exercise" ,required: true}
+    videoId: {type: mongoose.Types.ObjectId, ref:"Video" ,required: true}
 }, {timestamps: true})
 
 var Course = mongoose.model("Course",courseSchema);

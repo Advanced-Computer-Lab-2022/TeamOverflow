@@ -6,6 +6,7 @@ const { verifyAllUsersCorp, verifyCorpTrainee } = require('../auth/jwt-auth');
 const CourseRating = require('../models/CourseRating');
 const InstructorRating = require("../models/InstructorRating");
 const Course = require('../models/Course');
+const Subtitle = require('../models/Subtitle');
 const Instructor = require("../models/Instructor");
 const Exercise = require("../models/Exercise");
 const Answer = require("../models/StudentAnswer");
@@ -138,12 +139,8 @@ router.post('/submitExercise', async function(req, res) {
 
 //delete student answer
 router.delete('/deleteAnswer', async function(req, res) {
-  var course = await Course.findById(req.body.courseId);
-  var trainee = await CorporateTrainee.findById(req.body.traineeId);
-  var exercise = await Exercise.findById(req.body.exerciseId);
-  var answer = await Answer.findOne({traineeId: trainee, courseId: course, exerciseId: exercise});
   try{
-    await answer.deleteOne();
+    var answer = await Answer.findByIdAndDelete(req.body.answerId);
     res.status(200).json({message: "Deleted Successfully"})
   }
   catch(err){
@@ -211,12 +208,12 @@ router.get('/watchVideo', async function(req, res) {
 
 router.get('/openItems' ,async function(req, res) {
   try{
-    var courseIds = await CorporateTraineeCourses.find({_id:req.reqId})
-    var videoIds = await Course.find({courseId: {$in: courseIds}}).select(["videoId"]);
-    var exerciseIds = await Course.find({courseId: {$in: courseIds}}).select(["exerciseId"]);
-    var results = await Course.find({courseId: {$in: courseIds}}) && await Video.find({videoId: {$in: videoIds}}) 
-    && await Exercise.find({exerciseId: {$in: exerciseIds}});
-    res.status(200).json(results)
+    if(await CorporateTraineeCourses.find({_id:req.body.courseId, corporateTraineeId: req.reqId})){
+      var result = await Subtitle.find({courseId: req.body.courseId}).populate(["courseId","videoId","exerciseId"])
+      res.status(200).json(result)
+    } else {
+      res.status(400).json({message: "Not registered for course"}) 
+    }
   }catch(err){
     res.status(400).json({message: err.message}) 
   }
