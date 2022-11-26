@@ -143,23 +143,31 @@ router.post('/create', verifyInstructor ,async function(req, res) {
 });
 
 // create exercise
-router.post('/createExercise' ,async function(req, res) {
-  const exercise = new Exercise({
-    title: req.body.title,
-    courseId: req.body.courseId,
-    question: req.body.question,
-    answer: req.body.answer
-  })
+router.post('/createExercise', verifyInstructor ,async function(req, res) {
   try{
-    const newExercise =  await exercise.save()
-    res.status(201).json(newExercise)
+    var subtitle = await Subtitle.findById(req.body.subtitleId).populate("courseId")
+    if(mongoose.Types.ObjectId(subtitle.courseId.instructorId).toString() === req.reqId){
+      const exercise = new Exercise({
+        questions: req.body.questions, //Comes in as an array of strings
+        choices: req.body.choices, //Comes in as an array of arrays of strings
+        marks: req.body.marks, //Comes in as an array of integers
+        correctIndecies: req.body.correctIndecies, //Comes in as an array of integers
+      })
+      const newExercise =  await exercise.save()
+      subtitle.$set("exerciseId",newExercise._id);
+      await subtitle.save()
+      res.status(201).json(newExercise)
+    } else {
+      res.status(500).json({message: "You are not the instructor for this course"})
+    }
   }catch(err){
+    console.log(err)
     res.status(400).json({message: err.message}) 
   }
 });
 
 // create video
-router.post('/createVideo' ,async function(req, res) {
+router.post('/createVideo', verifyInstructor, async function(req, res) {
   const video = new Video({
     title: req.body.title,
     description: req.body.description,
