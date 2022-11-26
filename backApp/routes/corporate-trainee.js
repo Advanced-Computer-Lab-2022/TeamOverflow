@@ -12,89 +12,90 @@ const Exercise = require("../models/Exercise");
 const Answer = require("../models/StudentAnswer");
 const Video = require("../models/Video");
 const TraineeCourses = require("../models/TraineeCourses");
-var CorporateTraineeCourses = require("../models/CorporateTraineeCourses")
+var CorporateTraineeCourses = require("../models/CorporateTraineeCourses");
+const { openExercise, getGrade, submitSolution } = require('../controllers/studentController');
 
 
 /* GET corporate trainees listing. */
-router.get('/', function(req, res) {
+router.get('/', function (req, res) {
   res.send('respond with a resource');
 
 });
 
 //Corporate Trainee Login
-router.post("/login", async (req,res) => {
+router.post("/login", async (req, res) => {
   const traineeLogin = req.body
-  await CorporateTrainee.findOne({username: traineeLogin.username, password: traineeLogin.password}, {password: 0}).then( trainee => {
-    if(trainee) {
+  await CorporateTrainee.findOne({ username: traineeLogin.username, password: traineeLogin.password }, { password: 0 }).then(trainee => {
+    if (trainee) {
       const payload = JSON.parse(JSON.stringify(trainee))
       jwt.sign(
         payload,
         process.env.JWT_SECRET,
         //{expiresIn: 86400},
         (err, token) => {
-          if(err) return res.json({message: err})
-          return res.status(200).json({message: "Success", payload: payload, token: "Corporate "+token})
+          if (err) return res.json({ message: err })
+          return res.status(200).json({ message: "Success", payload: payload, token: "Corporate " + token })
         }
       )
     } else {
-      return res.json({message: "Invalid username or password"})
+      return res.json({ message: "Invalid username or password" })
     }
   })
 })
 
-router.post("/selectCountry",verifyAllUsersCorp , async (req,res) => {
-  try{
-    await CorporateTrainee.updateOne({_id:req.reqId},{country: req.body.country})
-  var user= await CorporateTrainee.findById(req.reqId)
-  return res.status(200).json(user)
-  } catch(err){
-    return res.status(400).json({message: "Update Failed"})
+router.post("/selectCountry", verifyCorpTrainee, async (req, res) => {
+  try {
+    await CorporateTrainee.updateOne({ _id: req.reqId }, { country: req.body.country })
+    var user = await CorporateTrainee.findById(req.reqId)
+    return res.status(200).json(user)
+  } catch (err) {
+    return res.status(400).json({ message: "Update Failed" })
   }
-  })
+})
 
 //add instructor review
-router.post('/rate/instructor', verifyCorpTrainee, async function(req, res) {
-  var ratingBefore = await InstructorRating.findOne({userId: req.reqId, instructorId: req.body.instructorId})
-  if(ratingBefore){
-    return res.status(200).json({message: "You have rated this instructor before"})
+router.post('/rate/instructor', verifyCorpTrainee, async function (req, res) {
+  var ratingBefore = await InstructorRating.findOne({ userId: req.reqId, instructorId: req.body.instructorId })
+  if (ratingBefore) {
+    return res.status(200).json({ message: "You have rated this instructor before" })
   }
   const review = new InstructorRating({
-    rating:req.body.rating,
-    review:req.body.review,
-    instructorId:req.body.instructorId,
+    rating: req.body.rating,
+    review: req.body.review,
+    instructorId: req.body.instructorId,
     userId: req.reqId
   })
-  try{
-    const newReview =  await review.save()
+  try {
+    const newReview = await review.save()
     var instructor = await Instructor.findById(req.body.instructorId);
-    var newRate = instructor.rating ? ((instructor.numberOfRatings*instructor.rating) + req.body.rating)/(instructor.numberOfRatings+1) : req.body.rating;
-    await instructor.updateOne({rating: newRate, numberOfRatings: instructor.numberOfRatings+1});
+    var newRate = instructor.rating ? ((instructor.numberOfRatings * instructor.rating) + req.body.rating) / (instructor.numberOfRatings + 1) : req.body.rating;
+    await instructor.updateOne({ rating: newRate, numberOfRatings: instructor.numberOfRatings + 1 });
     res.status(200).json(newReview)
-  }catch(err){
-    res.status(400).json({message: err.message}) 
+  } catch (err) {
+    res.status(400).json({ message: err.message })
   }
 });
 
 //add course review
-router.post('/rate/course', verifyCorpTrainee, async function(req, res) {
-  var ratingBefore = await CourseRating.findOne({userId: req.reqId, courseId: req.body.courseId})
-  if(ratingBefore){
-    return res.status(200).json({message: "You have rated this course before"})
+router.post('/rate/course', verifyCorpTrainee, async function (req, res) {
+  var ratingBefore = await CourseRating.findOne({ userId: req.reqId, courseId: req.body.courseId })
+  if (ratingBefore) {
+    return res.status(200).json({ message: "You have rated this course before" })
   }
   const review = new CourseRating({
-    rating:req.body.rating,
-    review:req.body.review,
-    courseId:req.body.courseId,
+    rating: req.body.rating,
+    review: req.body.review,
+    courseId: req.body.courseId,
     userId: req.reqId
   })
-  try{
-    const newReview =  await review.save()
+  try {
+    const newReview = await review.save()
     var course = await Course.findById(req.body.courseId);
-    var newRate = course.rating ? ((course.numberOfRatings*course.rating) + req.body.rating)/(course.numberOfRatings+1) : req.body.rating;
-    await course.updateOne({rating: newRate, numberOfRatings: course.numberOfRatings+1});
+    var newRate = course.rating ? ((course.numberOfRatings * course.rating) + req.body.rating) / (course.numberOfRatings + 1) : req.body.rating;
+    await course.updateOne({ rating: newRate, numberOfRatings: course.numberOfRatings + 1 });
     res.status(200).json(newReview)
-  }catch(err){
-    res.status(400).json({message: err.message}) 
+  } catch (err) {
+    res.status(400).json({ message: err.message })
   }
 });
 
@@ -116,106 +117,57 @@ router.post('/rate/course', verifyCorpTrainee, async function(req, res) {
 // });  
 
 //submit the answers to the exercise after completing it
-router.post('/submitExercise', async function(req, res) {
-  var course = await Course.findById(req.body.courseId);
-  var trainee = await CorporateTrainee.findById(req.body.traineeId);
-  var exercise = await Exercise.findById(req.body.exerciseId);
-  try{
-    const answer = new Answer({
-      traineeId: trainee,
-      courseId: course,
-      exerciseId: exercise,
-      answer: req.body.answer
-    });
-    const newAnswer =  await answer.save();
-    res.status(200).json(newAnswer);
-
-  }
-  catch(err){
-    res.status(400).json({message: err.message}) 
-  }
-
+router.post('/submitSolution', verifyCorpTrainee, async function (req, res) {
+  await submitSolution(req,res);
 });
 
 //delete student answer
-router.delete('/deleteAnswer', async function(req, res) {
-  try{
+router.delete('/deleteAnswer', verifyCorpTrainee, async function (req, res) {
+  try {
     var answer = await Answer.findByIdAndDelete(req.body.answerId);
-    res.status(200).json({message: "Deleted Successfully"})
+    res.status(200).json({ message: "Deleted Successfully" })
   }
-  catch(err){
-    res.status(400).json({message: err.message}) 
+  catch (err) {
+    res.status(400).json({ message: err.message })
   }
 
 });
 
 
 //view his/her grade from the exercise
-router.get('/viewGrade', async function(req, res) {
-  var course = await Course.findById(req.body.courseId);
-  var trainee = await CorporateTrainee.findById(req.body.traineeId);
-  var exercise = await Exercise.findById(req.body.exerciseId);
-  var answer = await Answer.findOne({traineeId: trainee, courseId: course, exerciseId: exercise});
-
-  var grade = 0;
-  var maxGrade = answer.answer.length;
-  var percentage = 0;
-  try{
-    for(var i = 0; i < answer.answer.length; i++){
-      if(answer.answer[i] == exercise.answer[i]){
-        grade++;
-      }
-    }
-    percentage = (grade/maxGrade)*100;
-    res.status(200).json(percentage+" %");
-  }
-  
-  catch(err){
-    res.status(400).json({message: err.message})
-  }
+router.get('/viewGrade', verifyCorpTrainee, async function (req, res) {
+  await getGrade(req,res);
 });
 
 
 
 //view the questions with the correct solution to view the incorrect answers
-router.get('/viewExercise', async function(req, res) {
-  try{
-    var course = await Course.findById(req.body.courseId);
-    var exercise = await Exercise.findById(req.body.exerciseId);
-    var answer = new Array();
-    for(var i = 0; i < exercise.question.length; i++){
-      answer.push(exercise.question[i]+"? --> "+exercise.answer[i]);
-    }
-    res.status(200).json(answer);
-  
-  }catch(err){
-    res.status(400).json({message: err.message}) 
-  }
-
+router.get('/viewExercise', verifyCorpTrainee, async function (req, res) {
+  await openExercise(req, res);
 });
 
 
 //watch a video from a course he/she is registered for
-router.get('/watchVideo', async function(req, res) {
-  try{
+router.get('/watchVideo', verifyCorpTrainee, async function (req, res) {
+  try {
     var course = await Course.findById(req.body.courseId);
-    var video = await Video.findOne({courseId: req.body.courseId});
+    var video = await Video.findOne({ courseId: req.body.courseId });
     res.status(200).json(video)
-  }catch(err){
-    res.status(400).json({message: err.message}) 
+  } catch (err) {
+    res.status(400).json({ message: err.message })
   }
 });
 
-router.get('/openItems' ,async function(req, res) {
-  try{
-    if(await CorporateTraineeCourses.find({_id:req.body.courseId, corporateTraineeId: req.reqId})){
-      var result = await Subtitle.find({courseId: req.body.courseId}).populate(["courseId","videoId","exerciseId"])
+router.get('/openItems', verifyCorpTrainee, async function (req, res) {
+  try {
+    if (await CorporateTraineeCourses.find({ _id: req.body.courseId, corporateTraineeId: req.reqId })) {
+      var result = await Subtitle.find({ courseId: req.body.courseId }).populate(["courseId", "videoId", "exerciseId"])
       res.status(200).json(result)
     } else {
-      res.status(400).json({message: "Not registered for course"}) 
+      res.status(400).json({ message: "Not registered for course" })
     }
-  }catch(err){
-    res.status(400).json({message: err.message}) 
+  } catch (err) {
+    res.status(400).json({ message: err.message })
   }
 });
 

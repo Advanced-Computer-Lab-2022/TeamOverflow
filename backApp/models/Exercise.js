@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
 
-var ExerciseSchema = new mongoose.Schema({   
+var ExerciseSchema = new mongoose.Schema({
     questions: [{type: String, required: true}],
     choices: [{type: Array, required: true}],
+    marks: [{type: Number, required: true}],
     correctIndecies: [{type: Number, required: true}],
 }, {timestamps: true});
 
