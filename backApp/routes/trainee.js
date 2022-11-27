@@ -11,6 +11,7 @@ const Answer = require("../models/StudentAnswer");
 const Video = require("../models/Video");
 const jwt = require("jsonwebtoken");
 const { verifyAllUsersCorp, verifyTrainee } = require('../auth/jwt-auth');
+const { submitSolution, getGrade, openExercise } = require('../controllers/studentController');
 
 /* GET trainees listing. */
 router.get('/', function(req, res) {
@@ -113,29 +114,12 @@ router.post('/registerCourse', async function(req, res) {
 });  
 
 //submit the answers to the exercise after completing it
-router.post('/submitExercise', async function(req, res) {
-  var course = await Course.findById(req.body.courseId);
-  var trainee = await Trainee.findById(req.body.traineeId);
-  var exercise = await Exercise.findById(req.body.exerciseId);
-  try{
-    const answer = new Answer({
-      traineeId: trainee,
-      courseId: course,
-      exerciseId: exercise,
-      answer: req.body.answer
-    });
-    const newAnswer =  await answer.save();
-    res.status(200).json(newAnswer);
-
-  }
-  catch(err){
-    res.status(400).json({message: err.message}) 
-  }
-
+router.post('/submitSolution', verifyTrainee ,async function(req, res) {
+  await submitSolution(req,res);
 });
 
 //delete student answer
-router.delete('/deleteAnswer', async function(req, res) {
+router.delete('/deleteAnswer', verifyTrainee, async function(req, res) {
   var course = await Course.findById(req.body.courseId);
   var trainee = await Trainee.findById(req.body.traineeId);
   var exercise = await Exercise.findById(req.body.exerciseId);
@@ -152,55 +136,22 @@ router.delete('/deleteAnswer', async function(req, res) {
 
 
 //view his/her grade from the exercise
-router.get('/viewGrade', async function(req, res) {
-  var course = await Course.findById(req.body.courseId);
-  var trainee = await Trainee.findById(req.body.traineeId);
-  var exercise = await Exercise.findById(req.body.exerciseId);
-  var answer = await Answer.findOne({traineeId: trainee, courseId: course, exerciseId: exercise});
-
-  var grade = 0;
-  var maxGrade = answer.answer.length;
-  var percentage = 0;
-  try{
-    for(var i = 0; i < answer.answer.length; i++){
-      if(answer.answer[i] == exercise.answer[i]){
-        grade++;
-      }
-    }
-    percentage = (grade/maxGrade)*100;
-    res.status(200).json(percentage+" %");
-  }
-  
-  catch(err){
-    res.status(400).json({message: err.message})
-  }
+router.get('/viewGrade', verifyTrainee, async function(req, res) {
+  await getGrade(req,res);
 });
 
 
 
 //view the questions with the correct solution to view the incorrect answers
-router.get('/viewExercise', async function(req, res) {
-  try{
-    var course = await Course.findById(req.body.courseId);
-    var exercise = await Exercise.findById(req.body.exerciseId);
-    var answer = new Array();
-    for(var i = 0; i < exercise.question.length; i++){
-      answer.push(exercise.question[i]+"? --> "+exercise.answer[i]);
-    }
-    res.status(200).json(answer);
-  
-  }catch(err){
-    res.status(400).json({message: err.message}) 
-  }
-
+router.get('/viewExercise', verifyTrainee, async function(req, res) {
+  await openExercise(req,res);
 });
 
 
 //watch a video from a course he/she is registered for
-router.get('/watchVideo', async function(req, res) {
+router.get('/watchVideo', verifyTrainee, async function(req, res) {
   try{
-    var course = await Course.findById(req.body.courseId);
-    var video = await Video.findOne({courseId: req.body.courseId});
+    var video = await Video.findOne({courseId: req.query.courseId});
     res.status(200).json(video)
   }catch(err){
     res.status(400).json({message: err.message}) 

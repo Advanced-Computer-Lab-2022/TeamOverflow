@@ -4,5 +4,6 @@ import { Home as CorporateHome } from "./CorporateTraineePages";
 import { Home as IndividualHome } from "./TraineePages";
 import { Home as InstructorHome, CreateCourse } from "./InstructorPages";
 import { AllCourses, InstructorCourses } from "./CoursesPages";
+import { RatingPage } from "./RatingPages";
 
-export {Index, AddUsers, AdminHome, CorporateHome, AllCourses, IndividualHome, InstructorCourses, InstructorHome, CreateCourse};
+export {Index, AddUsers, AdminHome, CorporateHome, AllCourses, IndividualHome, InstructorCourses, InstructorHome, CreateCourse, RatingPage};
