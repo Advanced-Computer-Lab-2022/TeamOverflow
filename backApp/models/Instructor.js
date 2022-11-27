@@ -8,7 +8,8 @@ var instructorSchema = new mongoose.Schema({
     email: {type: String},
     bio: {type: String},
     rating: {type: Number},
-    numberOfRatings: {type: Number, default: 0}
+    numberOfRatings: {type: Number, default: 0},
+    minibiography: {type: String}
 }, {timestamps: true})
 
 
