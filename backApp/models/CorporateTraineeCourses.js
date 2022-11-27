@@ -5,5 +5,5 @@ var corporateTraineeCoursesSchema = new mongoose.Schema({
 }, {timestamps: true})
 
 
-var corporateTraineeCourses = mongoose.model("CorporateTraineeCourses",corporateTraineeCoursesSchema);
-module.exports = corporateTraineeCourses
+var CorporateTraineeCourses = mongoose.model("CorporateTraineeCourses",corporateTraineeCoursesSchema);
+module.exports = CorporateTraineeCourses

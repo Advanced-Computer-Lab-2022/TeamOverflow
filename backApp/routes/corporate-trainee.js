@@ -13,7 +13,7 @@ const Answer = require("../models/StudentAnswer");
 const Video = require("../models/Video");
 const TraineeCourses = require("../models/TraineeCourses");
 var CorporateTraineeCourses = require("../models/CorporateTraineeCourses");
-const { openExercise, getGrade, submitSolution } = require('../controllers/studentController');
+const { openExercise, getGrade, submitSolution, openCourse } = require('../controllers/studentController');
 
 
 /* GET corporate trainees listing. */
@@ -97,24 +97,7 @@ router.post('/rate/course', verifyCorpTrainee, async function (req, res) {
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
-});
-
-// //register corporate-trainee to a course
-// router.post('/registerCourse', async function(req, res) {
-//   var course = await Course.findById(req.body.courseId);
-//   var trainee = await CorporateTrainee.findById(req.body.traineeId);
-//   const traineeCourse = new TraineeCourses({
-//     traineeId: trainee,
-//     courseId: course
-//   });
-//   try{
-//     const newTraineeCourse =  await traineeCourse.save();
-//     res.status(200).json(newTraineeCourse)
-//     res.status(200).json({message: "Registered Successfully"})
-//   }catch(err){
-//     res.status(400).json({message: err.message}) 
-//   }
-// });  
+}); 
 
 //submit the answers to the exercise after completing it
 router.post('/submitSolution', verifyCorpTrainee, async function (req, res) {
@@ -158,16 +141,15 @@ router.get('/watchVideo', verifyCorpTrainee, async function (req, res) {
   }
 });
 
-router.get('/openItems', verifyCorpTrainee, async function (req, res) {
-  try {
-    if (await CorporateTraineeCourses.find({ _id: req.body.courseId, corporateTraineeId: req.reqId })) {
-      var result = await Subtitle.find({ courseId: req.body.courseId }).populate(["courseId", "videoId", "exerciseId"])
-      res.status(200).json(result)
+router.get('/openCourse', verifyCorpTrainee, async function (req, res) {
+  try{
+    if(await CorporateTraineeCourses.findOne({courseId: req.query.courseId, corporateTraineeId: req.reqId})){
+      await openCourse(req, res)
     } else {
-      res.status(400).json({ message: "Not registered for course" })
+      res.status(403).json({message: "You are not registered to this course"})
     }
-  } catch (err) {
-    res.status(400).json({ message: err.message })
+  } catch(err) {
+    res.status(400).json({message: err.message})
   }
 });
 

@@ -4,7 +4,9 @@ const Admin= require('../models/Admin')
 const Instructor= require('../models/Instructor')
 const CorporateTrainee= require('../models/CorporateTrainee')
 const jwt = require("jsonwebtoken");
-const {verifyAdmin} = require("../auth/jwt-auth")
+const {verifyAdmin} = require("../auth/jwt-auth");
+const CorporateTraineeCourses = require('../models/CorporateTraineeCourses');
+const Course = require('../models/Course');
 
 /* GET admins listing. */
 router.get('/', function(req, res) {
@@ -87,6 +89,24 @@ router.post('/addTrainee', verifyAdmin, async function(req, res) {
     res.status(400).json({message: err.message}) 
   }
 });
+
+//register corporate-trainee to a course
+router.post('/registerCourse', verifyAdmin, async function(req, res) {
+  try{
+    if(!(await CorporateTraineeCourses.findOne({corporateTraineeId: req.body.traineeId, courseId: req.body.courseId}))){
+      const traineeCourse = new CorporateTraineeCourses({
+        corporateTraineeId: req.body.traineeId,
+        courseId: req.body.courseId
+      });
+      const newTraineeCourse =  await traineeCourse.save();
+      res.status(200).json(newTraineeCourse)
+    } else {
+      res.status(400).json({message: "Trainee already registered to this course"})
+    }
+  }catch(err){
+    res.status(400).json({message: err.message}) 
+  }
+}); 
 
 /* Functions */
 
