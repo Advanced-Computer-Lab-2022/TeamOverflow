@@ -147,6 +147,17 @@ router.get('/viewExercise', verifyTrainee, async function(req, res) {
   await openExercise(req,res);
 });
 
+router.get('/openCourse', verifyTrainee, async function (req, res) {
+  try{
+    if(await TraineeCourses.findOne({courseId: req.body.courseId, traineeId: req.reqId})){
+      await openCourse(req, res)
+    } else {
+      res.status(403).json({message: "You are not registered to this course"})
+    }
+  } catch(err) {
+    res.status(400).json({message: err.message})
+  }
+});
 
 //watch a video from a course he/she is registered for
 router.get('/watchVideo', verifyTrainee, async function(req, res) {
