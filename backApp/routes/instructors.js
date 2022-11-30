@@ -8,6 +8,8 @@ const InstructorRating = require('../models/InstructorRating');
 const CourseRating = require('../models/CourseRating');
 const Subtitle = require('../models/Subtitle');
 const Video = require('../models/Video');
+const Exercise = require('../models/Exercise');
+const mongoose = require("mongoose");
 
 /* GET instructors listing. */
 router.get('/', function (req, res) {
@@ -160,7 +162,6 @@ router.post('/createCourseExercise', verifyInstructor ,async function(req, res) 
     res.status(400).json({message: err.message}) 
   }
 });
-
 /* Functions */
 
 

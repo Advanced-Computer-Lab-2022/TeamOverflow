@@ -3,20 +3,17 @@ import { Typography, Box, Container, TextField, CssBaseline, Button, Slider, Sel
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { viewTitlesInstructor, viewCourse, searchCoursesInstructor, filterCoursesInstructor, getSubjects } from '../../app/store/actions/coursesActions';
+import { useNavigate } from 'react-router-dom';
 
 const theme = createTheme();
 
 export const InstructorCourses = ({ auth, getSubjects ,courses, viewTitlesInstructor, viewCourse, searchCoursesInstructor, filterCoursesInstructor }) => {
-
+  const navigate = useNavigate();
   const role = auth.token.split(" ")[0];
 
   React.useEffect(() => {
     getSubjects()
   },[])
-
-  const onView = (id) => {
-    if (role !== "Corporate") viewCourse({ id: id, token: auth.token })
-  }
 
   const handleSearch = (event) => {
     event.preventDefault();
@@ -102,7 +99,7 @@ export const InstructorCourses = ({ auth, getSubjects ,courses, viewTitlesInstru
             {courses.results?.map((course) => {
               return (
                 <Box className='m-2'>
-                <Card onClick={() => onView(course._id)}>
+                <Card onClick={() =>  navigate(`/courses/instructor/single/${course._id}`) }>
                     Title: {course.title}
                     <br />
                     {course.subject && 

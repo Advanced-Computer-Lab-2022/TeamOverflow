@@ -54,12 +54,21 @@ async function submitSolution(req, res) {
 
 async function openCourse(req, res) {
   try {
-    var course = await Course.findById(req.query.courseId).populate(["videoId", {path: "examId", select: {correctIndecies: 0}}]).select({examId: {correctIndecies: 0}})
-    var subtitles = await Subtitle.find({ courseId: req.query.courseId }).populate(["videoId", {path: "exerciseId", select: {correctIndecies: 0}}])
-    res.status(200).json({course: course, subtitles: subtitles})
+    var course = await Course.findById(req.query.courseId).populate(["videoId", { path: "examId", select: { correctIndecies: 0 } }]).select({ examId: { correctIndecies: 0 } })
+    var subtitles = await Subtitle.find({ courseId: req.query.courseId }).populate(["videoId", { path: "exerciseId", select: { correctIndecies: 0 } }])
+    res.status(200).json({ course: course, subtitles: subtitles })
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
 }
 
-module.exports = { getGrade, openExercise, submitSolution, openCourse };
+async function watchVideo(req, res) {
+  try {
+    var video = await Video.findById(req.query.videoId);
+    res.status(200).json(video)
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+}
+
+module.exports = { getGrade, openExercise, submitSolution, openCourse, watchVideo };

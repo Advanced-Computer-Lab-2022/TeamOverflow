@@ -26,3 +26,8 @@ export const GUEST = "GUEST";
 export const UPDATE_USER_SUCCESS = "UPDATE_USER_SUCCESS";
 export const UPDATE_USER_FAIL = "UPDATE_USER_FAIL";
 export const UPDATE_USER = "UPDATE_USER";
+
+//Videos
+export const VIDEO_SUCCESS = "VIDEO_SUCCESS";
+export const VIDEO_FAIL = "VIDEO_FAIL";
+export const VIDEO = "VIDEO";

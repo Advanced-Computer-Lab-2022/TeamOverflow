@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const {verifyAdmin} = require("../auth/jwt-auth");
 const CorporateTraineeCourses = require('../models/CorporateTraineeCourses');
 const Course = require('../models/Course');
+const mongoose = require("mongoose");
 
 /* GET admins listing. */
 router.get('/', function(req, res) {

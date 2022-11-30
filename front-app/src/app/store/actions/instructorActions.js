@@ -49,3 +49,22 @@ export const createCourse = (data) => (dispatch) => {
       });
     });
 };
+
+export const createExercise = (data) => (dispatch) => {
+  var {creation, token} = data
+  var end;
+  if(creation.subtitleId){
+    end = endpoints.instructor.createExercise
+  } else {
+    end = endpoints.instructor.createExam
+  }
+  postRequest(creation, undefined, undefined, token, end)
+    .then((response) => {
+      console.log(response)
+      notification.success({message: "Exercise Added"})
+    })
+    .catch((err) => {
+      notification.error({message: err.message})
+      console.log(err);
+    });
+};

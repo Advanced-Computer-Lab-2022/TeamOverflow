@@ -21,7 +21,10 @@
    },
    "instructor":{
       "setCountry":"instructor/selectCountry",
-      "createCourse":"course/create"
+      "createCourse":"course/create",
+      "createExercise":"instructor/createSubtitleExercise",
+      "createExam":"instructor/createCourseExercise"
+
    },
    "corporatetrainee":{
       "setCountry":"corpTrainee/selectCountry"
@@ -39,6 +42,7 @@
       "filterInstructor":"course/filter/instructor",
       "viewInstructor":"course/view/instructor",
       "viewSingleCourse":"course/view",
-      "getSubjects":"course/allSubj"
+      "getSubjects":"course/allSubj",
+      "getVideo":"video/"
    }
 }
