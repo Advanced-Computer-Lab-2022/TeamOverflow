@@ -133,7 +133,6 @@ export const InstructorCourses = ({ auth, getSubjects ,courses, viewTitlesInstru
                     <br />
                     </>}
                   </Card>
-                  <pre>{courses.single?._id === course._id && JSON.stringify(courses.single)}</pre>
                 </Box>
               )
             })}

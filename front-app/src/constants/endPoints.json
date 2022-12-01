@@ -26,8 +26,8 @@
       "createExam":"instructor/createCourseExercise",
       "getVideo":"video/",
       "uploadSubVid":"instructor/subtitleVideo",
-      "uploadCourseVid":"instructor/coursePreview"
-
+      "uploadCourseVid":"instructor/coursePreview",
+      "defineDiscount":"instructor/defineDiscount"
    },
    "corporatetrainee":{
       "setCountry":"corpTrainee/selectCountry"
@@ -46,5 +46,9 @@
       "viewInstructor":"course/view/instructor",
       "viewSingleCourse":"course/view",
       "getSubjects":"course/allSubj"
+   },
+   "rate":{
+      "rateInstructor":"rate/instructor",
+      "rateCourse":"rate/course"
    }
 }

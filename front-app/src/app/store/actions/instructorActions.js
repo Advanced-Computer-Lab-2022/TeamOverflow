@@ -68,3 +68,17 @@ export const createExercise = (data) => (dispatch) => {
       console.log(err);
     });
 };
+
+export const defineDiscount = (data) => (dispatch) => {
+  var {creation, token} = data
+
+  postRequest(creation, undefined, undefined, token, endpoints.instructor.defineDiscount)
+    .then((response) => {
+      console.log(response)
+      notification.success({message: "Discount Added"})
+    })
+    .catch((err) => {
+      notification.error({message: err.message})
+      console.log(err);
+    });
+};
