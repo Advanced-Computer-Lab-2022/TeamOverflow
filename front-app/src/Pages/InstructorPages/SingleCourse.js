@@ -31,7 +31,7 @@ export const InstructorSingleCourse = ({ auth, viewCourse, course }) => {
                 <Button>Add a discount</Button>
                 <Typography>Total Hours: {course?.totalHours}</Typography>
                 <Typography>Rating: {course?.rating}</Typography>
-                <Typography>Video: {course?.videoId ? <NavLink to={`/course/video/${course?.videoId}`}>View Preview Video</NavLink> : <Button>Add a preview Video</Button>}</Typography>
+                <Typography>Video: {course?.videoId ? <NavLink to={`/course/video/${course?.videoId}`}>View Preview Video</NavLink> : <NavLink to={`/course/video/upload/courseId=${course?._id}`}>Add Preview Video</NavLink>}</Typography>
                 <Typography>Exercise: {course?.exerciseId ? <NavLink to={`/course/exercise/${course?.exerciseId}`}>View Exam</NavLink> : <NavLink to={`/course/exercise/create/courseId=${course?._id}`}>Add Exercise</NavLink>}</Typography>
                 <hr/>
                 <Typography>Subtitles</Typography>
@@ -41,7 +41,7 @@ export const InstructorSingleCourse = ({ auth, viewCourse, course }) => {
                         return <>
                             <Typography>Title: {subtitle?.title}</Typography>
                             <Typography>Time: {subtitle?.time}</Typography>
-                            <Typography>Video: {subtitle?.videoId ? <NavLink to={`/course/video/${subtitle?.videoId}`}>View Subtitle Video</NavLink> : <Button>Add a Subtitle Video</Button>}</Typography>
+                            <Typography>Video: {subtitle?.videoId ? <NavLink to={`/course/video/${subtitle?.videoId}`}>View Subtitle Video</NavLink> : <NavLink to={`/course/video/upload/subId=${subtitle?._id}`}>Add Subtitle Video</NavLink>}</Typography>
                             <Typography>Exercise: {subtitle?.exerciseId ? <NavLink to={`/course/exercise/${subtitle?.exerciseId}`}>View Exercise</NavLink> : <NavLink to={`/course/exercise/create/subId=${subtitle?._id}`}>Add Exercise</NavLink>}</Typography>
                             <hr/>
                         </>

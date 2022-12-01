@@ -23,7 +23,10 @@
       "setCountry":"instructor/selectCountry",
       "createCourse":"course/create",
       "createExercise":"instructor/createSubtitleExercise",
-      "createExam":"instructor/createCourseExercise"
+      "createExam":"instructor/createCourseExercise",
+      "getVideo":"video/",
+      "uploadSubVid":"instructor/subtitleVideo",
+      "uploadCourseVid":"instructor/coursePreview"
 
    },
    "corporatetrainee":{
@@ -42,7 +45,6 @@
       "filterInstructor":"course/filter/instructor",
       "viewInstructor":"course/view/instructor",
       "viewSingleCourse":"course/view",
-      "getSubjects":"course/allSubj",
-      "getVideo":"video/"
+      "getSubjects":"course/allSubj"
    }
 }
