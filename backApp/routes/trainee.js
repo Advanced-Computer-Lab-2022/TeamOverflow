@@ -11,7 +11,8 @@ const Answer = require("../models/StudentAnswer");
 const Video = require("../models/Video");
 const jwt = require("jsonwebtoken");
 const { verifyAllUsersCorp, verifyTrainee } = require('../auth/jwt-auth');
-const { submitSolution, getGrade, openExercise } = require('../controllers/studentController');
+const { submitSolution, getGrade, openExercise, watchVideo } = require('../controllers/studentController');
+const mongoose = require("mongoose");
 
 /* GET trainees listing. */
 router.get('/', function(req, res) {
@@ -49,52 +50,6 @@ router.post("/selectCountry",verifyAllUsersCorp , async (req,res) => {
     return res.status(400).json({message: "Update Failed"})
   }
   })
-
-//add instructor review
-router.post('/rate/instructor', verifyTrainee, async function(req, res) {
-  var ratingBefore = await InstructorRating.findOne({userId: req.reqId, instructorId: req.body.instructorId})
-  if(ratingBefore){
-    return res.status(200).json({message: "You have rated this instructor before"})
-  }
-  const review = new InstructorRating({
-    rating:req.body.rating,
-    review:req.body.review,
-    instructorId:req.body.instructorId,
-    userId: req.reqId
-  })
-  try{
-    const newReview =  await review.save();
-    var instructor = await Instructor.findById(req.body.instructorId);
-    var newRate = instructor.rating ? ((instructor.numberOfRatings*instructor.rating) + req.body.rating)/(instructor.numberOfRatings+1) : req.body.rating;
-    await instructor.updateOne({rating: newRate, numberOfRatings: instructor.numberOfRatings+1});
-    res.status(200).json(newReview)
-  }catch(err){
-    res.status(400).json({message: err.message}) 
-  }
-});
-
-//add course review
-router.post('/rate/course', verifyTrainee, async function(req, res) {
-  var ratingBefore = await CourseRating.findOne({userId: req.reqId, courseId: req.body.courseId})
-  if(ratingBefore){
-    return res.status(200).json({message: "You have rated this course before"})
-  }
-  const review = new CourseRating({
-    rating:req.body.rating,
-    review:req.body.review,
-    courseId:req.body.courseId,
-    userId: req.reqId
-  })
-  try{
-    const newReview =  await review.save();
-    var course = await Course.findById(req.body.courseId);
-    var newRate = course.rating ? ((course.numberOfRatings*course.rating) + req.body.rating)/(course.numberOfRatings+1) : req.body.rating;
-    await course.updateOne({rating: newRate, numberOfRatings: course.numberOfRatings+1});
-    res.status(200).json(newReview)
-  }catch(err){
-    res.status(400).json({message: err.message}) 
-  }
-});
 
 //register trainee to a course
 router.post('/registerCourse', async function(req, res) {
@@ -162,10 +117,13 @@ router.get('/openCourse', verifyTrainee, async function (req, res) {
 //watch a video from a course he/she is registered for
 router.get('/watchVideo', verifyTrainee, async function(req, res) {
   try{
-    var video = await Video.findOne({courseId: req.query.courseId});
-    res.status(200).json(video)
-  }catch(err){
-    res.status(400).json({message: err.message}) 
+    if(await TraineeCourses.findOne({courseId: req.body.courseId, traineeId: req.reqId})){
+      await watchVideo(req, res)
+    } else {
+      res.status(403).json({message: "You are not registered to this course"})
+    }
+  } catch(err) {
+    res.status(400).json({message: err.message})
   }
 });
 

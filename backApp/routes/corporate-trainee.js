@@ -13,8 +13,8 @@ const Answer = require("../models/StudentAnswer");
 const Video = require("../models/Video");
 const TraineeCourses = require("../models/TraineeCourses");
 var CorporateTraineeCourses = require("../models/CorporateTraineeCourses");
-const { openExercise, getGrade, submitSolution, openCourse } = require('../controllers/studentController');
-
+const { openExercise, getGrade, submitSolution, openCourse, watchVideo } = require('../controllers/studentController');
+const mongoose = require("mongoose");
 
 /* GET corporate trainees listing. */
 router.get('/', function (req, res) {
@@ -132,12 +132,14 @@ router.get('/viewExercise', verifyCorpTrainee, async function (req, res) {
 
 //watch a video from a course he/she is registered for
 router.get('/watchVideo', verifyCorpTrainee, async function (req, res) {
-  try {
-    var course = await Course.findById(req.body.courseId);
-    var video = await Video.findOne({ courseId: req.body.courseId });
-    res.status(200).json(video)
-  } catch (err) {
-    res.status(400).json({ message: err.message })
+  try{
+    if(await CorporateTraineeCourses.findOne({courseId: req.body.courseId, traineeId: req.reqId})){
+      await watchVideo(req, res)
+    } else {
+      res.status(403).json({message: "You are not registered to this course"})
+    }
+  } catch(err) {
+    res.status(400).json({message: err.message})
   }
 });
 

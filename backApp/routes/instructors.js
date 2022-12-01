@@ -8,6 +8,8 @@ const InstructorRating = require('../models/InstructorRating');
 const CourseRating = require('../models/CourseRating');
 const Subtitle = require('../models/Subtitle');
 const Video = require('../models/Video');
+const Exercise = require('../models/Exercise');
+const mongoose = require("mongoose");
 
 /* GET instructors listing. */
 router.get('/', function (req, res) {
@@ -82,9 +84,9 @@ router.get('/viewCourseRatings', verifyInstructor, async function (req, res) {
 })
 
 //define discount and for how long
-router.put('/discountLong', verifyInstructor, async function (req, res) {
+router.post('/defineDiscount', verifyInstructor, async function (req, res) {
   try {
-    var result = await Course.findByIdAndUpdate(req.reqId, { $set: { discount: req.body.discount, period: req.body.period } }, { new: true })
+    var result = await Course.findByIdAndUpdate(req.body.courseId, { $set: { discount: req.body.discount, deadline: req.body.deadline } }, { new: true })
     res.status(200).json(result)
   } catch (err) {
     res.status(400).json({ message: err.message })
@@ -160,7 +162,6 @@ router.post('/createCourseExercise', verifyInstructor ,async function(req, res) 
     res.status(400).json({message: err.message}) 
   }
 });
-
 /* Functions */
 
 
