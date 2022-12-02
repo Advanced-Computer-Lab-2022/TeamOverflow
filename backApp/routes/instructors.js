@@ -68,7 +68,7 @@ router.put("/editMinibiographyorEmail", verifyInstructor, async (req, res) => {
       email: req.body.email ? req.body.email : undefined
     }
     console.log(update)
-    var user = await Instructor.findByIdAndUpdate(req.reqId, update, {new: true});
+    var user = await Instructor.findByIdAndUpdate(req.reqId, update, {new: true}).select({password: 0});
     return res.status(200).json(user)
   } catch (err) {
     return res.status(400).json({ message: "Edit Failed" })
