@@ -11,9 +11,10 @@ import { NavLink } from 'react-router-dom';
 import { logout } from '../../app/store/actions/authActions';
 import countryList from 'country-json/src/country-by-name.json'
 import { selectCountry } from '../../app/store/actions/instructorActions';
-const theme = createTheme();
+import { getCoursesRatings, getInstructorRatings } from '../../app/store/actions/ratingActions';
 
-export const Home = ({auth, logout, selectCountry}) => {
+const theme = createTheme();
+export const Home = ({auth, logout, selectCountry, getCoursesRatings, getInstructorRatings}) => {
   
   const [country, setCountry] = React.useState(auth.user.country)
   const handleCountryChange = (event) => {
@@ -26,9 +27,12 @@ export const Home = ({auth, logout, selectCountry}) => {
         <CssBaseline/>
         <Typography>Instructor Home Page</Typography>
         <Typography>Welcome {auth.user.username}</Typography>
+        <NavLink to="/Instructor/profile">My Profile</NavLink><br/>
+        <NavLink onClick={() => getInstructorRatings(auth?.token)} to="/Instructor/ratings">My Ratings and Reviews</NavLink><br/>
         <NavLink to="/courses">All Courses</NavLink><br/>
         <NavLink to="/courses/instructor">My Courses</NavLink><br/>
         <NavLink to="/courses/create">Add Courses</NavLink><br/>
+        <NavLink onClick={() => getCoursesRatings(auth?.token)} to="/courses/ratings">My Courses Ratings and Reviews</NavLink><br/>
         <Select 
           defaultValue={country}
           label="User Country"
@@ -53,6 +57,6 @@ const mapStateToProps = (state) => ({
     auth: state?.auth
 });
 
-const mapDispatchToProps = {logout, selectCountry};
+const mapDispatchToProps = {logout, selectCountry, getCoursesRatings, getInstructorRatings};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

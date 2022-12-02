@@ -8,9 +8,9 @@ const postRequest = async (body, query, params, token, endPoint) => {
     body,
     {
       params: query,
-      headers:{
-        "Accept":"json",
-        "x-access-token":token
+      headers: {
+        "Accept": "json",
+        "x-access-token": token
       }
     },
   );
@@ -19,9 +19,9 @@ const postRequest = async (body, query, params, token, endPoint) => {
 const getRequest = async (query, params, token, endPoint) => {
   return await axios.get(`${baseURL}/${endPoint}${params ? params : ""}`, {
     params: query,
-    headers:{
-      "Accept":"json",
-      "x-access-token":token
+    headers: {
+      "Accept": "json",
+      "x-access-token": token
     }
   });
 };
@@ -32,14 +32,15 @@ const delRequest = async (query, params, endPoint) => {
   });
 };
 
-const putRequest = async (body, query, params, endPoint) => {
+const putRequest = async (body, query, params, token, endPoint) => {
   return await axios.put(
     `${baseURL}/${endPoint}/${params ? params : ""}`,
     body,
     {
       params: query,
       headers: {
-        
+        "Accept": "json",
+        "x-access-token": token
       },
     }
   );
