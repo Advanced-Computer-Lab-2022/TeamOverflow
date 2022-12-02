@@ -9,7 +9,6 @@ var instructorSchema = new mongoose.Schema({
     bio: {type: String},
     rating: {type: Number},
     numberOfRatings: {type: Number, default: 0},
-    minibiography: {type: String}
 }, {timestamps: true})
 
 

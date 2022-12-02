@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Routes, Route } from "react-router-dom";
-import { Index, AddUsers, AdminHome, AllCourses, CorporateHome, IndividualHome, InstructorCourses, InstructorHome, CreateCourse, Rate, SingleCourseInstructor, InstructorVidView, CreateExam, UploadVideo, Discount } from "./Pages";
+import { Index, AddUsers, AdminHome, AllCourses, CorporateHome, IndividualHome, InstructorCourses, InstructorHome, CreateCourse, Rate, SingleCourseInstructor, InstructorVidView, CreateExam, UploadVideo, Discount, RatingList, InstructorProfile, InstructorEditProfile } from "./Pages";
 import ProtectedRoute from "./ProtectedRoute";
 
 export const Router = () => {
@@ -16,7 +16,11 @@ export const Router = () => {
         <Route path="/courses/instructor" exact element={<InstructorCourses/>}/>
         <Route path="/courses/instructor/single/:id" exact element={<SingleCourseInstructor/>}/>
         <Route path="/Instructor" exact element={<InstructorHome/>}/>
+        <Route path="/Instructor/profile" exact element={<InstructorProfile/>}/>
+        <Route path="/Instructor/edit" exact element={<InstructorEditProfile/>}/>
+        <Route path="/Instructor/ratings" exact element={<RatingList/>}/>
         <Route path="/courses/create" exact element={<CreateCourse/>}/>
+        <Route path="/courses/ratings" exact element={<RatingList/>}/>
         <Route path="/course/exercise/create/:id" exact element={<CreateExam/>}/>
         <Route path="/course/video/upload/:id" exact element={<UploadVideo/>}/>
         <Route path="/course/discount/:id" exact element={<Discount/>}/>

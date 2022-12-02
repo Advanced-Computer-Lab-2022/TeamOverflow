@@ -27,7 +27,10 @@
       "getVideo":"video/",
       "uploadSubVid":"instructor/subtitleVideo",
       "uploadCourseVid":"instructor/coursePreview",
-      "defineDiscount":"instructor/defineDiscount"
+      "defineDiscount":"instructor/defineDiscount",
+      "viewRatings":"instructor/viewOwnRatings",
+      "viewCourseRatings":"instructor/viewCourseRatings",
+      "editProfile":"instructor/editMinibiographyorEmail"
    },
    "corporatetrainee":{
       "setCountry":"corpTrainee/selectCountry"

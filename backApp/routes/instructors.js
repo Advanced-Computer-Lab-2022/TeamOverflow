@@ -51,7 +51,7 @@ router.post("/selectCountry", verifyInstructor, async (req, res) => {
 //view ratings and reviews of instructor
 router.get('/viewOwnRatings', verifyInstructor, async function (req, res) {
   try {
-    var ratingreview = await InstructorRating.find({ instructorId: req.reqId }, { title: 1, rating: 1, review, numberOfRatings: 1 });
+    var ratingreview = await InstructorRating.find({ instructorId: req.reqId }, { rating: 1, review: 1 });
     res.status(200).json(ratingreview);
   } catch (err) {
     res.status(400).json({ message: err.message })
@@ -63,7 +63,12 @@ router.get('/viewOwnRatings', verifyInstructor, async function (req, res) {
 //edit minibiography or email
 router.put("/editMinibiographyorEmail", verifyInstructor, async (req, res) => {
   try {
-    var user = await Instructor.findByIdAndUpdate(req.reqId, { minibiography: req.body.minibiography, email: req.body.email}, {new: true});
+    var update = {
+      bio: req.body.bio ? req.body.bio : undefined, 
+      email: req.body.email ? req.body.email : undefined
+    }
+    console.log(update)
+    var user = await Instructor.findByIdAndUpdate(req.reqId, update, {new: true});
     return res.status(200).json(user)
   } catch (err) {
     return res.status(400).json({ message: "Edit Failed" })
@@ -75,8 +80,8 @@ module.exports = router;
 router.get('/viewCourseRatings', verifyInstructor, async function (req, res) {
   try {
     var courses = await Course.find({ instructorId: req.reqId });
-    var courseIds = courses.map((course) => course._id);
-    var results = await CourseRating.find({ courseId: { $in: courseIds } }).select(["rating", "review", "courseId"])
+    var courseIds = courses.map((course) => course._id.toString());
+    var results = await CourseRating.find({ courseId: { $in: courseIds } }).populate({path: "courseId", select: {_id: 1, title: 1}}).select(["rating", "review", "courseId"]).sort("courseId")
     res.status(200).json(results)
   } catch (err) {
     res.status(400).json({ message: err.message })

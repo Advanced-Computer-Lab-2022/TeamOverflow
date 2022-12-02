@@ -1,7 +1,7 @@
 import { UPDATE_USER, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL } from "./types";
 import { COURSE, COURSE_SUCCESS, COURSE_FAIL, SUBJECT_SUCCESS } from "./types";
 
-import { postRequest } from "../../../core/network";
+import { postRequest, putRequest } from "../../../core/network";
 import endpoints from "../../../constants/endPoints.json";
 import { notification } from "antd";
 
@@ -13,6 +13,28 @@ export const selectCountry = (data) => (dispatch) => {
     .then((response) => {
       const { data } = response;
       notification.success({message: `${country} selected`})
+      return dispatch({
+        type: UPDATE_USER_SUCCESS,
+        payload: data
+      });
+    })
+    .catch((err) => {
+      notification.error({message: "Something Went Wrong"})
+      console.log(err);
+      return dispatch({
+        type: UPDATE_USER_FAIL,
+      });
+    });
+};
+
+export const editProfile = (data) => (dispatch) => {
+  dispatch({ type: UPDATE_USER });
+  var {edits, token} = data
+
+  putRequest(edits, undefined, undefined, token, endpoints.instructor.editProfile)
+    .then((response) => {
+      const { data } = response;
+      notification.success({message: "Profile updated"})
       return dispatch({
         type: UPDATE_USER_SUCCESS,
         payload: data
