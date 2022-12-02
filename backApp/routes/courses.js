@@ -142,38 +142,6 @@ router.post('/create', verifyInstructor ,async function(req, res) {
   }
 });
 
-// create exercise
-router.post('/createExercise' ,async function(req, res) {
-  const exercise = new Exercise({
-    title: req.body.title,
-    courseId: req.body.courseId,
-    question: req.body.question,
-    answer: req.body.answer
-  })
-  try{
-    const newExercise =  await exercise.save()
-    res.status(201).json(newExercise)
-  }catch(err){
-    res.status(400).json({message: err.message}) 
-  }
-});
-
-// create video
-router.post('/createVideo' ,async function(req, res) {
-  const video = new Video({
-    title: req.body.title,
-    description: req.body.description,
-    url: req.body.url,
-    courseId: req.body.courseId
-  })
-  try{
-    const newVideo =  await video.save()
-    res.status(201).json(newVideo)
-  }catch(err){
-    res.status(400).json({message: err.message}) 
-  }
-});
-
 /* Functions */
 
 async function searchCourseInstructor(data, instructorId){

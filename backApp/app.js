@@ -11,6 +11,8 @@ var corporateRouter = require('./routes/corporate-trainee');
 var coursesRouter = require('./routes/courses');
 var instructorsRouter = require('./routes/instructors');
 var authenticationRouter = require('./routes/authentication');
+var videoRouter = require('./routes/video');
+var ratingRouter = require('./routes/rating');
 
 var app = express();
 
@@ -30,6 +32,8 @@ app.use('/admin', adminsRouter);
 app.use('/course', coursesRouter);
 app.use('/instructor', instructorsRouter);
 app.use('/auth', authenticationRouter);
+app.use('/video', videoRouter);
+app.use('/rate', ratingRouter);
 
 app.get('/', function(req,res) {
   res.render("index", {

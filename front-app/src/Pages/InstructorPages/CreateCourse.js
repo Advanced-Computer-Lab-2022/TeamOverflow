@@ -34,8 +34,7 @@ export const CreateCourse = ({ token, createCourse, subjects, getSubjects }) => 
         for(let i=0; i<subtitleCount; i++){
             var sub = {
                 title: data.get(`title${i}`),
-                time: data.get(`time${i}`),
-                exercises: data.get(`exercises${i}`).split(',')
+                time: data.get(`time${i}`)
             }
             subtitles.push(sub);
         }
@@ -45,7 +44,6 @@ export const CreateCourse = ({ token, createCourse, subjects, getSubjects }) => 
                 subject: subject,
                 summary: data.get("summary"),
                 price: data.get("price"),
-                discount: data.get("discount"),
                 subtitles: subtitles
             },
             token: token
@@ -114,15 +112,6 @@ export const CreateCourse = ({ token, createCourse, subjects, getSubjects }) => 
                             id="price"
                             type="number"
                         />
-                        <TextField
-                            margin="normal"
-                            required
-                            fullWidth
-                            name="discount"
-                            label="Course Discount"
-                            id="discount"
-                            type="number"
-                        />
                         <Select
                             label="Subject"
                             id="Subject"
@@ -161,14 +150,6 @@ export const CreateCourse = ({ token, createCourse, subjects, getSubjects }) => 
                                         id={`time${idx}`}
                                         type="number"
                                     />
-                                    <Select
-                                        label="Exercises"
-                                        id={`exercises${idx}`}
-                                        name={`exercises${idx}`}
-                                        fullWidth
-                                        input={<TextField/>}
-                                    />
-                                    <FormHelperText>Comma separated exercise titles</FormHelperText>
                                     <hr />
                                 </Box>
                             )

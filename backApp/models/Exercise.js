@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
 
 var ExerciseSchema = new mongoose.Schema({
-    title: {type: String, required: true},
-    question: {type: Array, required: true},
-    answer: {type: Array, required: true},
+    questions: [{type: String, required: true}],
+    choices: [{type: Array, required: true}],
+    marks: [{type: Number, required: true}],
+    correctIndecies: [{type: Number, required: true}],
 }, {timestamps: true});
 
 var Exercise = mongoose.model("Exercise",ExerciseSchema);
