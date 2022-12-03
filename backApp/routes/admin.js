@@ -8,6 +8,7 @@ const {verifyAdmin} = require("../auth/jwt-auth");
 const CorporateTraineeCourses = require('../models/CorporateTraineeCourses');
 const Course = require('../models/Course');
 const mongoose = require("mongoose");
+const Contract = require('../models/Contract');
 
 /* GET admins listing. */
 router.get('/', function(req, res) {
@@ -69,6 +70,22 @@ router.post('/addInstructor', verifyAdmin, async function(req, res) {
     res.status(201).json(newInstructor) 
   }catch(err){
     res.status(400).json({message: err.message}) 
+  }
+});
+
+router.post('/createContract', verifyAdmin, async function(req, res) {
+  try{
+    const add = Contract({
+      title: req.body.title,
+      instructorId: req.body.instructorId,
+      terms: req.body.terms,
+      percentageTaken: req.body.percentageTaken,
+      status: "Pending",
+    })
+    const newContract =  await add.save()
+    res.status(201).json(newContract) 
+  } catch(err) {
+    res.status(400).json({message: err.message})
   }
 });
 
