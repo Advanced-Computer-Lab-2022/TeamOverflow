@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const Trainee = require("../models/Trainee");
-const TraineeCourses = require("../models/TraineeCourses");
+const StudentCourses = require("../models/StudentCourses");
 const CourseRating = require("../models/CourseRating");
 const InstructorRating = require("../models/InstructorRating");
 const Course = require("../models/Course");
@@ -11,7 +11,7 @@ const Answer = require("../models/StudentAnswer");
 const Video = require("../models/Video");
 const jwt = require("jsonwebtoken");
 const { verifyAllUsersCorp, verifyTrainee } = require('../auth/jwt-auth');
-const { submitSolution, getGrade, openExercise, watchVideo } = require('../controllers/studentController');
+const { submitSolution, getGrade, openExercise, watchVideo, getRegistered } = require('../controllers/studentController');
 const mongoose = require("mongoose");
 
 /* GET trainees listing. */
@@ -55,7 +55,7 @@ router.post("/selectCountry",verifyAllUsersCorp , async (req,res) => {
 router.post('/registerCourse', async function(req, res) {
   var course = await Course.findById(req.body.courseId);
   var trainee = await Trainee.findById(req.body.traineeId);
-  const traineeCourse = new TraineeCourses({
+  const traineeCourse = new StudentCourses({
     traineeId: trainee,
     courseId: course
   });
@@ -104,7 +104,7 @@ router.get('/viewExercise', verifyTrainee, async function(req, res) {
 
 router.get('/openCourse', verifyTrainee, async function (req, res) {
   try{
-    if(await TraineeCourses.findOne({courseId: req.body.courseId, traineeId: req.reqId})){
+    if(await StudentCourses.findOne({courseId: req.body.courseId, traineeId: req.reqId})){
       await openCourse(req, res)
     } else {
       res.status(403).json({message: "You are not registered to this course"})
@@ -114,10 +114,14 @@ router.get('/openCourse', verifyTrainee, async function (req, res) {
   }
 });
 
+router.get('/getRegisteredCourses', verifyTrainee, async function (req, res) {
+  await getRegistered(req, res);
+});
+
 //watch a video from a course he/she is registered for
 router.get('/watchVideo', verifyTrainee, async function(req, res) {
   try{
-    if(await TraineeCourses.findOne({courseId: req.body.courseId, traineeId: req.reqId})){
+    if(await StudentCourses.findOne({courseId: req.query.courseId, traineeId: req.reqId})){
       await watchVideo(req, res)
     } else {
       res.status(403).json({message: "You are not registered to this course"})

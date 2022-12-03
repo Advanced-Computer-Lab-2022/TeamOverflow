@@ -44,3 +44,27 @@ export const uploadVideo = (data) => (dispatch) => {
       console.log(err);
     });
 };
+
+export const getRegVideo = (data) => (dispatch) => {
+  dispatch({ type: VIDEO });
+  const {query, token} = data;
+
+  var role = token.split(" ")[0]
+  var end = role === "Trainee" ? endpoints.trainee : endpoints.corporatetrainee
+
+  getRequest(query, undefined, token, end.watchVideo)
+    .then((response) => {
+      const { data } = response;
+      return dispatch({
+        type: VIDEO_SUCCESS,
+        payload: data
+      });
+    })
+    .catch((err) => {
+      notification.error({ message: "Failed to retrieve video" })
+      console.log(err);
+      return dispatch({
+        type: VIDEO_FAIL,
+      });
+    });
+};

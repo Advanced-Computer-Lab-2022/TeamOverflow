@@ -11,9 +11,8 @@ const Instructor = require("../models/Instructor");
 const Exercise = require("../models/Exercise");
 const Answer = require("../models/StudentAnswer");
 const Video = require("../models/Video");
-const TraineeCourses = require("../models/TraineeCourses");
-var CorporateTraineeCourses = require("../models/CorporateTraineeCourses");
-const { openExercise, getGrade, submitSolution, openCourse, watchVideo } = require('../controllers/studentController');
+var StudentCourses = require("../models/StudentCourses");
+const { openExercise, getGrade, submitSolution, openCourse, watchVideo, getRegistered } = require('../controllers/studentController');
 const mongoose = require("mongoose");
 
 /* GET corporate trainees listing. */
@@ -133,7 +132,7 @@ router.get('/viewExercise', verifyCorpTrainee, async function (req, res) {
 //watch a video from a course he/she is registered for
 router.get('/watchVideo', verifyCorpTrainee, async function (req, res) {
   try{
-    if(await CorporateTraineeCourses.findOne({courseId: req.body.courseId, traineeId: req.reqId})){
+    if(await StudentCourses.findOne({courseId: req.query.courseId, traineeId: req.reqId})){
       await watchVideo(req, res)
     } else {
       res.status(403).json({message: "You are not registered to this course"})
@@ -143,9 +142,13 @@ router.get('/watchVideo', verifyCorpTrainee, async function (req, res) {
   }
 });
 
+router.get('/getRegisteredCourses', verifyCorpTrainee, async function (req, res) {
+  await getRegistered(req, res);
+});
+
 router.get('/openCourse', verifyCorpTrainee, async function (req, res) {
   try{
-    if(await CorporateTraineeCourses.findOne({courseId: req.query.courseId, corporateTraineeId: req.reqId})){
+    if(await StudentCourses.findOne({courseId: req.query.courseId, traineeId: req.reqId})){
       await openCourse(req, res)
     } else {
       res.status(403).json({message: "You are not registered to this course"})

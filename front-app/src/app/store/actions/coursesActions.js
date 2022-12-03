@@ -250,3 +250,52 @@ export const getSubjects = (data) => (dispatch) => {
       });
     });
 };
+
+export const getRegisteredCourses = (token) => (dispatch) => {
+  dispatch({ type: COURSE });
+
+  var role = token.split(" ")[0]
+    var end = role === "Trainee" ? endpoints.trainee : endpoints.corporatetrainee
+
+  getRequest(undefined, undefined, token, end.getRegisteredCourses)
+    .then((response) => {
+      console.log(response)
+      const { data } = response;
+      return dispatch({
+        type: COURSE_SUCCESS,
+        payload: data
+      });
+    })
+    .catch((err) => {
+      notification.error({ message: "Something Went Wrong" })
+      console.log(err);
+      return dispatch({
+        type: COURSE_FAIL,
+      });
+    });
+};
+
+export const openCourse = (data) => (dispatch) => {
+  dispatch({ type: COURSE });
+  const {query, token} = data;
+
+  var role = token.split(" ")[0]
+    var end = role === "Trainee" ? endpoints.trainee : endpoints.corporatetrainee
+
+  getRequest(query, undefined, token, end.openCourse)
+    .then((response) => {
+      console.log(response)
+      const { data } = response;
+      return dispatch({
+        type: SINGLE_COURSE_SUCCESS,
+        payload: data
+      });
+    })
+    .catch((err) => {
+      notification.error({ message: "Something Went Wrong" })
+      console.log(err);
+      return dispatch({
+        type: COURSE_FAIL,
+      });
+    });
+};

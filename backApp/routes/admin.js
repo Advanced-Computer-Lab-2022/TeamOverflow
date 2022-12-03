@@ -5,9 +5,10 @@ const Instructor= require('../models/Instructor')
 const CorporateTrainee= require('../models/CorporateTrainee')
 const jwt = require("jsonwebtoken");
 const {verifyAdmin} = require("../auth/jwt-auth");
-const CorporateTraineeCourses = require('../models/CorporateTraineeCourses');
+const StudentCourses = require('../models/StudentCourses');
 const Course = require('../models/Course');
 const mongoose = require("mongoose");
+const Contract = require('../models/Contract');
 
 /* GET admins listing. */
 router.get('/', function(req, res) {
@@ -72,6 +73,22 @@ router.post('/addInstructor', verifyAdmin, async function(req, res) {
   }
 });
 
+router.post('/createContract', verifyAdmin, async function(req, res) {
+  try{
+    const add = Contract({
+      title: req.body.title,
+      instructorId: req.body.instructorId,
+      terms: req.body.terms,
+      percentageTaken: req.body.percentageTaken,
+      status: "Pending",
+    })
+    const newContract =  await add.save()
+    res.status(201).json(newContract) 
+  } catch(err) {
+    res.status(400).json({message: err.message})
+  }
+});
+
 //add corporate trainee
 router.post('/addTrainee', verifyAdmin, async function(req, res) {
   var found = await CorporateTrainee.findOne({username: req.body.username})
@@ -94,8 +111,8 @@ router.post('/addTrainee', verifyAdmin, async function(req, res) {
 //register corporate-trainee to a course
 router.post('/registerCourse', verifyAdmin, async function(req, res) {
   try{
-    if(!(await CorporateTraineeCourses.findOne({corporateTraineeId: req.body.traineeId, courseId: req.body.courseId}))){
-      const traineeCourse = new CorporateTraineeCourses({
+    if(!(await StudentCourses.findOne({corporateTraineeId: req.body.traineeId, courseId: req.body.courseId}))){
+      const traineeCourse = new StudentCourses({
         corporateTraineeId: req.body.traineeId,
         courseId: req.body.courseId
       });
