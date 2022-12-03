@@ -5,7 +5,7 @@ const Instructor= require('../models/Instructor')
 const CorporateTrainee= require('../models/CorporateTrainee')
 const jwt = require("jsonwebtoken");
 const {verifyAdmin} = require("../auth/jwt-auth");
-const CorporateTraineeCourses = require('../models/CorporateTraineeCourses');
+const StudentCourses = require('../models/StudentCourses');
 const Course = require('../models/Course');
 const mongoose = require("mongoose");
 const Contract = require('../models/Contract');
@@ -111,8 +111,8 @@ router.post('/addTrainee', verifyAdmin, async function(req, res) {
 //register corporate-trainee to a course
 router.post('/registerCourse', verifyAdmin, async function(req, res) {
   try{
-    if(!(await CorporateTraineeCourses.findOne({corporateTraineeId: req.body.traineeId, courseId: req.body.courseId}))){
-      const traineeCourse = new CorporateTraineeCourses({
+    if(!(await StudentCourses.findOne({corporateTraineeId: req.body.traineeId, courseId: req.body.courseId}))){
+      const traineeCourse = new StudentCourses({
         corporateTraineeId: req.body.traineeId,
         courseId: req.body.courseId
       });

@@ -25,9 +25,10 @@ export const Home = ({ auth, logout, selectCountry }) => {
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xl">
         <CssBaseline />
-        <Typography>Trainee Home Page</Typography>
+        <Typography>Home Page</Typography>
         <Typography>Welcome {auth.user.username}</Typography>
         <NavLink to="/courses">Courses Page</NavLink><br />
+        <NavLink to="/courses/student">My registered courses</NavLink><br />
         <Select
           defaultValue={country}
           label="User Country"

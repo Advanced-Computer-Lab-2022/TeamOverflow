@@ -39,7 +39,7 @@ router.post("/login", async (req, res) => {
 })
 
 //View contract
-router.post('/getContract', verifyInstructor, async function (req, res) {
+router.get('/getContract', verifyInstructor, async function (req, res) {
   try {
     var result = await Contract.findOne({instructorId: req.reqId})
     res.status(200).json(result)
@@ -51,7 +51,7 @@ router.post('/getContract', verifyInstructor, async function (req, res) {
 //Accept or reject contract
 router.put('/contractResponse', verifyInstructor, async function (req, res) {
   try {
-    var result = await Contract.findByIdAndUpdate(req.body.contractId, { $set: { satatus: req.body.response} }, { new: true })
+    var result = await Contract.findByIdAndUpdate(req.body.contractId, { $set: { status: req.body.response} }, { new: true })
     res.status(200).json(result)
   } catch (err) {
     res.status(400).json({ message: err.message })

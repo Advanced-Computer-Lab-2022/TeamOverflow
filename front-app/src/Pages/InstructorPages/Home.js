@@ -28,6 +28,7 @@ export const Home = ({auth, logout, selectCountry, getCoursesRatings, getInstruc
         <Typography>Instructor Home Page</Typography>
         <Typography>Welcome {auth.user.username}</Typography>
         <NavLink to="/Instructor/profile">My Profile</NavLink><br/>
+        <NavLink to="/Instructor/contract">My Contract</NavLink><br/>
         <NavLink onClick={() => getInstructorRatings(auth?.token)} to="/Instructor/ratings">My Ratings and Reviews</NavLink><br/>
         <NavLink to="/courses">All Courses</NavLink><br/>
         <NavLink to="/courses/instructor">My Courses</NavLink><br/>

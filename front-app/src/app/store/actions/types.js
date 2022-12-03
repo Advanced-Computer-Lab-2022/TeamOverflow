@@ -36,3 +36,13 @@ export const VIDEO = "VIDEO";
 export const RATING_SUCCESS = "RATING_SUCCESS";
 export const RATING_FAIL = "RATING_FAIL";
 export const RATING = "RATING";
+
+//Contract
+export const CONTRACT_SUCCESS = "CONTRACT_SUCCESS";
+export const CONTRACT_FAIL = "CONTRACT_FAIL";
+export const CONTRACT = "CONTRACT";
+
+//Exams
+export const EXAM_SUCCESS = "EXAM_SUCCESS";
+export const EXAM_FAIL = "EXAM_FAIL";
+export const EXAM = "EXAM";

@@ -6,5 +6,6 @@ import UploadVideo from "./UploadVideo";
 import Discount from "./Discount";
 import InstructorProfile from "./Profile";
 import EditProfile from "./EditProfile";
+import Contract from "./Contract";
 
-export {Home, CreateCourse, SingleCourse, CreateExam, UploadVideo, Discount, InstructorProfile, EditProfile};
+export {Home, CreateCourse, SingleCourse, CreateExam, UploadVideo, Discount, InstructorProfile, EditProfile, Contract};
