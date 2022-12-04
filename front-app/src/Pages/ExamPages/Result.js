@@ -52,7 +52,7 @@ export const SolvedExam = ({ token, getGrade, graded, yourSol, totalMark }) => {
                                         <RadioGroup
                                             value={yourSol.answers[idx]}
                                         >
-                                            {graded.choices[idx]?.map((ans, i) => <FormControlLabel value={i} control={<Radio color={yourSol.answers[idx] !== graded?.correctIndecies[idx] ? 'error':'primary'}/>}  label={ans} />)}
+                                            {graded.choices[idx]?.map((ans, i) => ans !== null && <FormControlLabel value={i} control={<Radio color={yourSol.answers[idx] !== graded?.correctIndecies[idx] ? 'error':'primary'}/>}  label={ans} />)}
                                         </RadioGroup>
                                     </FormControl>
                                     {yourSol.answers[idx] !== graded?.correctIndecies[idx] && <Typography> Correct answer: {graded?.choices[idx][graded?.correctIndecies[idx]]} </Typography>}

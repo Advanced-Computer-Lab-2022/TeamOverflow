@@ -44,7 +44,7 @@ async function getGrade(req, res) {
 async function submitSolution(req, res) {
   try {
     const solution = await Answer.create({ answers: req.body.answers, traineeId: req.reqId, exerciseId: req.body.exerciseId })
-    res.status(200).json("Solution Submitted")
+    res.status(200).json({ message: "Solution Submitted" })
   } catch (err) {
     res.status(400).json({ message: err.message })
   }

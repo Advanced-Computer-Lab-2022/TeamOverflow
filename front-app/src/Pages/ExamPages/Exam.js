@@ -74,7 +74,7 @@ export const SitExam = ({ token, getExam, submitSolution, exam }) => {
                                             onChange={(event) => handleAnswerChange(event.target.value, idx)}
                                             required
                                         >
-                                            {exam.choices[idx]?.map((ans, i) => <FormControlLabel value={i} control={<Radio />}  label={ans} />)}
+                                            {exam.choices[idx]?.map((ans, i) => ans !== null && <FormControlLabel value={i} control={<Radio />}  label={ans} />)}
                                         </RadioGroup>
                                     </FormControl>
                                     <Typography>Total Mark: {exam?.marks[idx]}</Typography>

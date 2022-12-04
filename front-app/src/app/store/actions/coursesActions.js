@@ -21,7 +21,7 @@ export const searchCoursesUsers = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({ message: "Something Went Wrong" })
+      notification.error({ message: err.response.data.message })
       console.log(err);
       return dispatch({
         type: COURSE_FAIL,
@@ -49,7 +49,7 @@ export const filterCoursesAll = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({ message: "Something Went Wrong" })
+      notification.error({ message: err.response.data.message })
       console.log(err);
       return dispatch({
         type: COURSE_FAIL,
@@ -76,7 +76,7 @@ export const filterCoursesPrice = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({ message: "Something Went Wrong" })
+      notification.error({ message: err.response.data.message })
       console.log(err);
       return dispatch({
         type: COURSE_FAIL,
@@ -102,7 +102,7 @@ export const viewCourse = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({ message: "Something Went Wrong" })
+      notification.error({ message: err.response.data.message })
       console.log(err);
       return dispatch({
         type: COURSE_FAIL,
@@ -124,7 +124,7 @@ export const viewTitles = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({ message: "Something Went Wrong" })
+      notification.error({ message: err.response.data.message })
       console.log(err);
       return dispatch({
         type: COURSE_FAIL,
@@ -146,7 +146,7 @@ export const viewPrices = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({ message: "Something Went Wrong" })
+      notification.error({ message: err.response.data.message })
       console.log(err);
       return dispatch({
         type: COURSE_FAIL,
@@ -168,7 +168,7 @@ export const viewTitlesInstructor = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({ message: "Something Went Wrong" })
+      notification.error({ message: err.response.data.message })
       console.log(err);
       return dispatch({
         type: COURSE_FAIL,
@@ -196,7 +196,7 @@ export const filterCoursesInstructor = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({ message: "Something Went Wrong" })
+      notification.error({ message: err.response.data.message })
       console.log(err);
       return dispatch({
         type: COURSE_FAIL,
@@ -222,7 +222,7 @@ export const searchCoursesInstructor = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({ message: "Something Went Wrong" })
+      notification.error({ message: err.response.data.message })
       console.log(err);
       return dispatch({
         type: COURSE_FAIL,
@@ -243,7 +243,7 @@ export const getSubjects = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({ message: "Something Went Wrong" })
+      notification.error({ message: err.response.data.message })
       console.log(err);
       return dispatch({
         type: COURSE_FAIL,
@@ -267,7 +267,7 @@ export const getRegisteredCourses = (token) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({ message: "Something Went Wrong" })
+      notification.error({ message: err.response.data.message })
       console.log(err);
       return dispatch({
         type: COURSE_FAIL,
@@ -292,7 +292,7 @@ export const openCourse = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({ message: "Something Went Wrong" })
+      notification.error({ message: err.response.data.message })
       console.log(err);
       return dispatch({
         type: COURSE_FAIL,

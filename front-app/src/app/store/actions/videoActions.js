@@ -17,7 +17,7 @@ export const getVideo = (videoId) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({ message: "Failed to retrieve video" })
+      notification.error({ message: err.response.data.message })
       console.log(err);
       return dispatch({
         type: VIDEO_FAIL,
@@ -61,7 +61,7 @@ export const getRegVideo = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({ message: "Failed to retrieve video" })
+      notification.error({ message: err.response.data.message })
       console.log(err);
       return dispatch({
         type: VIDEO_FAIL,

@@ -1,5 +1,5 @@
 import { LOGIN, LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT_SUCCESS, GUEST } from "./types";
-import { getRequest, postRequest } from "../../../core/network";
+import { getRequest, postRequest, putRequest } from "../../../core/network";
 import endpoints from "../../../constants/endPoints.json";
 import { notification } from "antd";
 
@@ -58,11 +58,37 @@ export const LoginUser = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({message: "Something Went Wrong"})
+      notification.error({message: err.response.data.message})
       console.log(err);
       return dispatch({
         type: LOGIN_FAIL,
       });
+    });
+};
+
+export const forgotPassword = (data) => (dispatch) => {
+
+  getRequest(data, undefined, undefined, endpoints.auth.forgot)
+    .then((response) => {
+      const {data} = response;
+      notification.success(data)
+    })
+    .catch((err) => {
+      notification.error({message: err.response.data.message})
+      console.log(err);
+    });
+};
+
+export const resetPassword = (data) => (dispatch) => {
+
+  putRequest(data, undefined, undefined, undefined, endpoints.auth.reset)
+    .then((response) => {
+      const {data} = response;
+      notification.success(data)
+    })
+    .catch((err) => {
+      notification.error({message: err.response.data.message})
+      console.log(err);
     });
 };
 
