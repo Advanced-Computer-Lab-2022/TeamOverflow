@@ -7,29 +7,22 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, FormHelperText, InputLabel} from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
-import { LoginUser, guestVisit } from '../../app/store/actions/authActions';
+import { forgotPassword } from '../../app/store/actions/authActions';
 import {Navigate, NavLink, Route, Routes} from "react-router-dom";
 
 const theme = createTheme();
 
-export const Index = ({LoginUser, user, token, guestVisit}) => {
+export const Forgot = ({ forgotPassword }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     var details = {
       username: data.get('username'),
-      password: data.get('password'),
-      type: data.get('type')
+      email: data.get('email')
     }
-    LoginUser(details)
+    forgotPassword(details)
   };
-
-  if(user?.type === "Guest User"){
-    return (<Navigate to={"/courses"} replace/>)
-  } else if(user) {
-    return (<Navigate to={`/${token.split(" ")[0]}`} replace/>)
-  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -64,48 +57,20 @@ export const Index = ({LoginUser, user, token, guestVisit}) => {
               margin="normal"
               required
               fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
+              name="email"
+              label="Email"
+              type="email"
+              id="email"
+              autoComplete="current-email"
             />
-            <Select
-              margin="normal"
-              required
-              fullWidth
-              autoFocus
-              labelId='select-label'
-              id="type"
-              label="User Type"
-              name="type"
-            >
-              <MenuItem value={"Admin"}>Admin</MenuItem>
-              <MenuItem value={"Instructor"}>Instructor</MenuItem>
-              <MenuItem value={"Corporate"}>Corporate Trainee</MenuItem>
-              <MenuItem value={"Trainee"}>Individual Trainee</MenuItem>
-            </Select>
-            <FormHelperText>User type to log in as</FormHelperText>
             <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign In
+              Send Email
             </Button>
-            <Grid container>
-              <Grid item xs={12}>
-                <NavLink to="/forgot-password">
-                  Forgot password?
-                </NavLink>
-              </Grid>
-              <Grid item xs={12}>
-                <NavLink onClick={guestVisit}>
-                  Continue as guest?
-                </NavLink>
-              </Grid>
-            </Grid>
           </Box>
         </Box>
       </Container>
@@ -114,10 +79,9 @@ export const Index = ({LoginUser, user, token, guestVisit}) => {
 }
 
 const mapStateToProps = (state) => ({
-  user : state?.auth?.user,
-  token : state?.auth?.token
+
 });
 
-const mapDispatchToProps = {LoginUser, guestVisit};
+const mapDispatchToProps = {forgotPassword};
 
-export default connect(mapStateToProps, mapDispatchToProps)(Index);
+export default connect(mapStateToProps, mapDispatchToProps)(Forgot);

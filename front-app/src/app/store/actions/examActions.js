@@ -19,7 +19,7 @@ export const getExam = (data) => (dispatch) => {
             });
         })
         .catch((err) => {
-            notification.error({ message: "Something Went Wrong" })
+            notification.error({ message: err.response.data.message })
             console.log(err);
             return dispatch({
                 type: EXAM_FAIL,
@@ -36,10 +36,11 @@ export const submitSolution = (data) => (dispatch) => {
 
     postRequest(solution, undefined, undefined, token, end.submitSolution)
         .then((response) => {
-            notification.success({ message: response })
+            const {data} = response
+            notification.success({ message: data.message })
         })
         .catch((err) => {
-            notification.error({ message: err.message })
+            notification.error({ message: err.response.data.message })
             console.log(err);
         });
 };
@@ -60,7 +61,7 @@ export const getGrade = (data) => (dispatch) => {
             });
         })
         .catch((err) => {
-            notification.error({ message: err.message })
+            notification.error({ message: err.response.data.message })
             console.log(err);
             return dispatch({
                 type: EXAM_FAIL,

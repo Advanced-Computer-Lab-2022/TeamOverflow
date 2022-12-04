@@ -14,7 +14,9 @@
       },
       "trainee": {
          "login":"trainee/login"
-      }
+      },
+      "forgot":"auth/forgotPassword",
+      "reset":"auth/resetPassword"
    },
    "admin":{
       

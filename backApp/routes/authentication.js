@@ -17,9 +17,13 @@ var transporter = nodemailer.createTransport({
 });
 
 router.get("/forgotPassword", async (req, res) => {
-  var user = (await Instructor.findOne({ username: req.query.username, email: req.query.email }) || await CorporateTrainee.findOne({ username: req.username, email: req.email }) || await Trainee.findOne({ username: req.username, email: req.email }))
   try {
-    await sendEmail(user, res);
+    var user = (await Instructor.findOne({ username: req.query.username, email: req.query.email }) || await CorporateTrainee.findOne({ username: req.username, email: req.email }) || await Trainee.findOne({ username: req.username, email: req.email }))
+    if(user) {
+      await sendEmail(user, res);
+    } else {
+      res.status(404).json({ message: "User not found" })
+    }
   } catch (err) {
     res.status(400).json({ message: err })
   }

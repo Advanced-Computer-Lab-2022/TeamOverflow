@@ -1,13 +1,15 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Routes, Route } from "react-router-dom";
-import { Index, AddUsers, AdminHome, AllCourses, TraineeCourses, TraineeHome, InstructorCourses, InstructorHome, CreateCourse, Rate, SingleCourseInstructor, SingleCourse, InstructorVidView, CreateExam, UploadVideo, Discount, RatingList, InstructorProfile, InstructorEditProfile, InstructorContract, StudentVidView, Exam, Result } from "./Pages";
+import { Index, AddUsers, AdminHome, AllCourses, TraineeCourses, TraineeHome, InstructorCourses, InstructorHome, CreateCourse, Rate, SingleCourseInstructor, SingleCourse, InstructorVidView, CreateExam, UploadVideo, Discount, RatingList, InstructorProfile, InstructorEditProfile, InstructorContract, StudentVidView, Exam, Result, Forgot, Reset } from "./Pages";
 import ProtectedRoute from "./ProtectedRoute";
 
 export const Router = () => {
   return (
     <Routes>
       <Route path="/" exact element={<Index/>}/>
+      <Route path="/forgot-password" exact element={<Forgot/>}/>
+      <Route path="/reset-password/:token" exact element={<Reset/>}/>
       <Route exact element={<ProtectedRoute allowed={["Admin"]}/>}>
         <Route path="/Admin" exact element={<AdminHome/>}/>
         <Route path="/Admin/addUsers" exact element={<AddUsers/>}/>
