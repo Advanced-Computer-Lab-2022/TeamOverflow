@@ -1,4 +1,7 @@
 const jwt = require("jsonwebtoken");
+const CorporateTrainee = require("../models/CorporateTrainee");
+const Instructor = require("../models/Instructor");
+const Trainee = require("../models/Trainee");
 
 function verifyAdmin (req,res,next) {
     const header = req.headers['x-access-token']?.split(' ')
@@ -110,7 +113,7 @@ function verifyAllUsersCorp (req,res,next) {
     const role = header[0]
     const token = header[1]
     if((role == "Instructor" || role == "Trainee" || role == "Corporate") && token){
-        jwt.verify(token, process.env.PASSPORTSECRET, (err, decoded) => {
+        jwt.verify(token, process.env.PASSPORTSECRET, async (err, decoded) => {
             if(err){
                 return res.json({message: "Failed to authenticate", isValid: false})
             }

@@ -54,8 +54,8 @@ async function openCourse(req, res) {
   try {
     var course = await Course.findById(req.query.courseId).populate(["videoId", { path: "examId", select: { correctIndecies: 0 } }]).select({ examId: { correctIndecies: 0 } })
     var subtitles = await Subtitle.find({ courseId: req.query.courseId }).populate(["videoId", { path: "exerciseId", select: { correctIndecies: 0 } }])
-    var exerciseIds = [course.examId._id]
-    exerciseIds.push(subtitles.map((subtitle) => subtitle.exerciseId._id))
+    var exerciseIds = [course.examId?._id]
+    exerciseIds.push(subtitles.map((subtitle) => subtitle.exerciseId?._id))
     var solutions = await Answer.find({exerciseId: {$in: exerciseIds.flat()}})
     res.status(200).json({ course: course, subtitles: subtitles, examSolutions: solutions })
   } catch (err) {

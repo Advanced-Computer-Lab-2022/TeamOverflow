@@ -11,7 +11,7 @@ const Answer = require("../models/StudentAnswer");
 const Video = require("../models/Video");
 const jwt = require("jsonwebtoken");
 const { verifyAllUsersCorp, verifyTrainee } = require('../auth/jwt-auth');
-const { submitSolution, getGrade, openExercise, watchVideo, getRegistered } = require('../controllers/studentController');
+const { submitSolution, getGrade, openExercise, watchVideo, getRegistered, openCourse } = require('../controllers/studentController');
 const mongoose = require("mongoose");
 
 /* GET trainees listing. */
@@ -104,7 +104,7 @@ router.get('/viewExercise', verifyTrainee, async function(req, res) {
 
 router.get('/openCourse', verifyTrainee, async function (req, res) {
   try{
-    if(await StudentCourses.findOne({courseId: req.body.courseId, traineeId: req.reqId})){
+    if(await StudentCourses.findOne({courseId: req.query.courseId, traineeId: req.reqId})){
       await openCourse(req, res)
     } else {
       res.status(403).json({message: "You are not registered to this course"})
