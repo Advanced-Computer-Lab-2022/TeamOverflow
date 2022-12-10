@@ -6,7 +6,7 @@ const Trainee = require("../models/Trainee");
 const Instructor = require("../models/Instructor");
 const jwt = require("jsonwebtoken");
 const { default: mongoose } = require("mongoose");
-import { verifyAllUsersCorp } from '../auth/jwt-auth';
+const {verifyAllUsersCorp} = require("../auth/jwt-auth")
 
 /* Mail Setup*/
 var transporter = nodemailer.createTransport({
