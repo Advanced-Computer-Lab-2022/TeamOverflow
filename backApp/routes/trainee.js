@@ -1,3 +1,4 @@
+const bcrypt = require("bcryptjs");
 var express = require('express');
 var router = express.Router();
 const Trainee = require("../models/Trainee");
@@ -16,11 +17,29 @@ const mongoose = require("mongoose");
 const { processPayment } = require('../controllers/paymentController');
 const Subtitle = require('../models/Subtitle');
 
+
 /* GET trainees listing. */
-router.get('/', function (req, res) {
-  res.send('respond with a resource');
+router.get('/', async function (req, res) {
+  users = await Trainee.find();
+  res.send(users);
 
 });
+
+//Trainee Signup
+router.post("/signup", async (req, res) => {
+  const trainee = req.body
+
+  try {
+    const newUser = new Trainee({
+      ...trainee
+    });
+
+    await newUser.save();
+    res.status(200).send("User has been created.");
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+})
 
 //Trainee Login
 router.post("/login", async (req, res) => {

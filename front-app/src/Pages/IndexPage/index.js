@@ -79,6 +79,7 @@ export const Index = ({LoginUser, user, token, guestVisit}) => {
               id="type"
               label="User Type"
               name="type"
+              
             >
               <MenuItem value={"Admin"}>Admin</MenuItem>
               <MenuItem value={"Instructor"}>Instructor</MenuItem>
@@ -95,6 +96,11 @@ export const Index = ({LoginUser, user, token, guestVisit}) => {
               Sign In
             </Button>
             <Grid container>
+            <Grid item xs={12}>
+                <NavLink to="/register">
+                  Register
+                </NavLink>
+              </Grid>
               <Grid item xs={12}>
                 <NavLink to="/forgot-password">
                   Forgot password?
