@@ -11,9 +11,10 @@ const Answer = require("../models/StudentAnswer");
 const Video = require("../models/Video");
 const jwt = require("jsonwebtoken");
 const { verifyAllUsersCorp, verifyTrainee } = require('../auth/jwt-auth');
-const { submitSolution, getGrade, openExercise, watchVideo, getRegistered, openCourse } = require('../controllers/studentController');
+const { submitSolution, getGrade, openExercise, watchVideo, getRegistered, openCourse, getProgress } = require('../controllers/studentController');
 const mongoose = require("mongoose");
 const { processPayment } = require('../controllers/paymentController');
+const Subtitle = require('../models/Subtitle');
 
 /* GET trainees listing. */
 router.get('/', function (req, res) {
@@ -53,19 +54,32 @@ router.post("/selectCountry", verifyAllUsersCorp, async (req, res) => {
 })
 
 //register trainee to a course
-router.post('/registerCourse', async function (req, res) {
+router.post('/registerCourse', verifyTrainee, async function (req, res) {
   try {
-    const response = await processPayment(req,res)
-    console.log(response)
-    res.status(response.statusCode).json(response)
-    // var course = await Course.findById(req.body.courseId);
-    // var trainee = await Trainee.findById(req.body.traineeId);
-    // const traineeCourse = new StudentCourses({
-    //   traineeId: trainee,
-    //   courseId: course
-    // });
-    // const newTraineeCourse = await traineeCourse.save();
-    // res.status(200).json(newTraineeCourse)
+    const course = await Course.findById(req.body.courseId)
+    const user = await Trainee.findById(req.reqId)
+    const alreadyRegistered = await StudentCourses.findOne({ courseId: req.body.courseId, traineeId: req.reqId })
+    if (alreadyRegistered) {
+      return res.status(400).json({ message: "You are already registered to this course" })
+    }
+    const subtitles = await Subtitle.find({ courseId: req.body.courseId }, { _id: 1, exerciseId: 1, videoId: 1 })
+    const itemIds = [course.examId?.toString(), course.videoId?.toString(), subtitles.map((sub) => [sub.exerciseId?.toString(), sub.videoId?.toString()])].flat().flat()
+    var completion = {}
+    for (let i = 0; i < itemIds.length; i++) {
+      if (itemIds[i]) {
+        completion[itemIds[i]] = false
+      }
+    }
+    const traineeCourse = new StudentCourses({
+      traineeId: req.reqId,
+      courseId: req.body.courseId,
+      completion: completion
+    });
+    const response = await processPayment(req, res, course, user)
+    if (response.statusCode === 200) {
+      const newTraineeCourse = await traineeCourse.save();
+      res.status(201).json({ payment: response, registration: newTraineeCourse })
+    }
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
@@ -73,7 +87,16 @@ router.post('/registerCourse', async function (req, res) {
 
 //submit the answers to the exercise after completing it
 router.post('/submitSolution', verifyTrainee, async function (req, res) {
-  await submitSolution(req, res);
+  try {
+    const regCourse = await StudentCourses.findOne({ courseId: req.body.courseId, traineeId: req.reqId })
+    if (regCourse) {
+      await submitSolution(req, res, regCourse);
+    } else {
+      res.status(403).json({ message: "You are not registered to this course" })
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
 });
 
 //delete student answer
@@ -124,8 +147,23 @@ router.get('/getRegisteredCourses', verifyTrainee, async function (req, res) {
 //watch a video from a course he/she is registered for
 router.get('/watchVideo', verifyTrainee, async function (req, res) {
   try {
-    if (await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })) {
-      await watchVideo(req, res)
+    const regCourse = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
+    if (regCourse) {
+      await watchVideo(req, res, regCourse)
+    } else {
+      res.status(403).json({ message: "You are not registered to this course" })
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+});
+
+//get progress of a course he/she is registered for
+router.get('/getProgress', verifyTrainee, async function (req, res) {
+  try {
+    const regCourse = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
+    if (regCourse) {
+      await getProgress(req, res, regCourse)
     } else {
       res.status(403).json({ message: "You are not registered to this course" })
     }

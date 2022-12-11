@@ -9,12 +9,11 @@ const Corporate = require("../models/CorporateTrainee");
 const Instructor = require("../models/Instructor");
 const Exercise = require("../models/Exercise");
 const Video = require("../models/Video");
-var exchange
-var currencies = require("country-json/src/country-by-currency-code.json")
 var subjects = require("../public/jsons/subjects.json")
 router.use(express.json())
 const {verifyAllUsers, verifyInstructor, verifyAllUsersCorp} = require("../auth/jwt-auth");
 const { default: mongoose } = require("mongoose");
+const { forex } = require("../controllers/currencyController");
 
 // General Purpose endpoints
 router.get('/', async function(req, res) {
@@ -194,23 +193,12 @@ async function findCourseAndSubtitles(id, reqId){
   var course = await Course.findById(id)
   var subtitles = await Subtitle.find({courseId: id})
   var courseObj = JSON.parse(JSON.stringify(course))
-  var curr = currencies.filter((elem) => elem.country === user?.country)[0]?.currency_code
-  await updateRates()
-  var price = courseObj.price
-  var rate = exchange.rates[curr] || exchange.rates.USD
-  courseObj.price = price * rate
+  courseObj.price = await forex(courseObj.price, user?.country)
   courseObj.subtitles = JSON.parse(JSON.stringify(subtitles))
   return courseObj
 }
 
-//API call to update exchange rates
-async function updateRates() {
-  if(!exchange || moment(exchange.lastUpdate).add(1, "day").isBefore(moment())){
-    var ex = await axios.get("https://v6.exchangerate-api.com/v6/76b74834bd41f9920042f73c/latest/USD")
-    exchange = {lastUpdate: ex.data.time_last_update_utc, rates: ex.data.conversion_rates}
-    console.log(`Exchange rates updated: ${exchange.lastUpdate}`)
-  }
-}
+
 
 
 module.exports = router;

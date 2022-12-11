@@ -3,15 +3,16 @@ const Course = require('../models/Course');
 const Trainee = require('../models/Trainee');
 var crypto = require('crypto');
 const axios = require('axios');
+const { forexCode } = require('./currencyController');
+const moment = require("moment")
 
-
-async function processPayment(req, res) {
+async function processPayment(req, res, course, user) {
     try {
-        const course = await Course.findById(req.body.courseId)
-        const user = await Trainee.findById(req.reqId)
         if (course) {
             const input = process.env.merchantCode + req.body.merchantRefNum + req.reqId + "CARD" + course.price.toFixed(2) + req.body.cardNumber + req.body.cardExpiryYear + req.body.cardExpiryMonth + req.body.cvv + req.body.returnUrl + process.env.secureKey
             const hash = crypto.createHash('sha256').update(input).digest('hex');
+            const discountRate = (course.deadline && moment().isBefore(course.deadline)) ? ((100-course.discount)/100) : 1
+            const coursePrice = course.price * discountRate
             const paymentData = {
                 "merchantCode": process.env.merchantCode,
                 "customerName": req.body.nameOnCard,
@@ -23,14 +24,14 @@ async function processPayment(req, res) {
                 "cardExpiryMonth": req.body.cardExpiryMonth,
                 "cvv": req.body.cvv,
                 "merchantRefNum": req.body.merchantRefNum,
-                "amount": course.price.toFixed(2),
+                "amount": await forexCode(coursePrice, req.body.currencyCode),
                 "currencyCode": req.body.currencyCode,
                 "language": "en-gb",
                 "chargeItems": [
                     {
                         "itemId": course._id,
                         "description": course.title,
-                        "price": course.price.toFixed(2),
+                        "price": await forexCode(coursePrice, req.body.currencyCode),
                         "quantity": "1"
                     }
                 ],
@@ -41,7 +42,6 @@ async function processPayment(req, res) {
                 "paymentMethod": "CARD",
                 "description": "Course Registration Payment"
             }
-
             const paymentRes = await axios.post("https://atfawry.fawrystaging.com/ECommerceWeb/Fawry/payments/charge", paymentData).then(response => {
                 return response.data
             }).catch(error => {

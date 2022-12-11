@@ -11,11 +11,31 @@ const Exercise = require("../models/Exercise");
 const Answer = require("../models/StudentAnswer");
 const Video = require("../models/Video");
 const StudentCourses = require("../models/StudentCourses");
+const {forex} = require('../controllers/currencyController');
 
 async function openExercise(req, res) {
   try {
     var exercise = await Exercise.findById(req.query.exerciseId, { correctIndecies: 0 })
     res.status(200).json(exercise);
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+}
+
+async function getProgress(req, res, regCourse) {
+  try {
+    var completion = regCourse.completion
+    var keysbyindex = Object.keys(completion);
+    var total = keysbyindex.length;
+    var done = 0;
+    for (let i = 0; i < keysbyindex.length; i++) {
+      if (completion[keysbyindex[i]]) {
+        done++;
+      }
+    }
+    console.log(total)
+    const progress = (done / total) * 100
+    res.status(200).json({ progress: progress.toFixed(2), completion: completion })
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
@@ -41,9 +61,12 @@ async function getGrade(req, res) {
   }
 }
 
-async function submitSolution(req, res) {
+async function submitSolution(req, res, regCourse) {
   try {
     const solution = await Answer.create({ answers: req.body.answers, traineeId: req.reqId, exerciseId: req.body.exerciseId })
+    var completion = regCourse.completion
+    completion[req.body.exerciseId] = true
+    await regCourse.updateOne({ completion: completion })
     res.status(200).json({ message: "Solution Submitted" })
   } catch (err) {
     res.status(400).json({ message: err.message })
@@ -53,19 +76,24 @@ async function submitSolution(req, res) {
 async function openCourse(req, res) {
   try {
     var course = await Course.findById(req.query.courseId).populate(["videoId", { path: "examId", select: { correctIndecies: 0 } }]).select({ examId: { correctIndecies: 0 } })
+    var courseObj = JSON.parse(JSON.stringify(course))
+    courseObj.price = await forex(courseObj.price, req.user.country)
     var subtitles = await Subtitle.find({ courseId: req.query.courseId }).populate(["videoId", { path: "exerciseId", select: { correctIndecies: 0 } }])
     var exerciseIds = [course.examId?._id]
     exerciseIds.push(subtitles.map((subtitle) => subtitle.exerciseId?._id))
-    var solutions = await Answer.find({exerciseId: {$in: exerciseIds.flat()}})
-    res.status(200).json({ course: course, subtitles: subtitles, examSolutions: solutions })
+    var solutions = await Answer.find({ exerciseId: { $in: exerciseIds.flat() } })
+    res.status(200).json({ course: courseObj, subtitles: subtitles, examSolutions: solutions })
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
 }
 
-async function watchVideo(req, res) {
+async function watchVideo(req, res, regCourse) {
   try {
     var video = await Video.findById(req.query.videoId);
+    var completion = regCourse.completion
+    completion[req.query.videoId] = true
+    await regCourse.updateOne({ completion: completion })
     res.status(200).json(video)
   } catch (err) {
     res.status(400).json({ message: err.message })
@@ -76,11 +104,11 @@ async function getRegistered(req, res) {
   try {
     var regCourses = await StudentCourses.find({ traineeId: req.reqId })
     var courseIds = regCourses?.map((course) => course.courseId.toString());
-    var results = await Course.find({_id: {$in: courseIds}}).populate({path: "instructorId", select:{name:1}})
+    var results = await Course.find({ _id: { $in: courseIds } }).populate({ path: "instructorId", select: { name: 1 } })
     res.status(200).json(results)
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
 }
 
-module.exports = { getGrade, openExercise, submitSolution, openCourse, watchVideo, getRegistered };
+module.exports = { getGrade, openExercise, submitSolution, openCourse, watchVideo, getRegistered, getProgress };

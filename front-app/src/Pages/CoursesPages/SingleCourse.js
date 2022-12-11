@@ -49,7 +49,7 @@ export const TraineeSingleCourse = ({ auth, openCourse, course }) => {
                 <Typography>Rating: {course?.course?.rating}</Typography>
                 <NavLink to={`/Rate/courseId=${course?.course?._id}`}>Rate Course</NavLink>
                 <Typography>Video: {course?.course?.videoId ? <NavLink to={`/course/watch/${course?.course?._id}/${course?.course?.videoId._id}`}>View Preview Video</NavLink> : "No Preview Video"}</Typography>
-                <Typography>Exercise: {course?.course?.exerciseId ? (examsSolved.includes(course?.course?.exerciseId._id) ? <NavLink to={`/course/grade/${course?.examSolutions[examsSolved.indexOf(course?.course?.exerciseId._id)]._id}`}>Get Grade</NavLink> : <NavLink to={`/course/solve/exercise/${course?.course?._id}/${course?.course?.exerciseId._id}`}>Solve Exam</NavLink>) : "No Course Exam"}</Typography>
+                <Typography>Exercise: {course?.course?.examId ? (examsSolved.includes(course?.course?.examId?._id) ? <NavLink to={`/course/grade/${course?.examSolutions[examsSolved.indexOf(course?.course?.examId?._id)]._id}`}>Get Grade</NavLink> : <NavLink to={`/course/solve/exercise/${course?.course?._id}/${course?.course?.examId?._id}`}>Solve Exam</NavLink>) : "No Course Exam"}</Typography>
                 <hr />
                 <Typography>Subtitles</Typography>
                 <hr />

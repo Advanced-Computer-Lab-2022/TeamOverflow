@@ -1,7 +1,8 @@
 const mongoose = require('mongoose')
 var traineeCoursesSchema = new mongoose.Schema({
     traineeId: {type: mongoose.Types.ObjectId, required: true},
-    courseId: {type: mongoose.Types.ObjectId, ref:"Course", required: true}
+    courseId: {type: mongoose.Types.ObjectId, ref:"Course", required: true},
+    completion: {type: JSON, required: true}
 }, {timestamps: true})
 
 

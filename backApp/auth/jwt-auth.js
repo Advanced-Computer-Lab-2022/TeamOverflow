@@ -43,11 +43,12 @@ function verifyTrainee (req,res,next) {
     const role = header[0]
     const token = header[1]
     if(role == "Trainee" && token){
-        jwt.verify(token, process.env.PASSPORTSECRET, (err, decoded) => {
+        jwt.verify(token, process.env.PASSPORTSECRET, async (err, decoded) => {
             if(err){
                 return res.json({message: "Failed to authenticate", isValid: false})
             }
             req.reqId = decoded._id
+            req.user = await Trainee.findById(decoded._id)
             next()
         })
     } else {
