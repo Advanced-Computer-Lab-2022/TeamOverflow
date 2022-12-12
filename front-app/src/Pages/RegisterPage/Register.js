@@ -5,18 +5,27 @@ import {Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Sele
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import countryList from 'country-json/src/country-by-name.json'
 import { createUser } from '../../app/store/actions/authActions';
-import { NavLink } from 'react-router-dom';
+import { Navigate, NavLink, useNavigate } from 'react-router-dom';
+import { connect } from "react-redux";
+
+const theme = createTheme();
 
 
 
-
-const Register = () => {
-    const theme = createTheme();
-    const [country, setCountry] = useState("Egypt");
-    const handleCountryChange = (event) => {
-    setCountry(event.target.value)
-    }
+const Register = ({createUser}) => {
+    const navigate = useNavigate();
         
+    const[terms, setTerms] = useState(false);
+    const handleTermsChange = (event) => {
+    if(event.target.checked){
+        setTerms(true)
+    }
+    else{
+        setTerms(false)
+
+    }
+    }
+
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
@@ -29,11 +38,19 @@ const Register = () => {
           email: data.get('email'),
           gender: data.get('gender'),
           country: data.get('country'),
+          acceptedTerms: terms
         }
         createUser(details)
+        //navigate("/")
 
       };
-    
+
+      const [country, setCountry] = useState("Egypt");
+      const handleCountryChange = (event) => {
+      setCountry(event.target.value)
+      }
+
+              
 
   return (
     <ThemeProvider theme={theme}>
@@ -118,7 +135,6 @@ const Register = () => {
               label="Gender"
               name="gender"
               sx={{ mt: 2, mb: 1}}
-              defaultValue={''}
 
             >
               <MenuItem value={"Male"}>Male</MenuItem>
@@ -148,9 +164,17 @@ const Register = () => {
                 )
             })}
             </Select>
-            {/* <Checkbox>
-                <NavLink >Please Read Terms and Conditions</NavLink>
-            </Checkbox> */}
+            
+            <NavLink to="/terms"> Please Read Terms and Conditions</NavLink>
+            <Checkbox
+                required
+                sx={{ mt: 1, mb: 1}}
+                name="acceptedTerms"
+                id="acceptedTerms"
+                onChange={handleTermsChange}
+            />
+            
+            
 
             <Button
               type="submit"
@@ -166,4 +190,10 @@ const Register = () => {
     </ThemeProvider>
   )
  }
-export default Register
+ const mapStateToProps = (state) => ({
+    errors: state?.errors
+  });
+  
+ const mapDispatchToProps = {createUser};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Register);

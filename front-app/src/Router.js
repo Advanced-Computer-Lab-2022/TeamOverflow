@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { Routes, Route } from "react-router-dom";
 import { Index, AddUsers, AdminHome, AllCourses, TraineeCourses, TraineeHome, InstructorCourses, InstructorHome, CreateCourse, Rate, SingleCourseInstructor, SingleCourse, InstructorVidView, CreateExam, UploadVideo, Discount, RatingList, InstructorProfile, InstructorEditProfile, InstructorContract, StudentVidView, Exam, Result, Forgot, Reset } from "./Pages";
 import Register from "./Pages/RegisterPage/Register";
+import Terms from "./Pages/RegisterPage/Terms";
 import ProtectedRoute from "./ProtectedRoute";
 
 export const Router = () => {
@@ -11,6 +12,7 @@ export const Router = () => {
       <Route path="/" exact element={<Index/>}/>
       <Route path="/forgot-password" exact element={<Forgot/>}/>
       <Route path="/register" exact element={<Register/>}/>
+      <Route path="/terms" exact element={<Terms/>}/>
       <Route path="/reset-password/:token" exact element={<Reset/>}/>
       <Route exact element={<ProtectedRoute allowed={["Admin"]}/>}>
         <Route path="/Admin" exact element={<AdminHome/>}/>

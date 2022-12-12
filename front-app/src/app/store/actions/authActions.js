@@ -25,14 +25,13 @@ export const loadUser = () => async (dispatch, getState) => {
 };
 
 export const createUser = (data) =>  (dispatch) => {
-  console.log("hello");
 
   dispatch({ 
     type:CREATE,
   });
 
   var end;
-  end = endpoints.trainee.signup;
+  end = endpoints.trainee.register;
   const info = {
     username: data.username,
     password: data.password,
@@ -41,8 +40,10 @@ export const createUser = (data) =>  (dispatch) => {
     lastName: data.lastName,
     email: data.email,
     gender: data.gender,
-    country: data.country
+    country: data.country,
+    acceptedTerms: data.acceptedTerms
   }
+
   postRequest(info, undefined,undefined, undefined, end)
   .then((response) => {
       console.log(response)
@@ -52,7 +53,7 @@ export const createUser = (data) =>  (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({message: err.response.data.message})
+      notification.error({message: "User already exists."})
       console.log(err);
       return dispatch({
         type: CREATE_FAIL,
