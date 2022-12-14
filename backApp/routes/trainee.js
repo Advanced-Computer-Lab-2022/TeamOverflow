@@ -13,7 +13,7 @@ const jwt = require("jsonwebtoken");
 const { verifyAllUsersCorp, verifyTrainee } = require('../auth/jwt-auth');
 const { submitSolution, getGrade, openExercise, watchVideo, getRegistered, openCourse, getProgress } = require('../controllers/studentController');
 const mongoose = require("mongoose");
-const { processPayment } = require('../controllers/paymentController');
+const { processPayment, getPaymentLink, verifyPayment } = require('../controllers/paymentController');
 const Subtitle = require('../models/Subtitle');
 
 /* GET trainees listing. */
@@ -53,6 +53,21 @@ router.post("/selectCountry", verifyAllUsersCorp, async (req, res) => {
   }
 })
 
+router.get('/checkOut', verifyTrainee, async function (req, res) {
+  try {
+    const course = await Course.findById(req.body.courseId)
+    const user = await Trainee.findById(req.reqId)
+    const alreadyRegistered = await StudentCourses.findOne({ courseId: req.body.courseId, traineeId: req.reqId })
+    if (alreadyRegistered) {
+      return res.status(400).json({ message: "You are already registered to this course" })
+    }
+    await getPaymentLink(req, res, course)
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+}
+)
+
 //register trainee to a course
 router.post('/registerCourse', verifyTrainee, async function (req, res) {
   try {
@@ -75,10 +90,9 @@ router.post('/registerCourse', verifyTrainee, async function (req, res) {
       courseId: req.body.courseId,
       completion: completion
     });
-    const response = await processPayment(req, res, course, user)
-    if (response.statusCode === 200) {
+    if (await verifyPayment(req, res)) {
       const newTraineeCourse = await traineeCourse.save();
-      res.status(201).json({ payment: response, registration: newTraineeCourse })
+      res.status(201).json(newTraineeCourse)
     }
   } catch (err) {
     res.status(400).json({ message: err.message })
