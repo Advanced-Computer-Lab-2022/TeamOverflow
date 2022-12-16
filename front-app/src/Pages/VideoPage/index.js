@@ -1,3 +1,3 @@
 import InstructorVidView from "./InstructorVidView";
-
-export {InstructorVidView};
+import StudentVidView from "./StudentVidView";
+export {InstructorVidView,StudentVidView};

@@ -11,6 +11,7 @@ const Subtitle = require('../models/Subtitle');
 const Video = require('../models/Video');
 const Exercise = require('../models/Exercise');
 const mongoose = require("mongoose");
+const Contract = require('../models/Contract');
 
 
 /* GET instructors listing. */
@@ -37,6 +38,26 @@ router.post("/login", async (req, res) => {
       return res.json({ message: "Invalid username or password" })
     }
   })
+})
+
+//View contract
+router.get('/getContract', verifyInstructor, async function (req, res) {
+  try {
+    var result = await Contract.findOne({instructorId: req.reqId})
+    res.status(200).json(result)
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+})
+
+//Accept or reject contract
+router.put('/contractResponse', verifyInstructor, async function (req, res) {
+  try {
+    var result = await Contract.findByIdAndUpdate(req.body.contractId, { $set: { status: req.body.response} }, { new: true })
+    res.status(200).json(result)
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
 })
 
 //Instructor select country

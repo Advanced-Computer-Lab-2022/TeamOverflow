@@ -1,7 +1,8 @@
 import { UPDATE_USER, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL } from "./types";
 import { COURSE, COURSE_SUCCESS, COURSE_FAIL, SUBJECT_SUCCESS } from "./types";
+import { CONTRACT, CONTRACT_SUCCESS, CONTRACT_FAIL } from "./types";
 
-import { postRequest, putRequest } from "../../../core/network";
+import { postRequest, putRequest, getRequest } from "../../../core/network";
 import endpoints from "../../../constants/endPoints.json";
 import { notification } from "antd";
 
@@ -19,7 +20,7 @@ export const selectCountry = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({message: "Something Went Wrong"})
+      notification.error({message: err.response.data.message})
       console.log(err);
       return dispatch({
         type: UPDATE_USER_FAIL,
@@ -41,7 +42,7 @@ export const editProfile = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({message: "Something Went Wrong"})
+      notification.error({message: err.response.data.message})
       console.log(err);
       return dispatch({
         type: UPDATE_USER_FAIL,
@@ -64,7 +65,7 @@ export const createCourse = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({message: "Something Went Wrong"})
+      notification.error({message: err.response.data.message})
       console.log(err);
       return dispatch({
         type: COURSE_FAIL,
@@ -86,7 +87,7 @@ export const createExercise = (data) => (dispatch) => {
       notification.success({message: "Exercise Added"})
     })
     .catch((err) => {
-      notification.error({message: err.message})
+      notification.error({message: err.response.data.message})
       console.log(err);
     });
 };
@@ -100,7 +101,49 @@ export const defineDiscount = (data) => (dispatch) => {
       notification.success({message: "Discount Added"})
     })
     .catch((err) => {
-      notification.error({message: err.message})
+      notification.error({message: err.response.data.message})
       console.log(err);
+    });
+};
+
+export const contractResponse = (data) => (dispatch) => {
+  dispatch({ type: CONTRACT });
+  var {edits, token} = data
+
+  putRequest(edits, undefined, undefined, token, endpoints.instructor.respondContract)
+    .then((response) => {
+      const { data } = response;
+      notification.success({message: "Contract updated"})
+      return dispatch({
+        type: CONTRACT_SUCCESS,
+        payload: data
+      });
+    })
+    .catch((err) => {
+      notification.error({message: err.response.data.message})
+      console.log(err);
+      return dispatch({
+        type: CONTRACT_FAIL,
+      });
+    });
+};
+
+export const getContract = (token) => (dispatch) => {
+  dispatch({ type: CONTRACT });
+
+  getRequest(undefined, undefined, token, endpoints.instructor.getContract)
+    .then((response) => {
+      const { data } = response;
+      return dispatch({
+        type: CONTRACT_SUCCESS,
+        payload: data
+      });
+    })
+    .catch((err) => {
+      notification.error({message: err.response.data.message})
+      console.log(err);
+      return dispatch({
+        type: CONTRACT_FAIL,
+      });
     });
 };

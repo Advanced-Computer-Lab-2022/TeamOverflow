@@ -14,7 +14,9 @@
       },
       "trainee": {
          "login":"trainee/login"
-      }
+      },
+      "forgot":"auth/forgotPassword",
+      "reset":"auth/resetPassword"
    },
    "admin":{
       
@@ -30,13 +32,27 @@
       "defineDiscount":"instructor/defineDiscount",
       "viewRatings":"instructor/viewOwnRatings",
       "viewCourseRatings":"instructor/viewCourseRatings",
-      "editProfile":"instructor/editMinibiographyorEmail"
+      "editProfile":"instructor/editMinibiographyorEmail",
+      "getContract":"instructor/getContract",
+      "respondContract":"instructor/contractResponse"
    },
    "corporatetrainee":{
-      "setCountry":"corpTrainee/selectCountry"
+      "setCountry":"corpTrainee/selectCountry",
+      "openExam":"corpTrainee/viewExercise",
+      "submitSolution":"corpTrainee/submitSolution",
+      "getGrade":"corpTrainee/viewGrade",
+      "getRegisteredCourses":"corpTrainee/getRegisteredCourses",
+      "openCourse":"corpTrainee/openCourse",
+      "watchVideo":"corpTrainee/watchVideo"
    },
    "trainee": {
-      "setCountry":"trainee/selectCountry"
+      "setCountry":"trainee/selectCountry",
+      "openExam":"trainee/viewExercise",
+      "submitSolution":"trainee/submitSolution",
+      "getGrade":"trainee/viewGrade",
+      "getRegisteredCourses":"trainee/getRegisteredCourses",
+      "openCourse":"trainee/openCourse",
+      "watchVideo":"trainee/watchVideo"
    },
    "course":{
       "searchUsers":"course/search/course",

@@ -18,7 +18,7 @@ export const selectCountry = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({message: "Something Went Wrong"})
+      notification.error({message: err.response.data.message})
       console.log(err);
       return dispatch({
         type: UPDATE_USER_FAIL,

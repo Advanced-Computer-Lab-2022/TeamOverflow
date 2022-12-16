@@ -6,6 +6,7 @@ const Trainee = require("../models/Trainee");
 const Instructor = require("../models/Instructor");
 const jwt = require("jsonwebtoken");
 const { default: mongoose } = require("mongoose");
+const {verifyAllUsersCorp} = require("../auth/jwt-auth")
 
 /* Mail Setup*/
 var transporter = nodemailer.createTransport({
@@ -17,9 +18,13 @@ var transporter = nodemailer.createTransport({
 });
 
 router.get("/forgotPassword", async (req, res) => {
-  var user = (await Instructor.findOne({ username: req.query.username, email: req.query.email }) || await CorporateTrainee.findOne({ username: req.username, email: req.email }) || await Trainee.findOne({ username: req.username, email: req.email }))
   try {
-    await sendEmail(user, res);
+    var user = (await Instructor.findOne({ username: req.query.username, email: req.query.email }) || await CorporateTrainee.findOne({ username: req.username, email: req.email }) || await Trainee.findOne({ username: req.username, email: req.email }))
+    if (user) {
+      await sendEmail(user, res);
+    } else {
+      res.status(404).json({ message: "User not found" })
+    }
   } catch (err) {
     res.status(400).json({ message: err })
   }
@@ -27,13 +32,22 @@ router.get("/forgotPassword", async (req, res) => {
 
 router.put("/resetPassword", async (req, res) => {
   jwt.verify(req.body.token, process.env.PASSPORTSECRET, async (err, decoded) => {
-    try{
-      var user = (await Instructor.findByIdAndUpdate(decoded._id, {password: req.body.password}) || await CorporateTrainee.findByIdAndUpdate(decoded._id, {password: req.body.password}) || await Trainee.findByIdAndUpdate(decoded._id, {password: req.body.password}));
-      res.status(200).json({messsage: "Password Changed"});
-    } catch(err){
-      res.status(400).json({messsage: err});
+    try {
+      var user = (await Instructor.findByIdAndUpdate(decoded._id, { password: req.body.password }) || await CorporateTrainee.findByIdAndUpdate(decoded._id, { password: req.body.password }) || await Trainee.findByIdAndUpdate(decoded._id, { password: req.body.password }));
+      res.status(200).json({ messsage: "Password Changed" });
+    } catch (err) {
+      res.status(400).json({ messsage: err });
     }
   })
+})
+
+router.put("/changePassword", verifyAllUsersCorp, async (req, res) => {
+  try {
+    var user = (await Instructor.findByIdAndUpdate(decoded._id, { password: req.body.password }) || await CorporateTrainee.findByIdAndUpdate(decoded._id, { password: req.body.password }) || await Trainee.findByIdAndUpdate(decoded._id, { password: req.body.password }));
+    res.status(200).json({ messsage: "Password Changed" });
+  } catch (err) {
+    res.status(400).json({ messsage: err });
+  }
 })
 
 /* Functions */

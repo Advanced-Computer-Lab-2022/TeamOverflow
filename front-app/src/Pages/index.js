@@ -1,10 +1,10 @@
 import Index from "./IndexPage";
 import { Home as AdminHome, AddUsers } from "./AdminPages";
-import { Home as CorporateHome } from "./CorporateTraineePages";
-import { Home as IndividualHome } from "./TraineePages";
-import { Home as InstructorHome, CreateCourse, SingleCourse as SingleCourseInstructor, CreateExam, UploadVideo, Discount, InstructorProfile, EditProfile as InstructorEditProfile } from "./InstructorPages";
-import { AllCourses, InstructorCourses } from "./CoursesPages";
-import {Rate, RatingList} from "./RatingPages";
-import {InstructorVidView} from "./VideoPage";
-
-export {Index, AddUsers, AdminHome, CorporateHome, AllCourses, IndividualHome, InstructorCourses, InstructorHome, CreateCourse, SingleCourseInstructor, Rate, RatingList, CreateExam, InstructorVidView, UploadVideo, Discount, InstructorProfile, InstructorEditProfile};
+import { Home as TraineeHome } from "./TraineePages";
+import { Home as InstructorHome, CreateCourse, SingleCourse as SingleCourseInstructor, CreateExam, UploadVideo, Discount, InstructorProfile, EditProfile as InstructorEditProfile, Contract as InstructorContract } from "./InstructorPages";
+import { AllCourses, InstructorCourses, TraineeCourses, SingleCourse } from "./CoursesPages";
+import { Rate, RatingList } from "./RatingPages";
+import { InstructorVidView, StudentVidView } from "./VideoPage";
+import { Exam, Result } from "./ExamPages";
+import { Forgot, Reset } from "./ForgotPasswordPages";
+export { Forgot, Reset, Result, Exam, Index, AddUsers, AdminHome, TraineeCourses, AllCourses, TraineeHome, InstructorCourses, InstructorHome, CreateCourse, SingleCourseInstructor, SingleCourse, Rate, RatingList, CreateExam, InstructorVidView, UploadVideo, Discount, InstructorProfile, InstructorEditProfile, InstructorContract, StudentVidView};
