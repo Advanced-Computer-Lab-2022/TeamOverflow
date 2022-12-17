@@ -11,6 +11,8 @@ var courseSchema = new mongoose.Schema({
     rating: {type: Number},
     numberOfRatings: {type: Number, default: 0},
     totalHours: {type: Number, required: true},
+    certificate: {type: String},
+    notes: {type: String},
     videoId: {type: mongoose.Types.ObjectId, ref:"Video"},
     examId: {type: mongoose.Types.ObjectId, ref:"Exercise" }
 }, {timestamps: true})

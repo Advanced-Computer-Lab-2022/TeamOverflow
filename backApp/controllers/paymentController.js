@@ -5,56 +5,46 @@ var crypto = require('crypto');
 const axios = require('axios');
 const { forexCode } = require('./currencyController');
 const moment = require("moment")
+const stripe = require('stripe')(process.env.SECUREKEY);
 
-async function processPayment(req, res, course, user) {
+async function verifyPayment(req, res) {
     try {
-        if (course) {
-            const input = process.env.merchantCode + req.body.merchantRefNum + req.reqId + "CARD" + course.price.toFixed(2) + req.body.cardNumber + req.body.cardExpiryYear + req.body.cardExpiryMonth + req.body.cvv + req.body.returnUrl + process.env.secureKey
-            const hash = crypto.createHash('sha256').update(input).digest('hex');
-            const discountRate = (course.deadline && moment().isBefore(course.deadline)) ? ((100-course.discount)/100) : 1
-            const coursePrice = course.price * discountRate
-            const paymentData = {
-                "merchantCode": process.env.merchantCode,
-                "customerName": req.body.nameOnCard,
-                "customerMobile": req.body.mobile,
-                "customerEmail": req.body.email,
-                "customerProfileId": req.reqId,
-                "cardNumber": req.body.cardNumber,
-                "cardExpiryYear": req.body.cardExpiryYear,
-                "cardExpiryMonth": req.body.cardExpiryMonth,
-                "cvv": req.body.cvv,
-                "merchantRefNum": req.body.merchantRefNum,
-                "amount": await forexCode(coursePrice, req.body.currencyCode),
-                "currencyCode": req.body.currencyCode,
-                "language": "en-gb",
-                "chargeItems": [
-                    {
-                        "itemId": course._id,
-                        "description": course.title,
-                        "price": await forexCode(coursePrice, req.body.currencyCode),
-                        "quantity": "1"
-                    }
-                ],
-                "enable3DS": true,
-                "authCaptureModePayment": false,
-                "returnUrl": req.body.returnUrl,
-                "signature": hash,
-                "paymentMethod": "CARD",
-                "description": "Course Registration Payment"
-            }
-            const paymentRes = await axios.post("https://atfawry.fawrystaging.com/ECommerceWeb/Fawry/payments/charge", paymentData).then(response => {
-                return response.data
-            }).catch(error => {
-                res.status(400).json({ message: error })
-            })
-
-            return paymentRes
-        } else {
-            res.status(404).json({ message: "Course not found" })
-        }
+        const session = await stripe.checkout.sessions.retrieve(req.body.session_id);
+        return session.payment_status === "paid"
     } catch (err) {
         res.status(400).json({ message: err.message })
     }
 }
 
-module.exports = { processPayment }
+async function getPaymentLink(req, res, course) {
+    try {
+        const discountRate = (course.deadline && moment().isBefore(course.deadline)) ? ((100 - course.discount) / 100) : 1
+        const coursePrice = await forexCode(course.price * discountRate, req.body.currencyCode)
+
+        const session = await stripe.checkout.sessions.create({
+            success_url: `http://localhost:3000/paymentCompleted/{CHECKOUT_SESSION_ID}/${course._id}`,
+            cancel_url: `http://localhost:3000/paymentCompleted/failed/${course._id}`,
+            payment_method_types: ['card'],
+            line_items: [
+                {
+                    price_data: {
+                        currency: req.body.currencyCode.toLowerCase(),
+                        product_data: {
+                            name: course.title,
+                            description: course.summary
+                        },
+                        unit_amount_decimal: coursePrice * 100
+                    },
+                    quantity: 1
+                }
+            ],
+            mode: 'payment',
+        });
+
+        res.status(200).json({ paymentUrl: session.url })
+    } catch (err) {
+        res.status(400).json({ message: err.message })
+    }
+}
+
+module.exports = { getPaymentLink, verifyPayment }
