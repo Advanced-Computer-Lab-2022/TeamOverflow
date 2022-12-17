@@ -163,6 +163,21 @@ router.get('/viewRequest', verifyAllUsers ,async function(req, res) {
 
 })
 
+//grant corporate trainees access to specific courses
+router.post('/grandAccess', verifyInstructor, async function (req, res) {
+  try {
+    const noRequests = req.body.noRequests
+    for (let i = 0; i < noRequests.lenght; i++) {
+      var traniee =  await Requests.findOne({ traineeId: req.body.traineeId })
+      var result = await Requests.findByIdAndUpdate(trainee._id, { $set: { status : req.body.status} }, { new: true }) 
+    }
+    res.status(200).json(result)
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+})
+
+
 
 
 /* Functions */
