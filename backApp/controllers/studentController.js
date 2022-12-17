@@ -111,4 +111,18 @@ async function getRegistered(req, res) {
   }
 }
 
-module.exports = { getGrade, openExercise, submitSolution, openCourse, watchVideo, getRegistered, getProgress };
+async function requestCourse(req, res){
+  try {
+    const reqCourse = await Course.findOne({courseId: req.query.courseId})
+    const regCourse = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
+    if (reqCourse!=regCourse) {
+      return res.status(200).json(reqCourse)
+    } else {
+      res.status(403).json({ message: "You are not registered to this course" })
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+}
+
+module.exports = { getGrade, openExercise, submitSolution, openCourse, watchVideo, getRegistered, getProgress, requestCourse };
