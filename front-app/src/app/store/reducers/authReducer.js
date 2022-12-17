@@ -1,4 +1,4 @@
-import { LOGIN, LOGIN_FAIL, LOGIN_SUCCESS, LOGOUT_SUCCESS, GUEST, UPDATE_USER, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL } from "../actions/types";
+import { LOGIN, LOGIN_FAIL, LOGIN_SUCCESS, LOGOUT_SUCCESS, GUEST, UPDATE_USER, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL, CREATE, CREATE_FAIL, CREATE_SUCCESS } from "../actions/types";
 
 const initialState = {
   user: null,
@@ -67,6 +67,24 @@ export default function store(state = initialState, action) {
         isError: true,
         isLoading: false
       }
+      case CREATE:
+        return{
+          ...state,
+          isLoading: true,
+          isError: false
+        }
+        case CREATE_SUCCESS:
+          return{
+            ...state,
+            isLoading: false,
+            isError: false
+          }
+          case CREATE_FAIL:
+            return{
+              ...state,
+              isLoading: false,
+              isError: true
+            }
     default:
       return state;
   }

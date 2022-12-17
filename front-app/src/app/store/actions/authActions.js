@@ -1,4 +1,4 @@
-import { LOGIN, LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT_SUCCESS, GUEST } from "./types";
+import { LOGIN, LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT_SUCCESS, GUEST, CREATE, CREATE_FAIL, CREATE_SUCCESS } from "./types";
 import { getRequest, postRequest, putRequest } from "../../../core/network";
 import endpoints from "../../../constants/endPoints.json";
 import { notification } from "antd";
@@ -23,6 +23,45 @@ export const loadUser = () => async (dispatch, getState) => {
     });
   }
 };
+
+export const createUser = (data) =>  (dispatch) => {
+
+  dispatch({ 
+    type:CREATE,
+  });
+
+  var end;
+  end = endpoints.trainee.register;
+  const info = {
+    username: data.username,
+    password: data.password,
+    corporation: data.corporation,
+    firstName: data.firstName,
+    lastName: data.lastName,
+    email: data.email,
+    gender: data.gender,
+    country: data.country,
+    acceptedTerms: data.acceptedTerms
+  }
+
+  postRequest(info, undefined,undefined, undefined, end)
+  .then((response) => {
+      console.log(response)
+      notification.success({message: "User has been created."})
+      return dispatch({
+        type: CREATE_SUCCESS,
+      });
+    })
+    .catch((err) => {
+      notification.error({message: "User already exists."})
+      console.log(err);
+      return dispatch({
+        type: CREATE_FAIL,
+      });
+    });
+
+  
+}
 
 export const logout = () => async (dispatch, getState) => {
   localStorage.removeItem("learningAppUser");
