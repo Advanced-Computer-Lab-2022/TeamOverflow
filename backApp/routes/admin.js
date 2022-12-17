@@ -10,6 +10,7 @@ const Course = require('../models/Course');
 const mongoose = require("mongoose");
 const Contract = require('../models/Contract');
 const Subtitle = require('../models/Subtitle');
+const { requestCourse } = require('../controllers/studentController');
 
 /* GET admins listing. */
 router.get('/', function (req, res) {
@@ -149,6 +150,13 @@ router.post('/defineDiscount', verifyInstructor, async function (req, res) {
     res.status(400).json({ message: err.message })
   }
 })
+
+//view course requests from corporate trainees
+router.get('/viewRequest', verifyAllUsers ,async function(req, res) {
+  
+
+});
+
 
 /* Functions */
 
