@@ -188,6 +188,11 @@ router.post('/createCourseExercise', verifyInstructor ,async function(req, res) 
     res.status(400).json({message: err.message}) 
   }
 });
+
+//report problem with course
+router.post('/reportProblem', verifyInstructor, async function (req, res) {
+  await reportProblem(req,res);
+});
 /* Functions */
 
 

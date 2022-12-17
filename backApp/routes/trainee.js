@@ -199,6 +199,11 @@ router.get('/downloadNotes', verifyTrainee, async function (req, res) {
     res.status(400).json({ message: err.message })
   }
 });
+
+//report problem with course
+router.post('/reportProblem', verifyTrainee, async function (req, res) {
+  await reportProblem(req,res);
+});
 /* Functions */
 
 module.exports = router;

@@ -214,6 +214,10 @@ router.get('/downloadNotes', verifyCorpTrainee, async function (req, res) {
     res.status(400).json({ message: err.message })
   }
 });
+//report problem with course
+router.post('/reportProblem', verifyCorpTrainee, async function (req, res) {
+  await reportProblem(req,res);
+});
 /* Functions */
 
 
