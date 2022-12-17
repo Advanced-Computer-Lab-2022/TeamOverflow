@@ -187,6 +187,33 @@ router.get('/requestCourse', verifyCorpTrainee, async function (req, res) {
   }
 });
 
+//download certificate as a pdf 
+router.get('/downloadCertificate', verifyCorpTrainee, async function (req, res) {
+  try {
+    const regCourse = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
+    if (regCourse) {
+      await downloadCertificate(req, res, regCourse)
+    } else {
+      res.status(403).json({ message: "You are not registered to this course" })
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+});
+
+//download notes as a pdf 
+router.get('/downloadNotes', verifyCorpTrainee, async function (req, res) {
+  try {
+    const regCourse = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
+    if (regCourse) {
+      await downloadNotes(req, res, regCourse)
+    } else {
+      res.status(403).json({ message: "You are not registered to this course" })
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+});
 /* Functions */
 
 
