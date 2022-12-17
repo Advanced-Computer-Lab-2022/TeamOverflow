@@ -78,7 +78,7 @@ router.get('/viewPrices', verifyAllUsers ,async function(req, res) {
 // Instructor filter courses
 router.get('/filter/instructor', verifyInstructor ,async function(req, res) {
   try{
-    var results = await filterCourse(req.query, req.reqId)
+    var results = await instructorFilterCourse(req.query, req.reqId)
     res.status(200).json(results)
   }catch(err){
     res.status(400).json({message: err.message}) 
@@ -96,19 +96,9 @@ router.get('/search/course', verifyAllUsersCorp ,async function(req, res) {
 });
 
 //filter course by price
-router.get('/filter', verifyAllUsers ,async function(req, res) {
+router.get('/filter', verifyAllUsersCorp ,async function(req, res) {
   try{
-    var results = await filterCourseByPrice(req.query)
-    res.status(200).json(results)
-  }catch(err){
-    res.status(400).json({message: err.message}) 
-  }
-});
-
-//filter course by subject and/or rating
-router.get('/filter/subjrate', verifyAllUsersCorp ,async function(req, res) {
-  try{
-    var results = await filterCourseBySubjRating(req.query)
+    var results = await filterCourse(req.query)
     res.status(200).json(results)
   }catch(err){
     res.status(400).json({message: err.message}) 
@@ -159,7 +149,7 @@ async function searchforcourse(data){
   return results
 }
 
-async function filterCourse(data, instructorId){
+async function instructorFilterCourse(data, instructorId){
   var {subject, minPrice, maxPrice} = data
   var sub = subject||{$regex: ".*"}
   var min = minPrice||0
@@ -169,21 +159,14 @@ async function filterCourse(data, instructorId){
   return results
 }
 
-async function filterCourseByPrice(data){
-  var {minPrice, maxPrice} = data
+async function filterCourse(data){
+  var {subject, minPrice, maxPrice, minRating, maxRating} = data
+  var sub = subject||{$regex: ".*"}
+  var minRate = minRating||0
+  var maxRate = maxRating||5
   var min = minPrice||0
   var max = maxPrice||10000
-  const mongoQuery = { $and: [{price: { $gte : min, $lt : max}}]}
-  var results = await Course.find(mongoQuery)
-  return results
-}
-
-async function filterCourseBySubjRating(data){
-  var {minRating, maxRating, subject} = data
-  var min = minRating||0
-  var max = maxRating||5
-  var subj = subject || {$regex:".*"}
-  const mongoQuery = { $and: [{rating: { $gte : min, $lte : max}},{subject:subj}]}
+  const mongoQuery = { $and: [{price: { $gte : min, $lt : max}}, {subject: sub}, {rating: { $gte : minRate, $lte : maxRate}}]}
   var results = await Course.find(mongoQuery)
   return results
 }
