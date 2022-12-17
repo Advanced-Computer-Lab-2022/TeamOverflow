@@ -136,6 +136,19 @@ router.post('/registerCourse', verifyAdmin, async function (req, res) {
     res.status(400).json({ message: err.message })
   }
 });
+// a promotion for specific courses, several courses or all courses
+router.post('/defineDiscount', verifyInstructor, async function (req, res) {
+  try {
+    const courses= req.body.courses
+    for (let i = 0; i < courses.lenght; i++) {
+      var course =  await Course.findOne({ courseId: req.body.courseId })
+      var result = await Course.findByIdAndUpdate(course._id, { $set: { discount: req.body.discount} }, { new: true }) 
+    }
+    res.status(200).json(result)
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+})
 
 /* Functions */
 

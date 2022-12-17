@@ -172,6 +172,21 @@ router.get('/getProgress', verifyCorpTrainee, async function (req, res) {
   }
 });
 
+// request access to a specific course they do not have access to
+router.get('/getProgress', verifyCorpTrainee, async function (req, res) {
+  try {
+    const reqCourse = await Course.findOne({courseId: req.query.courseId})
+    const regCourse = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
+    if (reqCourse!=regCourse) {
+      return res.status(200).json(reqCourse)
+    } else {
+      res.status(403).json({ message: "You are not registered to this course" })
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+});
+
 /* Functions */
 
 
