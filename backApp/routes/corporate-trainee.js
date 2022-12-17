@@ -173,7 +173,7 @@ router.get('/getProgress', verifyCorpTrainee, async function (req, res) {
 });
 
 // request access to a specific course they do not have access to
-router.get('/getProgress', verifyCorpTrainee, async function (req, res) {
+router.get('/requestCourse', verifyCorpTrainee, async function (req, res) {
   try {
     const reqCourse = await Course.findOne({courseId: req.query.courseId})
     const regCourse = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
