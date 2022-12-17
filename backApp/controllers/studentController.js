@@ -12,6 +12,7 @@ const Answer = require("../models/StudentAnswer");
 const Video = require("../models/Video");
 const StudentCourses = require("../models/StudentCourses");
 const {forex} = require('../controllers/currencyController');
+const Trainee = require('../models/Trainee');
 
 async function openExercise(req, res) {
   try {
@@ -113,12 +114,20 @@ async function getRegistered(req, res) {
 
 async function requestCourse(req, res){
   try {
-    const reqCourse = await Course.findOne({courseId: req.query.courseId})
+    const reqCourse = await Course.findOne({courseId: req.query.courseId},{_id: 1})
     const regCourse = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
-    if (reqCourse!=regCourse) {
-      return res.status(200).json(reqCourse)
+    if (!regCourse) {
+      const doc = new StudentCourses({
+        traineeId: req.query.traineeId,
+        courseId: reqCourse,
+        completion: 'Not started yet'
+      });
+      
+      await doc.save();
+      
+      return res.status(200).json(doc)
     } else {
-      res.status(403).json({ message: "You are not registered to this course" })
+      res.status(403).json({ message: "You are already registered to this course" })
     }
   } catch (err) {
     res.status(400).json({ message: err.message })
