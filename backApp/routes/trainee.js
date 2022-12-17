@@ -191,6 +191,38 @@ router.get('/getProgress', verifyTrainee, async function (req, res) {
   }
 });
 
+//download certificate as a pdf 
+router.get('/downloadCertificate', verifyTrainee, async function (req, res) {
+  try {
+    const regCourse = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
+    if (regCourse) {
+      await downloadCertificate(req, res, regCourse)
+    } else {
+      res.status(403).json({ message: "You are not registered to this course" })
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+});
+
+//download notes as a pdf 
+router.get('/downloadNotes', verifyTrainee, async function (req, res) {
+  try {
+    const regCourse = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
+    if (regCourse) {
+      await downloadNotes(req, res, regCourse)
+    } else {
+      res.status(403).json({ message: "You are not registered to this course" })
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+});
+
+//report problem with course
+router.post('/reportProblem', verifyTrainee, async function (req, res) {
+  await reportProblem(req,res);
+});
 /* Functions */
 
 module.exports = router;
