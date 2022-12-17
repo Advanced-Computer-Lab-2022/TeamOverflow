@@ -17,7 +17,7 @@
       },
       "forgot":"auth/forgotPassword",
       "reset":"auth/resetPassword"
-   },
+      },
    "admin":{
       
    },
@@ -52,7 +52,8 @@
       "getGrade":"trainee/viewGrade",
       "getRegisteredCourses":"trainee/getRegisteredCourses",
       "openCourse":"trainee/openCourse",
-      "watchVideo":"trainee/watchVideo"
+      "watchVideo":"trainee/watchVideo",
+      "register": "trainee/signup"
    },
    "course":{
       "searchUsers":"course/search/course",
