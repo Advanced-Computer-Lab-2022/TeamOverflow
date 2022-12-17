@@ -8,6 +8,7 @@ var instructorSchema = new mongoose.Schema({
     email: {type: String},
     bio: {type: String},
     rating: {type: Number},
+    walletId: {type: mongoose.Types.ObjectId, ref : "Wallet",required : true},
     numberOfRatings: {type: Number, default: 0},
 }, {timestamps: true})
 
