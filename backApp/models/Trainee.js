@@ -9,7 +9,8 @@ var traineeSchema = new mongoose.Schema({
     lastName: {type: String, required: true},
     email: {type: String, required: true, unique: true},
     gender: {type: String, required: true},
-    acceptedTerms: {type: Boolean, required: true}
+    acceptedTerms: {type: Boolean, required: true},
+    walletId: {type: mongoose.Types.ObjectId, required: true}
 }, {timestamps: true})
 
 
