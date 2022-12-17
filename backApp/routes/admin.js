@@ -11,6 +11,7 @@ const mongoose = require("mongoose");
 const Contract = require('../models/Contract');
 const Subtitle = require('../models/Subtitle');
 const { requestCourse } = require('../controllers/studentController');
+const Requests = require('../models/Requests');
 
 /* GET admins listing. */
 router.get('/', function (req, res) {
@@ -153,9 +154,15 @@ router.post('/defineDiscount', verifyInstructor, async function (req, res) {
 
 //view course requests from corporate trainees
 router.get('/viewRequest', verifyAllUsers ,async function(req, res) {
-  
+  try {
+    var results = await Requests.find({ courseId: { $in: req.body.courseId } }).populate({path: "courseId", select: {_id: 1, title: 1}}).populate({path: "traineeId", select: {_id: 1, name: 1}})
+    res.status(200).json(results)
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
 
-});
+})
+
 
 
 /* Functions */
