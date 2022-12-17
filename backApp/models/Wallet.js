@@ -1,9 +1,7 @@
 const mongoose = require('mongoose');
 
 var WalletSchema = new mongoose.Schema({
-    id: {type: String, required: true},
-   debit: {type: Number},
-    credit: {type:Number},
+   balance : {type: Number},
 }, {timestamp: true});
 
 var Wallet = mongoose.model("Wallet",WalletSchema);
