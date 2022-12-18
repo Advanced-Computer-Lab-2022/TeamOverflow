@@ -142,9 +142,8 @@ router.post('/registerCourse', verifyAdmin, async function (req, res) {
 router.post('/defineDiscount', verifyAdmin, async function (req, res) {
   try {
     const courses= req.body.courses
-    for (let i = 0; i < courses.lenght; i++) {
-      var course =  await Course.findOne({ courseId: req.body.courseId })
-      var result = await Course.findByIdAndUpdate(course._id, { $set: { discount: req.body.discount} }, { new: true }) 
+    for (let i = 0; i < courses.length; i++) {
+      var result = await Course.findByIdAndUpdate(courses[i], { $set: {discount: req.body.discount} }, { new: true }) 
     }
     res.status(200).json(result)
   } catch (err) {
@@ -153,7 +152,7 @@ router.post('/defineDiscount', verifyAdmin, async function (req, res) {
 })
 
 //view course requests from corporate trainees
-router.get('/viewRequest', verifyAllUsers ,async function(req, res) {
+router.get('/viewRequest', verifyAdmin ,async function(req, res) {
   try {
     var results = await Requests.find({ courseId: { $in: req.body.courseId } }).populate({path: "courseId", select: {_id: 1, title: 1}}).populate({path: "traineeId", select: {_id: 1, name: 1}})
     res.status(200).json(results)
