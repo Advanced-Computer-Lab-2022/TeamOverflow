@@ -171,6 +171,15 @@ async function filterCourse(data){
   return results
 }
 
+async function sortCourse(data){
+  var {subject, enrolled} = data
+  var sub = subject||{$regex: ".*"}
+  var enrolled = enrolled||0
+  var results = await Course.find().sort({enrolled})
+  return results
+}
+
+
 async function findCourseAndSubtitles(id, reqId){
   var user = (await Trainee.findById(reqId) || await Corporate.findById(reqId) || await Instructor.findById(reqId))
   var course = await Course.findById(id)
