@@ -139,7 +139,7 @@ router.post('/registerCourse', verifyAdmin, async function (req, res) {
   }
 });
 // a promotion for specific courses, several courses or all courses
-router.post('/defineDiscount', verifyInstructor, async function (req, res) {
+router.post('/defineDiscount', verifyAdmin, async function (req, res) {
   try {
     const courses= req.body.courses
     for (let i = 0; i < courses.lenght; i++) {
