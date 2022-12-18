@@ -12,6 +12,8 @@ const Contract = require('../models/Contract');
 const Subtitle = require('../models/Subtitle');
 const { requestCourse } = require('../controllers/studentController');
 const Requests = require('../models/Requests');
+const Refund = require('../models/Refund');
+const Wallet = require('../models/Wallet');
 
 /* GET admins listing. */
 router.get('/', function (req, res) {
@@ -175,6 +177,20 @@ router.post('/grandAccess', verifyInstructor, async function (req, res) {
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
+})
+
+
+//refund an amount to a trainee to their wallet
+router.post('/refundTraniee', verifyInstructor, async function (req, res) {
+  try{
+    var wallet =  await Refund.findOne({ walletId: req.body.walletId })
+    var refundAmount = await Refund.findOne({ walletId: req.body.walletId },{amount:1})
+    var result = await Wallet.findByIdAndUpdate(wallet._id, { $inc: { balance : refundAmount } }, { new: true }) 
+    res.status(200).json(result)
+  }catch (err){
+    res.status(400).json({ message: err.message })
+  }
+  
 })
 
 
