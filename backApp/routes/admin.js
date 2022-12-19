@@ -193,6 +193,26 @@ router.post('/refundTraniee', verifyInstructor, async function (req, res) {
   
 })
 
+//view reported problems - should automaticalled be marked as "unseen"
+router.get('/reportedProblems', verifyInstructor, async function (req, res) {
+  try {
+    var result = await Problem.findByIdAndUpdate(req.body.userId, { set: { delivered : "unseen" } }, { new: true }) 
+    res.status(200).json(result)
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+})
+
+//mark reported problems as "resolved" or "pending"
+router.post('/markReport', verifyInstructor, async function (req, res) {
+  try {
+    var result = await Problem.findByIdAndUpdate(req.body.userId, { set: { delivered : req.body.delivered } }, { new: true }) 
+    res.status(200).json(result)
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+})
+
 
 
 
