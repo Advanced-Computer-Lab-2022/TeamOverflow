@@ -18,6 +18,12 @@ async function forexCode(amount, code) {
     return (amount * rate).toFixed(2)
 }
 
+async function forexBack(amount, code) {
+    await updateRates()
+    var rate = exchange.rates[code] || exchange.rates.USD
+    return (amount / rate).toFixed(2)
+}
+
 //API call to update exchange rates
 async function updateRates() {
     if (!exchange || moment(exchange.lastUpdate).add(1, "day").isBefore(moment())) {
@@ -27,4 +33,4 @@ async function updateRates() {
     }
 }
 
-module.exports = { updateRates, forex, forexCode }
+module.exports = { updateRates, forex, forexCode, forexBack }
