@@ -1,7 +1,6 @@
 var express = require('express');
 const Course = require('../models/Course');
 const Trainee = require('../models/Trainee');
-var crypto = require('crypto');
 const axios = require('axios');
 const { forexCode } = require('./currencyController');
 const moment = require("moment")
@@ -10,7 +9,7 @@ const stripe = require('stripe')(process.env.SECUREKEY);
 async function verifyPayment(req, res) {
     try {
         const session = await stripe.checkout.sessions.retrieve(req.body.session_id);
-        return session.payment_status === "paid"
+        return session
     } catch (err) {
         res.status(400).json({ message: err.message })
     }

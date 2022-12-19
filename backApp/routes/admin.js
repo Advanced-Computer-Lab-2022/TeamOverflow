@@ -14,6 +14,8 @@ const { requestCourse } = require('../controllers/studentController');
 const Requests = require('../models/Requests');
 const bcrypt = require("bcrypt");
 const Wallet = require('../models/Wallet');
+const {addAmountOwed} = require('../controllers/walletController');
+const moment = require("moment");
 
 /* GET admins listing. */
 router.get('/', function (req, res) {
@@ -128,7 +130,7 @@ router.post('/addTrainee', verifyAdmin, async function (req, res) {
 router.post('/registerCourse', verifyAdmin, async function (req, res) {
   try {
     if (!(await StudentCourses.findOne({ traineeId: req.body.traineeId, courseId: req.body.courseId }))) {
-      const course = await Course.findById(req.body.courseId)
+      const course = await Course.findById(req.body.courseId).populate("instructorId")
       const subtitles = await Subtitle.find({ courseId: req.body.courseId }, { _id: 1, exerciseId: 1, videoId: 1 })
       const itemIds = [course.examId?.toString(), course.videoId?.toString(), subtitles.map((sub) => [sub.exerciseId?.toString(), sub.videoId?.toString()])].flat().flat()
       var completion = {}
@@ -142,6 +144,8 @@ router.post('/registerCourse', verifyAdmin, async function (req, res) {
         courseId: req.body.courseId,
         completion: completion
       });
+      var courseSubtotal = course.discount && moment().isBefore(course.deadline) ? course.price * ((100 - course.discount)/100) : course.price
+      await addAmountOwed(course.instructorId.walletId, courseSubtotal, "USD")
       const newTraineeCourse = await traineeCourse.save();
       res.status(200).json(newTraineeCourse)
     } else {

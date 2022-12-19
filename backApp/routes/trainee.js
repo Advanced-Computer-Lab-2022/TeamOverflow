@@ -18,6 +18,7 @@ const { processPayment, getPaymentLink, verifyPayment } = require('../controller
 const Subtitle = require('../models/Subtitle');
 const bcrypt = require('bcrypt');
 const Wallet = require('../models/Wallet');
+const { addAmountOwed } = require('../controllers/walletController');
 
 /* GET trainees listing. */
 router.get('/', async function (req, res) {
@@ -103,7 +104,7 @@ router.get('/checkOut', verifyTrainee, async function (req, res) {
 //register trainee to a course
 router.post('/registerCourse', verifyTrainee, async function (req, res) {
   try {
-    const course = await Course.findById(req.body.courseId)
+    const course = await Course.findById(req.body.courseId).populate("instructorId")
     const user = await Trainee.findById(req.reqId)
     const alreadyRegistered = await StudentCourses.findOne({ courseId: req.body.courseId, traineeId: req.reqId })
     if (alreadyRegistered) {
@@ -122,7 +123,9 @@ router.post('/registerCourse', verifyTrainee, async function (req, res) {
       courseId: req.body.courseId,
       completion: completion
     });
-    if (await verifyPayment(req, res)) {
+    const paymentSession = await verifyPayment(req, res)
+    if (paymentSession.payment_status === "paid") {
+      await addAmountOwed(course.instructorId.walletId, paymentSession.amount_subtotal/100, paymentSession.currency.toUpperCase())
       const newTraineeCourse = await traineeCourse.save();
       res.status(201).json(newTraineeCourse)
     }
