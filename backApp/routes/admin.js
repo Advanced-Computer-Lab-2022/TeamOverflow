@@ -12,6 +12,10 @@ const Contract = require('../models/Contract');
 const Subtitle = require('../models/Subtitle');
 const { requestCourse } = require('../controllers/studentController');
 const Requests = require('../models/Requests');
+const bcrypt = require("bcrypt");
+const Wallet = require('../models/Wallet');
+const {addAmountOwed} = require('../controllers/walletController');
+const moment = require("moment");
 
 /* GET admins listing. */
 router.get('/', function (req, res) {
@@ -21,36 +25,41 @@ router.get('/', function (req, res) {
 
 //Admin Login
 router.post("/login", async (req, res) => {
-  const adminLogin = req.body
-  await Admin.findOne({ username: adminLogin.username, password: adminLogin.password }, { password: 0 }).then(admin => {
-    if (admin) {
-      const payload = JSON.parse(JSON.stringify(admin))
-      jwt.sign(
-        payload,
-        process.env.JWT_SECRET,
-        //{expiresIn: 86400},
-        (err, token) => {
-          if (err) return res.json({ message: err })
-          return res.status(200).json({ message: "Success", payload: payload, token: "Admin " + token })
-        }
-      )
-    } else {
-      return res.json({ message: "Invalid username or password" })
-    }
-  })
+  try {
+    const adminLogin = req.body
+    await Admin.findOne({ username: adminLogin.username }).then(async (admin) => {
+      if (admin && await bcrypt.compare(adminLogin.password, admin.password)) {
+        const payload = admin.toJSON()
+        jwt.sign(
+          payload,
+          process.env.JWT_SECRET,
+          //{expiresIn: 86400},
+          (err, token) => {
+            if (err) return res.json({ message: err })
+            return res.status(200).json({ message: "Success", payload: payload, token: "Admin " + token })
+          }
+        )
+      } else {
+        return res.status(400).json({ message: "Invalid username or password" })
+      }
+    })
+  } catch (err) {
+    return res.status(400).json({ message: err.message })
+  }
 })
 
 //add admin
 router.post('/addAdmin', verifyAdmin, async function (req, res) {
-  var found = await Admin.findOne({ username: req.body.username })
-  if (found) {
-    return res.status(400).json({ message: "Admin username already exists" })
-  }
-  const add = new Admin({
-    username: req.body.username,
-    password: req.body.password
-  })
   try {
+    var found = await Admin.findOne({ username: req.body.username })
+    if (found) {
+      return res.status(400).json({ message: "Admin username already exists" })
+    }
+    var hash = await bcrypt.hash(req.body.password, 10)
+    const add = new Admin({
+      username: req.body.username,
+      password: hash
+    })
     const newAdmin = await add.save()
     res.status(201).json(newAdmin)
   } catch (err) {
@@ -60,15 +69,19 @@ router.post('/addAdmin', verifyAdmin, async function (req, res) {
 
 //add instructor
 router.post('/addInstructor', verifyAdmin, async function (req, res) {
-  var found = await Instructor.findOne({ username: req.body.username })
-  if (found) {
-    return res.status(400).json({ message: "Instructor username already exists" })
-  }
-  const add = new Instructor({
-    username: req.body.username,
-    password: req.body.password
-  })
   try {
+    var found = await Instructor.findOne({ username: req.body.username })
+    if (found) {
+      return res.status(400).json({ message: "Instructor username already exists" })
+    }
+    var wallet = await Wallet.create({})
+    var hash = await bcrypt.hash(req.body.password, 10)
+    const add = new Instructor({
+      username: req.body.username,
+      password: hash,
+      email: req.body.email,
+      walletId: wallet._id
+    })
     const newInstructor = await add.save()
     res.status(201).json(newInstructor)
   } catch (err) {
@@ -94,16 +107,18 @@ router.post('/createContract', verifyAdmin, async function (req, res) {
 
 //add corporate trainee
 router.post('/addTrainee', verifyAdmin, async function (req, res) {
-  var found = await CorporateTrainee.findOne({ username: req.body.username })
-  if (found) {
-    return res.status(400).json({ message: "Corporate Trainee username already exists" })
-  }
-  const add = new CorporateTrainee({
-    username: req.body.username,
-    password: req.body.password,
-    corporation: req.body.corporation
-  })
   try {
+    var found = await CorporateTrainee.findOne({ username: req.body.username })
+    if (found) {
+      return res.status(400).json({ message: "Corporate Trainee username already exists" })
+    }
+    var hash = await bcrypt.hash(req.body.password, 10)
+    const add = new CorporateTrainee({
+      username: req.body.username,
+      password: hash,
+      email: req.body.email,
+      corporation: req.body.corporation
+    })
     const newCorporateTrainee = await add.save()
     res.status(201).json(newCorporateTrainee)
   } catch (err) {
@@ -115,7 +130,7 @@ router.post('/addTrainee', verifyAdmin, async function (req, res) {
 router.post('/registerCourse', verifyAdmin, async function (req, res) {
   try {
     if (!(await StudentCourses.findOne({ traineeId: req.body.traineeId, courseId: req.body.courseId }))) {
-      const course = await Course.findById(req.body.courseId)
+      const course = await Course.findById(req.body.courseId).populate("instructorId")
       const subtitles = await Subtitle.find({ courseId: req.body.courseId }, { _id: 1, exerciseId: 1, videoId: 1 })
       const itemIds = [course.examId?.toString(), course.videoId?.toString(), subtitles.map((sub) => [sub.exerciseId?.toString(), sub.videoId?.toString()])].flat().flat()
       var completion = {}
@@ -129,6 +144,8 @@ router.post('/registerCourse', verifyAdmin, async function (req, res) {
         courseId: req.body.courseId,
         completion: completion
       });
+      var courseSubtotal = course.discount && moment().isBefore(course.deadline) ? course.price * ((100 - course.discount)/100) : course.price
+      await addAmountOwed(course.instructorId.walletId, courseSubtotal, "USD")
       const newTraineeCourse = await traineeCourse.save();
       res.status(200).json(newTraineeCourse)
     } else {
@@ -138,13 +155,13 @@ router.post('/registerCourse', verifyAdmin, async function (req, res) {
     res.status(400).json({ message: err.message })
   }
 });
+
 // a promotion for specific courses, several courses or all courses
 router.post('/defineDiscount', verifyAdmin, async function (req, res) {
   try {
-    const courses= req.body.courses
-    for (let i = 0; i < courses.lenght; i++) {
-      var course =  await Course.findOne({ courseId: req.body.courseId })
-      var result = await Course.findByIdAndUpdate(course._id, { $set: { discount: req.body.discount} }, { new: true }) 
+    const courses = req.body.courses
+    for (let i = 0; i < courses.length; i++) {
+      var result = await Course.findByIdAndUpdate(courses[i], { $set: { discount: req.body.discount, deadline: req.body.deadline } }, { new: true })
     }
     res.status(200).json(result)
   } catch (err) {
@@ -153,9 +170,9 @@ router.post('/defineDiscount', verifyAdmin, async function (req, res) {
 })
 
 //view course requests from corporate trainees
-router.get('/viewRequest', verifyAllUsers ,async function(req, res) {
+router.get('/viewRequest', verifyAdmin, async function (req, res) {
   try {
-    var results = await Requests.find({ courseId: { $in: req.body.courseId } }).populate({path: "courseId", select: {_id: 1, title: 1}}).populate({path: "traineeId", select: {_id: 1, name: 1}})
+    var results = await Requests.find({}).populate([{ path: "courseId", select: { _id: 1, title: 1 } }, { path: "traineeId", select: { _id: 1, name: 1 } }])
     res.status(200).json(results)
   } catch (err) {
     res.status(400).json({ message: err.message })
