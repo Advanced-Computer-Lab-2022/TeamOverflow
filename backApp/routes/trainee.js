@@ -127,6 +127,8 @@ router.post('/registerCourse', verifyTrainee, async function (req, res) {
     if (paymentSession.payment_status === "paid") {
       await addAmountOwed(course.instructorId.walletId, paymentSession.amount_subtotal/100, paymentSession.currency.toUpperCase())
       const newTraineeCourse = await traineeCourse.save();
+      course.$inc("enrolled", 1)
+      await course.save()
       res.status(201).json(newTraineeCourse)
     }
   } catch (err) {
