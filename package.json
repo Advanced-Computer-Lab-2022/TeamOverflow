@@ -5,6 +5,7 @@
         "dev": "concurrently \"npm run back\" \"npm run front\""
     },
     "dependencies": {
+        "bcrypt": "^5.1.0",
         "concurrently": "^7.5.0",
         "moment": "^2.29.4",
         "nodemailer": "^6.8.0",

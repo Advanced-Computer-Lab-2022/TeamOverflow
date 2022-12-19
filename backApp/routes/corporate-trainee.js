@@ -14,6 +14,7 @@ const Video = require("../models/Video");
 var StudentCourses = require("../models/StudentCourses");
 const { openExercise, getGrade, submitSolution, openCourse, watchVideo, getRegistered,  requestCourse} = require('../controllers/studentController');
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 /* GET corporate trainees listing. */
 router.get('/', function (req, res) {
@@ -24,9 +25,9 @@ router.get('/', function (req, res) {
 //Corporate Trainee Login
 router.post("/login", async (req, res) => {
   const traineeLogin = req.body
-  await CorporateTrainee.findOne({ username: traineeLogin.username, password: traineeLogin.password }, { password: 0 }).then(trainee => {
-    if (trainee) {
-      const payload = JSON.parse(JSON.stringify(trainee))
+  await CorporateTrainee.findOne({ username: traineeLogin.username }).then(async(trainee) => {
+    if (trainee && await bcrypt.compare(traineeLogin.password, trainee.password)) {
+      const payload = trainee.toJSON()
       jwt.sign(
         payload,
         process.env.JWT_SECRET,

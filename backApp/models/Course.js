@@ -14,7 +14,8 @@ var courseSchema = new mongoose.Schema({
     certificate: {type: String},
     notes: {type: String},
     videoId: {type: mongoose.Types.ObjectId, ref:"Video"},
-    examId: {type: mongoose.Types.ObjectId, ref:"Exercise" }
+    examId: {type: mongoose.Types.ObjectId, ref:"Exercise" },
+    enrolled: {type: Number, default: 0}
 }, {timestamps: true})
 
 var Course = mongoose.model("Course",courseSchema);

@@ -161,6 +161,11 @@ export const AllCourses = ({ auth, courses, getSubjects, searchCoursesUsers, vie
                     Total Hours: {course.totalHours}
                     <br />
                     </>}
+                    {course.videoId && 
+                    <>
+                    Video: {course.videoId}
+                    <br />
+                    </>}
                   </Card>
                   <pre>{courses.single?._id === course._id && JSON.stringify(courses.single)}</pre>
                 </Box>

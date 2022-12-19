@@ -6,7 +6,8 @@ const Trainee = require("../models/Trainee");
 const Instructor = require("../models/Instructor");
 const jwt = require("jsonwebtoken");
 const { default: mongoose } = require("mongoose");
-const {verifyAllUsersCorp} = require("../auth/jwt-auth")
+const { verifyAllUsersCorp } = require("../auth/jwt-auth")
+const bcrypt = require("bcrypt")
 
 /* Mail Setup*/
 var transporter = nodemailer.createTransport({
@@ -33,7 +34,8 @@ router.get("/forgotPassword", async (req, res) => {
 router.put("/resetPassword", async (req, res) => {
   jwt.verify(req.body.token, process.env.PASSPORTSECRET, async (err, decoded) => {
     try {
-      var user = (await Instructor.findByIdAndUpdate(decoded._id, { password: req.body.password }) || await CorporateTrainee.findByIdAndUpdate(decoded._id, { password: req.body.password }) || await Trainee.findByIdAndUpdate(decoded._id, { password: req.body.password }));
+      var hash = await bcrypt.hash(req.body.password, 10)
+      var user = (await Instructor.findByIdAndUpdate(decoded._id, { password: hash }) || await CorporateTrainee.findByIdAndUpdate(decoded._id, { password: hash }) || await Trainee.findByIdAndUpdate(decoded._id, { password: hash }));
       res.status(200).json({ messsage: "Password Changed" });
     } catch (err) {
       res.status(400).json({ messsage: err });
@@ -43,8 +45,14 @@ router.put("/resetPassword", async (req, res) => {
 
 router.put("/changePassword", verifyAllUsersCorp, async (req, res) => {
   try {
-    var user = (await Instructor.findByIdAndUpdate(decoded._id, { password: req.body.password }) || await CorporateTrainee.findByIdAndUpdate(decoded._id, { password: req.body.password }) || await Trainee.findByIdAndUpdate(decoded._id, { password: req.body.password }));
-    res.status(200).json({ messsage: "Password Changed" });
+    var user = (await Instructor.findById(req.reqId)) || (await CorporateTrainee.findById(req.reqId)) || (await Trainee.findById(req.reqId))
+    if (user && await bcrypt.compare(req.body.prevPassword, user.password)) {
+      var hash = await bcrypt.hash(req.body.password, 10)
+      user.$set({ password: hash })
+      await user.save()
+      return res.status(200).json(user);
+    }
+    return res.status(400).json({ messsage: "Previous password is incorrect" });
   } catch (err) {
     res.status(400).json({ messsage: err });
   }
@@ -52,7 +60,7 @@ router.put("/changePassword", verifyAllUsersCorp, async (req, res) => {
 
 /* Functions */
 async function sendEmail(user, res) {
-  const payload = JSON.parse(JSON.stringify(user))
+  const payload = user.toJSON()
   var token;
   jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "10 minutes" }, async (err, token) => {
     var mailOptions = {
