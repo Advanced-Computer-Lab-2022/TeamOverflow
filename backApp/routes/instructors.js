@@ -12,6 +12,7 @@ const Exercise = require('../models/Exercise');
 const mongoose = require("mongoose");
 const Contract = require('../models/Contract');
 const Wallet = require('../models/Wallet');
+const bcrypt = require("bcrypt");
 
 /* GET instructors listing. */
 router.get('/', function (req, res) {
@@ -21,9 +22,9 @@ router.get('/', function (req, res) {
 //Instructor Login
 router.post("/login", async (req, res) => {
   const instructorLogin = req.body
-  await Instructor.findOne({ username: instructorLogin.username, password: instructorLogin.password }).then(instructor => {
-    if (instructor) {
-      const payload = JSON.parse(JSON.stringify(instructor))
+  await Instructor.findOne({ username: instructorLogin.username }).populate("walletId").then(async (instructor) => {
+    if (instructor && await bcrypt.compare(instructorLogin.password, instructor.password)) {
+      const payload = instructor.toJSON()
       jwt.sign(
         payload,
         process.env.JWT_SECRET,
