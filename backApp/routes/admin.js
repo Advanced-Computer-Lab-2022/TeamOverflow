@@ -15,7 +15,6 @@ const Subtitle = require('../models/Subtitle');
 const { requestCourse } = require('../controllers/studentController');
 const Requests = require('../models/Requests');
 const Refund = require('../models/Refund');
-const Wallet = require('../models/Wallet');
 const bcrypt = require("bcrypt");
 const Wallet = require('../models/Wallet');
 const {addAmountOwed} = require('../controllers/walletController');
@@ -151,6 +150,8 @@ router.post('/registerCourse', verifyAdmin, async function (req, res) {
       var courseSubtotal = course.discount && moment().isBefore(course.deadline) ? course.price * ((100 - course.discount)/100) : course.price
       await addAmountOwed(course.instructorId.walletId, courseSubtotal, "USD")
       const newTraineeCourse = await traineeCourse.save();
+      course.$inc("enrolled", 1)
+      await course.save()
       res.status(200).json(newTraineeCourse)
     } else {
       res.status(400).json({ message: "Trainee already registered to this course" })

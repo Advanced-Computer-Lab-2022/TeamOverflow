@@ -4,7 +4,6 @@ var router = express.Router();
 var Instructor = require("../models/Instructor");
 var Course = require("../models/Course");
 var jwt = require("jsonwebtoken");
-const { verifyAllUsersCorp, verifyInstructor } = require('../auth/jwt-auth');
 const InstructorRating = require('../models/InstructorRating');
 const CourseRating = require('../models/CourseRating');
 const Subtitle = require('../models/Subtitle');
