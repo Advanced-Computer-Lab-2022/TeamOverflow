@@ -115,27 +115,14 @@ async function getRegistered(req, res) {
 
 async function requestCourse(req, res){
   try {
-    const reqCourse = await Course.findOne({courseId: req.query.courseId},{_id: 1})
     const regCourse = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
     if (!regCourse) {
-      const doc = new Requests({
-        traineeId: req.query.traineeId,
-        courseId: reqCourse,
-        status: 'Pending'
-        
-        
+      const request = new Requests({
+        traineeId: req.reqId,
+        courseId: req.query.courseId,
       });
-      await doc.save();
-      return res.status(200).json(doc)
-
-      const result = new StudentCourses({
-        traineeId: req.query.traineeId,
-        courseId: reqCourse,
-        completion: 'Not started yet'
-        
-      });
-      await result.save();
-      return res.status(200).json(result)
+      await request.save();
+      return res.status(200).json({message: "Request Made"})
     } else {
       res.status(403).json({ message: "You are already registered to this course" })
     }

@@ -132,9 +132,10 @@ router.post('/addTrainee', verifyAdmin, async function (req, res) {
 //register corporate-trainee to a course
 router.post('/registerCourse', verifyAdmin, async function (req, res) {
   try {
-    if (!(await StudentCourses.findOne({ traineeId: req.body.traineeId, courseId: req.body.courseId }))) {
-      const course = await Course.findById(req.body.courseId).populate("instructorId")
-      const subtitles = await Subtitle.find({ courseId: req.body.courseId }, { _id: 1, exerciseId: 1, videoId: 1 })
+    var request = await Requests.findById(req.body.requestId)
+    if (!(await StudentCourses.findOne({ traineeId: request.traineeId, courseId: request.courseId }))) {
+      const course = await Course.findById(request.courseId).populate("instructorId")
+      const subtitles = await Subtitle.find({ courseId: request.courseId }, { _id: 1, exerciseId: 1, videoId: 1 })
       const itemIds = [course.examId?.toString(), course.videoId?.toString(), subtitles.map((sub) => [sub.exerciseId?.toString(), sub.videoId?.toString()])].flat().flat()
       var completion = {}
       for (let i = 0; i < itemIds.length; i++) {
@@ -143,13 +144,14 @@ router.post('/registerCourse', verifyAdmin, async function (req, res) {
         }
       }
       const traineeCourse = new StudentCourses({
-        traineeId: req.body.traineeId,
-        courseId: req.body.courseId,
+        traineeId: request.traineeId,
+        courseId: request.courseId,
         completion: completion
       });
       var courseSubtotal = course.discount && moment().isBefore(course.deadline) ? course.price * ((100 - course.discount)/100) : course.price
       await addAmountOwed(course.instructorId.walletId, courseSubtotal, "USD")
       const newTraineeCourse = await traineeCourse.save();
+      await request.delete();
       course.$inc("enrolled", 1)
       await course.save()
       res.status(200).json(newTraineeCourse)
