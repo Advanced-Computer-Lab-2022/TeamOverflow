@@ -16,7 +16,8 @@ const { submitSolution, getGrade, openExercise, watchVideo, getRegistered, openC
 const mongoose = require("mongoose");
 const { processPayment, getPaymentLink, verifyPayment } = require('../controllers/paymentController');
 const Subtitle = require('../models/Subtitle');
-
+const bcrypt = require('bcrypt');
+const Wallet = require('../models/Wallet');
 
 /* GET trainees listing. */
 router.get('/', async function (req, res) {
@@ -27,39 +28,51 @@ router.get('/', async function (req, res) {
 
 //Trainee Signup
 router.post("/signup", async (req, res) => {
-  const trainee = req.body
-
+  const { username, name, email, gender, acceptedTerms, country, password } = req.body
   try {
+    var hash = await bcrypt.hash(password, 10)
+    var wallet = await Wallet.create({})
     const newUser = new Trainee({
-      ...trainee
+      username: username,
+      name: name,
+      email: email,
+      gender: gender,
+      acceptedTerms: acceptedTerms,
+      country: country,
+      password: hash,
+      walletId: wallet._id
     });
 
     await newUser.save();
-    res.status(200).send("User has been created.");
+    res.status(201).json({ message: "User Created" });
   } catch (err) {
-    res.status(400).send(err.message);
+    res.status(400).json({ message: err.message });
   }
 })
 
 //Trainee Login
 router.post("/login", async (req, res) => {
-  const traineeLogin = req.body
-  await Trainee.findOne({ username: traineeLogin.username, password: traineeLogin.password }, { password: 0 }).then(trainee => {
-    if (trainee) {
-      const payload = JSON.parse(JSON.stringify(trainee))
-      jwt.sign(
-        payload,
-        process.env.JWT_SECRET,
-        //{expiresIn: 86400},
-        (err, token) => {
-          if (err) return res.json({ message: err })
-          return res.status(200).json({ message: "Success", payload: payload, token: "Trainee " + token })
-        }
-      )
-    } else {
-      return res.json({ message: "Invalid username or password" })
-    }
-  })
+  try {
+    const traineeLogin = req.body
+    await Trainee.findOne({ username: traineeLogin.username }).populate("walletId").then(async (trainee) => {
+      if (trainee && await bcrypt.compare(traineeLogin.password, trainee.password)) {
+        const payload = trainee.toJSON()
+        jwt.sign(
+          payload,
+          process.env.JWT_SECRET,
+          //{expiresIn: 86400},
+          (err, token) => {
+            if (err) return res.json({ message: err })
+            return res.status(200).json({ message: "Success", payload: payload, token: "Trainee " + token })
+          }
+        )
+      } else {
+        return res.status(400).json({ message: "Invalid username or password" })
+      }
+    })
+  } catch(err){
+    return res.status(400).json({ message: err.message })
+  }
 })
 
 router.post("/selectCountry", verifyAllUsersCorp, async (req, res) => {
@@ -235,7 +248,7 @@ router.get('/downloadNotes', verifyTrainee, async function (req, res) {
 
 //report problem with course
 router.post('/reportProblem', verifyTrainee, async function (req, res) {
-  await reportProblem(req,res);
+  await reportProblem(req, res);
 });
 /* Functions */
 
