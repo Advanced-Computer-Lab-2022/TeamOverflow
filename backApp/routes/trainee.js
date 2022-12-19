@@ -253,6 +253,17 @@ router.get('/downloadNotes', verifyTrainee, async function (req, res) {
 router.post('/reportProblem', verifyTrainee, async function (req, res) {
   await reportProblem(req, res);
 });
+
+//view the amount available in their wallet from refunded courses
+router.get('/wallet', verifyTrainee, async function (req, res) {
+  try {
+    var result = await Wallet.findOne({id: req.reqId})
+    res.status(200).json(result)
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+})
+
 /* Functions */
 
 module.exports = router;

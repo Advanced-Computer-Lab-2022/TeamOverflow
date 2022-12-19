@@ -121,6 +121,7 @@ async function requestCourse(req, res){
       const doc = new Requests({
         traineeId: req.query.traineeId,
         courseId: reqCourse,
+        status: 'Pending'
         
         
       });

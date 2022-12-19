@@ -14,6 +14,8 @@ const Contract = require('../models/Contract');
 const Subtitle = require('../models/Subtitle');
 const { requestCourse } = require('../controllers/studentController');
 const Requests = require('../models/Requests');
+const Refund = require('../models/Refund');
+const Wallet = require('../models/Wallet');
 const bcrypt = require("bcrypt");
 const Wallet = require('../models/Wallet');
 const {addAmountOwed} = require('../controllers/walletController');
@@ -181,6 +183,35 @@ router.get('/viewRequest', verifyAdmin, async function (req, res) {
   }
 
 })
+
+//grant corporate trainees access to specific courses
+router.post('/grandAccess', verifyInstructor, async function (req, res) {
+  try {
+    const noRequests = req.body.noRequests
+    for (let i = 0; i < noRequests.lenght; i++) {
+      var traniee =  await Requests.findOne({ traineeId: req.body.traineeId })
+      var result = await Requests.findByIdAndUpdate(trainee._id, { $set: { status : req.body.status} }, { new: true }) 
+    }
+    res.status(200).json(result)
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+})
+
+
+//refund an amount to a trainee to their wallet
+router.post('/refundTraniee', verifyInstructor, async function (req, res) {
+  try{
+    var wallet =  await Refund.findOne({ walletId: req.body.walletId })
+    var refundAmount = await Refund.findOne({ walletId: req.body.walletId },{amount:1})
+    var result = await Wallet.findByIdAndUpdate(wallet._id, { $inc: { balance : refundAmount } }, { new: true }) 
+    res.status(200).json(result)
+  }catch (err){
+    res.status(400).json({ message: err.message })
+  }
+  
+})
+
 
 
 

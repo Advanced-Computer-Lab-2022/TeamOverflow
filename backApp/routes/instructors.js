@@ -1,3 +1,4 @@
+const {verifyInstructor} = require('../auth/jwt-auth'); 
 var express = require('express');
 var router = express.Router();
 var Instructor = require("../models/Instructor");
@@ -13,6 +14,7 @@ const mongoose = require("mongoose");
 const Contract = require('../models/Contract');
 const Wallet = require('../models/Wallet');
 const bcrypt = require("bcrypt");
+
 
 /* GET instructors listing. */
 router.get('/', function (req, res) {
