@@ -31,42 +31,17 @@ export const searchCoursesUsers = (data) => (dispatch) => {
 
 export const filterCoursesAll = (data) => (dispatch) => {
   dispatch({ type: COURSE });
-  var { subject, minRating, maxRating, token } = data
+  var { subject, minRating, maxRating, minPrice, maxPrice, token } = data
 
   const info = {
     subject: subject,
     minRating: minRating,
-    maxRating: maxRating
-  }
-
-  getRequest(info, undefined, token, endpoints.course.filterUsers)
-    .then((response) => {
-      console.log(response)
-      const { data } = response;
-      return dispatch({
-        type: COURSE_SUCCESS,
-        payload: data
-      });
-    })
-    .catch((err) => {
-      notification.error({ message: err.response.data.message })
-      console.log(err);
-      return dispatch({
-        type: COURSE_FAIL,
-      });
-    });
-};
-
-export const filterCoursesPrice = (data) => (dispatch) => {
-  dispatch({ type: COURSE });
-  var { minPrice, maxPrice, token } = data
-
-  const info = {
+    maxRating: maxRating,
     minPrice: minPrice,
     maxPrice: maxPrice
   }
 
-  getRequest(info, undefined, token, endpoints.course.filterPrice)
+  getRequest(info, undefined, token, endpoints.course.filterUsers)
     .then((response) => {
       console.log(response)
       const { data } = response;

@@ -5,6 +5,10 @@ const moment = require("moment");
 var exchange
 var currencies = require("country-json/src/country-by-currency-code.json")
 
+function getCode(country) {
+    return currencies.filter((elem) => elem.country === country)[0]?.currency_code
+}
+
 async function forex(amount, country) {
     var curr = currencies.filter((elem) => elem.country === country)[0]?.currency_code
     await updateRates()
@@ -33,4 +37,4 @@ async function updateRates() {
     }
 }
 
-module.exports = { updateRates, forex, forexCode, forexBack }
+module.exports = { updateRates, forex, forexCode, forexBack, getCode }

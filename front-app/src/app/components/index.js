@@ -1,3 +1,3 @@
 import TopBar from "./TopBar";
-
-export {TopBar}
+import CourseCard from "./CourseCard";
+export {TopBar, CourseCard}
