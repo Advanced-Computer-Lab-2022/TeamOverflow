@@ -1,4 +1,4 @@
-import { LOGIN, LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT_SUCCESS, GUEST, CREATE, CREATE_FAIL, CREATE_SUCCESS } from "./types";
+import { LOGIN, LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT_SUCCESS, GUEST, CREATE, CREATE_FAIL, CREATE_SUCCESS, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL } from "./types";
 import { getRequest, postRequest, putRequest } from "../../../core/network";
 import endpoints from "../../../constants/endPoints.json";
 import { notification } from "antd";
@@ -128,6 +128,30 @@ export const resetPassword = (data) => (dispatch) => {
     .catch((err) => {
       notification.error({message: err.response.data.message})
       console.log(err);
+    });
+};
+
+export const changePassword = (data) => (dispatch) => {
+
+  var{token} = data;
+
+  putRequest(data, undefined, undefined, token, endpoints.auth.change)
+    .then((response) => {
+      const {data} = response;
+      notification.success(data)
+      return dispatch({
+        type: UPDATE_USER_SUCCESS,
+        payload: data
+      });
+
+    })
+    .catch((err) => {
+      notification.error({message: err.response.data.message})
+      console.log(err);
+      return dispatch({
+        type: UPDATE_USER_FAIL,
+      });
+
     });
 };
 

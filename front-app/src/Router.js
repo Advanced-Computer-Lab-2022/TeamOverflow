@@ -5,6 +5,7 @@ import { Register, Terms, Index, AddUsers, AdminHome, AllCourses, TraineeCourses
 import { TopBar } from "./app/components";
 import { useLocation } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
+import Profile from "./Pages/InstructorPages/Profile";
 
 export const Router = () => {
   return (
