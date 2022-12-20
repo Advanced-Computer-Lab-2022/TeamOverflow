@@ -25,6 +25,7 @@ export const EditProfile = ({ auth, editProfile, selectCountry, changePassword }
         const data = new FormData(event.currentTarget);
         var details = {
             edits: {
+                name: data.get('name'),
                 email: data.get('email'),
                 bio: data.get('bio'),
                 country: country
@@ -67,6 +68,14 @@ export const EditProfile = ({ auth, editProfile, selectCountry, changePassword }
                     </Typography>
                     <Box  sx={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                         <Box   sx={{ mt: 1}}>
+                        <TextField
+                                margin="normal"
+                                fullWidth
+                                id="name"
+                                label="Full Name"
+                                name="name"
+                                autoFocus                            
+                            />
                             <TextField
                                 margin="normal"
                                 fullWidth

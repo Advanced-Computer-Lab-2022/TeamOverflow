@@ -99,6 +99,7 @@ router.get('/viewOwnRatings', verifyInstructor, async function (req, res) {
 router.put("/editMinibiographyorEmail", verifyInstructor, async (req, res) => {
   try {
     var update = {
+      name: req.body.name ? req.body.name : undefined,
       bio: req.body.bio ? req.body.bio : undefined, 
       email: req.body.email ? req.body.email : undefined,
       country: req.body.country ? req.body.country : undefined
