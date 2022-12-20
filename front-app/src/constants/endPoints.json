@@ -16,7 +16,8 @@
          "login":"trainee/login"
       },
       "forgot":"auth/forgotPassword",
-      "reset":"auth/resetPassword"
+      "reset":"auth/resetPassword",
+      "change":"auth/changePassword"
       },
    "admin":{
       

@@ -16,8 +16,8 @@ const bcrypt = require("bcrypt");
 
 
 /* GET instructors listing. */
-router.get('/', function (req, res) {
-  res.send('respond with a resource');
+router.get('/', async function (req, res) {
+  res.send(await Instructor.find());
 });
 
 //Instructor Login
@@ -100,7 +100,8 @@ router.put("/editMinibiographyorEmail", verifyInstructor, async (req, res) => {
   try {
     var update = {
       bio: req.body.bio ? req.body.bio : undefined, 
-      email: req.body.email ? req.body.email : undefined
+      email: req.body.email ? req.body.email : undefined,
+      country: req.body.country ? req.body.country : undefined
     }
     console.log(update)
     var user = await Instructor.findByIdAndUpdate(req.reqId, update, {new: true}).select({password: 0});
