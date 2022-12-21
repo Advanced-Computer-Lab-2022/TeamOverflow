@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 var NotesSchema = new mongoose.Schema({
-    studentId : {type: mongoose.Types.ObjectId, required: true},
-    vidId : {type:mongoose.Types.ObjectId, required: true },
+    traineeId : {type: mongoose.Types.ObjectId, required: true},
+    videoId : {type:mongoose.Types.ObjectId, ref:"Video", required: true },
     content: {type: String, required: true},
     timestamp: {type: Number, required: true},
 }, {timestamp: true});

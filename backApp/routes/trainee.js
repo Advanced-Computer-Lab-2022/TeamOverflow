@@ -12,7 +12,7 @@ const Answer = require("../models/StudentAnswer");
 const Video = require("../models/Video");
 const jwt = require("jsonwebtoken");
 const { verifyAllUsersCorp, verifyTrainee } = require('../auth/jwt-auth');
-const { submitSolution, getGrade, openExercise, watchVideo, getRegistered, openCourse, getProgress } = require('../controllers/studentController');
+const { submitSolution, getGrade, openExercise, watchVideo, getRegistered, openCourse, getProgress, addNote } = require('../controllers/studentController');
 const mongoose = require("mongoose");
 const { processPayment, getPaymentLink, verifyPayment } = require('../controllers/paymentController');
 const Subtitle = require('../models/Subtitle');
@@ -207,6 +207,11 @@ router.get('/watchVideo', verifyTrainee, async function (req, res) {
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
+});
+
+//Add note to video
+router.post('/addNote', verifyTrainee, async function (req, res) {
+  await addNote(req, res);
 });
 
 //get progress of a course he/she is registered for
