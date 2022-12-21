@@ -8,6 +8,7 @@ import { changePassword } from '../../app/store/actions/authActions';
 
 import countryList from 'country-json/src/country-by-name.json'
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 
 const theme = createTheme();
@@ -18,6 +19,10 @@ export const EditProfile = ({ auth, editProfile }) => {
     const handleCountryChange = (event) => {
       setCountry(event.target.value)
     }
+
+    let navigate = useNavigate(); 
+    let path = `/Trainee/profile`; 
+        
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -32,6 +37,8 @@ export const EditProfile = ({ auth, editProfile }) => {
         }
 
         editProfile(details);
+        navigate(path);
+
         
 
 

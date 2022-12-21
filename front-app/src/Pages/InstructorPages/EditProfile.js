@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import { editProfile } from '../../app/store/actions/instructorActions';
 import { changePassword } from '../../app/store/actions/authActions';
 
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import countryList from 'country-json/src/country-by-name.json'
 import { selectCountry } from '../../app/store/actions/traineeActions';
 
@@ -19,6 +19,10 @@ export const EditProfile = ({ auth, editProfile, selectCountry, changePassword }
     const handleCountryChange = (event) => {
       setCountry(event.target.value)
     }
+    let navigate = useNavigate(); 
+    let path = `/Instructor/profile`; 
+
+
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -34,6 +38,8 @@ export const EditProfile = ({ auth, editProfile, selectCountry, changePassword }
         }
 
         editProfile(details);
+        navigate(path);
+
         
 
 
