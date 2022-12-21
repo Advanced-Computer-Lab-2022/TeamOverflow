@@ -3,19 +3,18 @@ import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
 import { Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, FormHelperText } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
-import { editProfile } from '../../app/store/actions/instructorActions';
+import { editProfile } from '../../app/store/actions/traineeActions';
 import { changePassword } from '../../app/store/actions/authActions';
 
-import { useParams } from 'react-router-dom';
 import countryList from 'country-json/src/country-by-name.json'
-import { selectCountry } from '../../app/store/actions/traineeActions';
+import { useState } from 'react';
 
 
 const theme = createTheme();
 
-export const EditProfile = ({ auth, editProfile, selectCountry, changePassword }) => {
+export const EditProfile = ({ auth, editProfile }) => {
 
-    const [country, setCountry] = React.useState(auth.user.country)
+    const [country, setCountry] = useState(auth.user.country)
     const handleCountryChange = (event) => {
       setCountry(event.target.value)
     }
@@ -27,7 +26,6 @@ export const EditProfile = ({ auth, editProfile, selectCountry, changePassword }
             edits: {
                 name: data.get('name'),
                 email: data.get('email'),
-                bio: data.get('bio'),
                 country: country
             },
             token: auth.token
@@ -60,7 +58,7 @@ export const EditProfile = ({ auth, editProfile, selectCountry, changePassword }
                     <Typography component="h1" variant="h5">
                         Update Profile
                     </Typography>
-                    <Box  sx={{display: 'flex', flexDirection: 'row', alignItems: 'center', width: "42%"}}>
+                    <Box  sx={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                         <Box   sx={{ mt: 1}}>
                         <TextField
                                 margin="normal"
@@ -79,14 +77,6 @@ export const EditProfile = ({ auth, editProfile, selectCountry, changePassword }
                                 name="name"
                                 autoFocus                            
                             />
-                            <TextField
-                                margin="normal"
-                                fullWidth
-                                id="bio"
-                                label="Mini Biography"
-                                name="bio"
-                                autoFocus                            
-                            />
                             <Select
                                 sx={{marginTop:"15px"}}
                                 defaultValue={country}
@@ -102,6 +92,7 @@ export const EditProfile = ({ auth, editProfile, selectCountry, changePassword }
                                     </MenuItem>
                                 )})}
                             </Select>
+                            
                             <FormHelperText>Select your country</FormHelperText>
 
 
@@ -110,8 +101,9 @@ export const EditProfile = ({ auth, editProfile, selectCountry, changePassword }
                     </Box>
                     <Button
                         type="submit"
+                        
                         variant="contained"
-                        sx={{ mt: 3, mb: 2, bgcolor: "var(--secColor)",width: "42%" }}
+                        sx={{ mt: 3, mb: 2, bgcolor: "var(--secColor)", width: "42%" }}
 
                    >
                         Update
@@ -127,6 +119,6 @@ const mapStateToProps = (state) => ({
     auth: state?.auth
 });
 
-const mapDispatchToProps = { editProfile, changePassword };
+const mapDispatchToProps = { editProfile };
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditProfile);

@@ -54,7 +54,8 @@
       "getRegisteredCourses":"trainee/getRegisteredCourses",
       "openCourse":"trainee/openCourse",
       "watchVideo":"trainee/watchVideo",
-      "register": "trainee/signup"
+      "register": "trainee/signup",
+      "editProfile": "trainee/edit"
    },
    "course":{
       "searchUsers":"course/search/course",

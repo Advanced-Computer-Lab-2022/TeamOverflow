@@ -1,11 +1,12 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Routes, Route } from "react-router-dom";
-import { Register, Terms, Index, AddUsers, AdminHome, AllCourses, TraineeCourses, TraineeHome, InstructorCourses, InstructorHome, CreateCourse, Rate, SingleCourseInstructor, SingleCourse, InstructorVidView, CreateExam, UploadVideo, Discount, RatingList, InstructorProfile, InstructorEditProfile, InstructorContract, StudentVidView, Exam, Result, Forgot, Reset, PaymentDone } from "./Pages";
+import { TraineeProfile ,Register, Terms, Index, AddUsers, AdminHome, AllCourses, TraineeCourses, TraineeHome, InstructorCourses, InstructorHome, CreateCourse, Rate, SingleCourseInstructor, SingleCourse, InstructorVidView, CreateExam, UploadVideo, Discount, RatingList, InstructorProfile, InstructorEditProfile, InstructorContract, StudentVidView, Exam, Result, Forgot, Reset, PaymentDone, EditTraineeProfile, EditInstructorPassword } from "./Pages";
 import { TopBar } from "./app/components";
 import { useLocation } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import Profile from "./Pages/InstructorPages/Profile";
+import { EditTraineePassword } from "./Pages/TraineePages";
 
 export const Router = () => {
   return (
@@ -25,6 +26,8 @@ export const Router = () => {
         <Route path="/Instructor" exact element={<InstructorHome />} />
         <Route path="/Instructor/profile" exact element={<InstructorProfile />} />
         <Route path="/Instructor/edit" exact element={<InstructorEditProfile />} />
+        <Route path="/Instructor/editPassword" exact element={<EditInstructorPassword />} />
+
         <Route path="/Instructor/ratings" exact element={<RatingList />} />
         <Route path="/Instructor/contract" exact element={<InstructorContract />} />
         <Route path="/courses/create" exact element={<CreateCourse />} />
@@ -35,6 +38,12 @@ export const Router = () => {
       </Route>
       <Route exact element={<ProtectedRoute allowed={["Trainee"]} />}>
         <Route path="/Trainee" exact element={<TraineeHome />} />
+        <Route path="/Trainee/profile" exact element={<TraineeProfile />} />
+        <Route path="/Trainee/edit" exact element={<EditTraineeProfile />} />
+        <Route path="/Trainee/editPassword" exact element={<EditTraineePassword />} />
+
+
+
         <Route path="/paymentCompleted/:status/:courseId" exact element={<PaymentDone />} />
       </Route>
       <Route exact element={<ProtectedRoute allowed={["Corporate"]} />}>

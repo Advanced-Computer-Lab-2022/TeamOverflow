@@ -18,6 +18,10 @@ import { useNavigate } from 'react-router-dom';
 function MenuAppBar({ auth, logout }) {
     const navigate = useNavigate()
     const [anchorEl, setAnchorEl] = React.useState(null);
+    
+    var token = auth.token || '';
+    var header = token.split(' ')
+    var role = header[0]
 
     const handleMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -46,6 +50,11 @@ function MenuAppBar({ auth, logout }) {
         setAnchorEl(null);
         navigate("/");
     };
+    const routeChange = () =>{ 
+        let path = "/"+role+"/profile"; 
+        navigate(path);
+      }
+
 
     return (
         <Box sx={{ flexGrow: 1, marginBottom: 2, bgColor:"var(--primaryColor)", color:"var(--secColor)" }}>
@@ -77,6 +86,13 @@ function MenuAppBar({ auth, logout }) {
                         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                             CanCham Online Learning System
                         </Typography>
+
+                        
+                        <AccountCircle onClick={routeChange} sx={{cursor:'pointer'}}/>
+                        <Typography marginLeft={"5px"} onClick={routeChange} sx={{cursor:'pointer'}}>{auth.user.username}</Typography>
+
+                        
+
                     </Toolbar>
                 </AppBar>
             )}

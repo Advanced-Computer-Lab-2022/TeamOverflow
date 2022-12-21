@@ -86,6 +86,23 @@ router.post("/selectCountry", verifyAllUsersCorp, async (req, res) => {
   }
 })
 
+router.put("/edit", verifyTrainee, async (req, res) => {
+  try {
+    var update = {
+      name: req.body.name ? req.body.name : undefined,
+      email: req.body.email ? req.body.email : undefined,
+      country: req.body.country ? req.body.country : undefined
+    }
+    console.log(update)
+    var user = await Trainee.findByIdAndUpdate(req.reqId, update, {new: true}).select({password: 0});
+    return res.status(200).json(user)
+  } catch (err) {
+    return res.status(400).json({ message: "Edit Failed" })
+  }
+})
+module.exports = router;
+
+
 router.get('/checkOut', verifyTrainee, async function (req, res) {
   try {
     const course = await Course.findById(req.body.courseId)
