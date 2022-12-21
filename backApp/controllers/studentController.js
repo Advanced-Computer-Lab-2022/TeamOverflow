@@ -14,6 +14,7 @@ const StudentCourses = require("../models/StudentCourses");
 const {forex} = require('../controllers/currencyController');
 const Trainee = require('../models/Trainee');
 const Requests = require('../models/Requests');
+const Notes = require('../models/Notes');
 
 async function openExercise(req, res) {
   try {
@@ -131,4 +132,19 @@ async function requestCourse(req, res){
   }
 }
 
-module.exports = { getGrade, openExercise, submitSolution, openCourse, watchVideo, getRegistered, getProgress, requestCourse };
+async function addNote(req, res) {
+  try{
+    const note = new Notes({
+      traineeId: req.reqId,
+      videoId: req.query.videoId,
+      timestamp: req.query.timestamp,
+      content: req.query.content
+    });
+    await note.save();
+    res.status(201).json({message: "New Note Added"})
+  } catch(err) {
+    res.status(400).json({ message: err.message })
+  }
+}
+
+module.exports = { getGrade, openExercise, submitSolution, openCourse, watchVideo, getRegistered, getProgress, requestCourse, addNote };

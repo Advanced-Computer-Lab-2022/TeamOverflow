@@ -87,7 +87,11 @@ export const LoginUser = (data) => (dispatch) => {
 
   postRequest(info, undefined, undefined, undefined, end)
     .then((response) => {
-      console.log(response)
+      if(response.data.message === "Success"){
+        notification.success({ message: "Welcome Back" })
+      } else {
+        notification.error({ message: response.data.message })
+      }
       const { data } = response;
       return dispatch({
         type: LOGIN_SUCCESS,
