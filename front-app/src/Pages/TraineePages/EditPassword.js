@@ -4,12 +4,17 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { changePassword } from '../../app/store/actions/authActions';
 import LockIcon from '@mui/icons-material/Lock';
+import { useNavigate } from 'react-router-dom';
 
 
 
 const theme = createTheme();
 
 export const EditPassword = ({ auth,  changePassword }) => {
+    let navigate = useNavigate(); 
+    let path = `/Trainee/profile`; 
+
+
 
 
     const handleSubmit = (event) => {
@@ -22,6 +27,8 @@ export const EditPassword = ({ auth,  changePassword }) => {
             token: auth.token
         }
         changePassword(details);
+        navigate(path);
+
         
 
 
