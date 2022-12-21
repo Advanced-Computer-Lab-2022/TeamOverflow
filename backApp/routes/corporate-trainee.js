@@ -17,10 +17,35 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
 /* GET corporate trainees listing. */
-router.get('/', function (req, res) {
-  res.send('respond with a resource');
+router.get('/', async function (req, res) {
+  res.send(await CorporateTrainee.find());
 
 });
+
+//create corporate trainee
+router.post('/create', async function (req, res) {
+  try {
+    var found = await CorporateTrainee.findOne({ username: req.body.username })
+    if (found) {
+      return res.status(400).json({ message: "Corporate Trainee username already exists" })
+    }
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(req.body.password, salt);
+    var newCorporateTrainee = new CorporateTrainee({
+      username: req.body.username,
+      password: hash,
+      name: req.body.name,
+      corporation: req.body.corporation,
+      email: req.body.email,
+      country: req.body.country
+    })
+    await newCorporateTrainee.save()
+    return res.status(200).json(newCorporateTrainee)
+  } catch (err) {
+    return res.status(400).json({ message: err.message })
+  }
+})
+
 
 //Corporate Trainee Login
 router.post("/login", async (req, res) => {

@@ -1,10 +1,5 @@
 import * as React from 'react';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { Typography, Box, Container, CssBaseline, Button, FormHelperText, Select, MenuItem } from '@mui/material';
+import { Typography, Container, CssBaseline, Button, FormHelperText, Select, MenuItem } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { NavLink } from 'react-router-dom';
@@ -28,6 +23,7 @@ export const Home = ({ auth, logout, selectCountry }) => {
         <Typography>Home Page</Typography>
         <Typography>Welcome {auth.user.username}</Typography>
         <NavLink to="/courses">Courses Page</NavLink><br />
+        {/* <NavLink to="/Trainee/profile">My Profile</NavLink><br/> */}
         <NavLink to="/courses/student">My registered courses</NavLink><br />
         <Select
           defaultValue={country}
