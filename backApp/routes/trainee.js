@@ -19,6 +19,7 @@ const Subtitle = require('../models/Subtitle');
 const bcrypt = require('bcrypt');
 const Wallet = require('../models/Wallet');
 const { addAmountOwed } = require('../controllers/walletController');
+const { getNotes } = require('../controllers/pdfController');
 
 /* GET trainees listing. */
 router.get('/', async function (req, res) {
@@ -262,12 +263,7 @@ router.get('/downloadCertificate', verifyTrainee, async function (req, res) {
 //download notes as a pdf 
 router.get('/downloadNotes', verifyTrainee, async function (req, res) {
   try {
-    const regCourse = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
-    if (regCourse) {
-      await downloadNotes(req, res, regCourse)
-    } else {
-      res.status(403).json({ message: "You are not registered to this course" })
-    }
+    await getNotes(req,res)
   } catch (err) {
     res.status(400).json({ message: err.message })
   }

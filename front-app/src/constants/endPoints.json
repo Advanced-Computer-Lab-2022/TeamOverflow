@@ -45,7 +45,8 @@
       "getRegisteredCourses":"corpTrainee/getRegisteredCourses",
       "openCourse":"corpTrainee/openCourse",
       "watchVideo":"corpTrainee/watchVideo",
-      "addNote":"corpTrainee/addNote"
+      "addNote":"corpTrainee/addNote",
+      "downloadNotes":"corpTrainee/downloadNotes"
    },
    "trainee": {
       "setCountry":"trainee/selectCountry",
@@ -58,7 +59,8 @@
       "register": "trainee/signup",
       "editProfile": "trainee/edit",
       "registercourse" : "trainee/registerCourse",
-      "addNote":"trainee/addNote"
+      "addNote":"trainee/addNote",
+      "downloadNotes":"trainee/downloadNotes"
    },
    "course":{
       "searchUsers":"course/search/course",

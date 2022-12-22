@@ -29,3 +29,9 @@ export const centered_flex_box = {
     alignItems:"center",
     justifyContent:"center"
 }
+
+export const left_flex_box = {
+    display: "flex",
+    alignItems:"center",
+    justifyContent:"flex-end"
+}

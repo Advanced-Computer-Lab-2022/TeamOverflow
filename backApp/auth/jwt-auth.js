@@ -8,12 +8,13 @@ function verifyAdmin (req,res,next) {
     const role = header[0]
     const token = header[1]
     if(role == "Admin" && token){
-        jwt.verify(token, process.env.PASSPORTSECRET, (err, decoded) => {
+        jwt.verify(token, process.env.PASSPORTSECRET, async (err, decoded) => {
             console.log(err)
             if(err){
                 return res.json({message: err, isValid: false})
             }
             req.reqId = decoded._id
+            req.user = await Admin.findById(decoded._id)
             next()
         })
     } else {
@@ -26,11 +27,12 @@ function verifyInstructor (req,res,next) {
     const role = header[0]
     const token = header[1]
     if(role == "Instructor" && token){
-        jwt.verify(token, process.env.PASSPORTSECRET, (err, decoded) => {
+        jwt.verify(token, process.env.PASSPORTSECRET, async (err, decoded) => {
             if(err){
                 return res.json({message: "Failed to authenticate", isValid: false})
             }
             req.reqId = decoded._id
+            req.user = await Instructor.findById(decoded._id)
             next()
         })
     } else {
@@ -61,11 +63,12 @@ function verifyCorpTrainee (req,res,next) {
     const role = header[0]
     const token = header[1]
     if(role == "Corporate" && token){
-        jwt.verify(token, process.env.PASSPORTSECRET, (err, decoded) => {
+        jwt.verify(token, process.env.PASSPORTSECRET, async (err, decoded) => {
             if(err){
                 return res.json({message: "Failed to authenticate", isValid: false})
             }
             req.reqId = decoded._id
+            req.user = await CorporateTrainee.findById(decoded._id)
             next()
         })
     } else {
