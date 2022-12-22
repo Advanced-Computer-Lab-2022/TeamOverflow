@@ -41,7 +41,7 @@ const Register = ({createUser}) => {
           acceptedTerms: terms
         }
         createUser(details)
-        //navigate("/")
+        navigate("/")
 
       };
 
