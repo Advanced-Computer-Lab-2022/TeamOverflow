@@ -5,6 +5,7 @@ const initialState = {
     single: null,
     isLoading: false,
     isError: false,
+    subjects: null
 };
 
 export default function store(state = initialState, action) {

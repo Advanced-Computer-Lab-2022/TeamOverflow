@@ -19,7 +19,7 @@ export const getExam = (data) => (dispatch) => {
             });
         })
         .catch((err) => {
-            notification.error({ message: err.response.data.message })
+            notification.error({ message: err?.response?.data?.message })
             console.log(err);
             return dispatch({
                 type: EXAM_FAIL,
@@ -40,7 +40,7 @@ export const submitSolution = (data) => (dispatch) => {
             notification.success({ message: data.message })
         })
         .catch((err) => {
-            notification.error({ message: err.response.data.message })
+            notification.error({ message: err?.response?.data?.message })
             console.log(err);
         });
 };
@@ -61,7 +61,7 @@ export const getGrade = (data) => (dispatch) => {
             });
         })
         .catch((err) => {
-            notification.error({ message: err.response.data.message })
+            notification.error({ message: err?.response?.data?.message })
             console.log(err);
             return dispatch({
                 type: EXAM_FAIL,

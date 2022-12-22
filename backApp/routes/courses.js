@@ -22,7 +22,11 @@ router.get('/', async function(req, res) {
 })
 
 router.get('/allSubj', async function(req, res) {
-  res.status(200).json(subjects)
+  try {
+    res.status(200).json(subjects)
+  } catch (err) {
+    res.status(400).json({message: err.message})
+  }
 })
 
 // View course

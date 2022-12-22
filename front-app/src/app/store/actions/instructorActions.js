@@ -20,7 +20,7 @@ export const selectCountry = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({message: err.response.data.message})
+      notification.error({message: err?.response?.data?.message})
       console.log(err);
       return dispatch({
         type: UPDATE_USER_FAIL,
@@ -42,7 +42,7 @@ export const editProfile = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({message: err.response.data.message})
+      notification.error({message: err?.response?.data?.message})
       console.log(err);
       return dispatch({
         type: UPDATE_USER_FAIL,
@@ -65,7 +65,7 @@ export const createCourse = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({message: err.response.data.message})
+      notification.error({message: err?.response?.data?.message})
       console.log(err);
       return dispatch({
         type: COURSE_FAIL,
@@ -87,7 +87,7 @@ export const createExercise = (data) => (dispatch) => {
       notification.success({message: "Exercise Added"})
     })
     .catch((err) => {
-      notification.error({message: err.response.data.message})
+      notification.error({message: err?.response?.data?.message})
       console.log(err);
     });
 };
@@ -101,7 +101,7 @@ export const defineDiscount = (data) => (dispatch) => {
       notification.success({message: "Discount Added"})
     })
     .catch((err) => {
-      notification.error({message: err.response.data.message})
+      notification.error({message: err?.response?.data?.message})
       console.log(err);
     });
 };
@@ -120,7 +120,7 @@ export const contractResponse = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({message: err.response.data.message})
+      notification.error({message: err?.response?.data?.message})
       console.log(err);
       return dispatch({
         type: CONTRACT_FAIL,
@@ -140,7 +140,7 @@ export const getContract = (token) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({message: err.response.data.message})
+      notification.error({message: err?.response?.data?.message})
       console.log(err);
       return dispatch({
         type: CONTRACT_FAIL,

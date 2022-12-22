@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Typography, Paper, IconButton, InputBase, Box, Container, Pagination, TextField, Accordion, AccordionSummary, AccordionDetails, Button, Slider, Select, MenuItem, Card, FormHelperText, Grid } from '@mui/material';
+import { Typography, Paper, IconButton, InputBase, Box, Container, Pagination, CircularProgress, Accordion, AccordionSummary, AccordionDetails, Button, Slider, Select, MenuItem, Card, FormHelperText, Grid } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { clearCourses, filterCoursesAll, getSubjects } from '../../app/store/actions/coursesActions';
@@ -16,8 +16,8 @@ export const AllCourses = ({ auth, courses, getSubjects, filterCoursesAll, clear
   const role = auth.token.split(" ")[0];
 
   React.useEffect(() => {
-    getSubjects()
     clearCourses()
+    getSubjects()
   }, [])
 
   const [formData, setFormData] = React.useState({
@@ -160,16 +160,22 @@ export const AllCourses = ({ auth, courses, getSubjects, filterCoursesAll, clear
         )}
         <hr />
         <Box>
-          <Grid container spacing={1}>
-            {courses.results?.docs?.map((course) => {
-              return (
-                <Grid item xs={12}>
-                  <CourseCard course={course} />
-                </Grid>
-              )
-            })}
-          </Grid>
-          <Box sx={{...centered_flex_box, m:1}}>
+          {!courses?.isLoading ? (
+            <Grid container spacing={1}>
+              {courses?.results?.docs?.map((course) => {
+                return (
+                  <Grid item xs={12}>
+                    <CourseCard course={course} />
+                  </Grid>
+                )
+              })}
+            </Grid>
+          ) : (
+            <Box sx={centered_flex_box}>
+              <CircularProgress sx={{ color: "var(--secColor)" }} />
+            </Box>
+          )}
+          <Box sx={{ ...centered_flex_box, m: 1 }}>
             <Pagination count={courses?.results?.pages || 1} page={page} onChange={handlePageChange} />
           </Box>
         </Box>

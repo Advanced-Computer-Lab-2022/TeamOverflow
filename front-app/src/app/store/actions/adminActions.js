@@ -32,7 +32,7 @@ export const addUser = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({message: err.response.data.message})
+      notification.error({message: err?.response?.data?.message})
       console.log(err);
       return dispatch({
         type: CREATE_FAIL,

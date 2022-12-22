@@ -40,7 +40,7 @@ export const uploadVideo = (data) => (dispatch) => {
       notification.success({ message: "Video Added" })
     })
     .catch((err) => {
-      notification.error({ message: err.message })
+      notification.error({ message: err?.response?.data?.message })
       console.log(err);
     });
 };
@@ -86,7 +86,7 @@ export const addNote = (data) => (dispatch) => {
       notification.success({ message: "Note Added" })
     })
     .catch((err) => {
-      notification.error({ message: err.message })
+      notification.error({ message: err?.response?.data?.message })
       console.log(err);
     });
 };
@@ -108,7 +108,7 @@ export const downloadNotes = (data) => (dispatch) => {
       download(response.data, response.headers["filename"], response.headers.getContentType)
       notification.success({ message: "Note Downloaded" })
     }).catch((err) => {
-      notification.error({ message: err.message })
+      notification.error({ message: err?.response?.data?.message })
       console.log(err);
     });
 };
