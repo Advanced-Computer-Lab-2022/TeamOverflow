@@ -46,4 +46,20 @@ export const editProfile = (data) => (dispatch) => {
         type: UPDATE_USER_FAIL,
       });
     });
-};
+  };
+    export const registerCourse = (data) =>  {
+    
+      var {courseData, token} = data
+      
+      postRequest(courseData, undefined, undefined, token, endpoints.trainee.registercourse)
+        .then((response) => {
+          const { data } = response;
+          notification.success({message: "successful registrations "})
+         
+        })
+        .catch((err) => {
+          notification.error({message: err.response.data.message})
+      console.log(err);
+        
+        });
+      };
