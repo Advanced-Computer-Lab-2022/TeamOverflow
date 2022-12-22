@@ -5,14 +5,14 @@ import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import DownloadIcon from '@mui/icons-material/Download';
 import CreateIcon from '@mui/icons-material/Create';
-import { Typography, Box, Card, Container, CssBaseline, Button, FormHelperText, Select, MenuItem, TextField, TextareaAutosize, Accordion, AccordionSummary, AccordionDetails, CircularProgress } from '@mui/material';
+import { Typography, Box, Card, Container, CssBaseline, Button, InputBase, FormHelperText, Select, MenuItem, TextField, TextareaAutosize, Accordion, AccordionSummary, AccordionDetails, CircularProgress } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { NavLink, useParams } from 'react-router-dom';
 import { getRegVideo, addNote, downloadNotes } from '../../app/store/actions/videoActions';
 import ReactPlayer from 'react-player'
 import TextArea from 'antd/lib/input/TextArea';
-import { centered_flex_box, left_flex_box, main_button } from '../../app/components/Styles';
+import { centered_flex_box, left_flex_box, MainInput, MainTextArea, main_button } from '../../app/components/Styles';
 import moment from 'moment';
 
 const theme = createTheme();
@@ -80,8 +80,8 @@ export const VideoView = ({ auth, getRegVideo, video, isLoading, addNote, downlo
               </AccordionDetails>
             </Accordion>
             <Box sx={left_flex_box}>
-              <Button sx={{ ...main_button, mx: 1 }} onClick={handleAddNote}>{!noteOpen ? (<><CreateIcon/> Write Note</>) : "Close Note"}</Button>
-              <Button sx={main_button} onClick={() => downloadNotes({videoId: videoId, token: auth?.token})}><DownloadIcon />Download Notes</Button>
+              <Button sx={{ ...main_button, mx: 1 }} onClick={handleAddNote}>{!noteOpen ? (<><CreateIcon /> Write Note</>) : "Close Note"}</Button>
+              <Button sx={main_button} onClick={() => downloadNotes({ videoId: videoId, token: auth?.token })}><DownloadIcon />Download Notes</Button>
             </Box>
           </>) : (
             <Box sx={centered_flex_box}>
@@ -93,10 +93,8 @@ export const VideoView = ({ auth, getRegVideo, video, isLoading, addNote, downlo
           <Card sx={{ my: 2, padding: 1 }}>
             <Typography>Add note at {moment().startOf('day').seconds(timestamp).format('mm:ss')}</Typography>
             <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-              <TextField
-                margin="normal"
+              <MainTextArea
                 required
-                fullWidth
                 id="note"
                 label="Your Notes"
                 name="note"
@@ -104,7 +102,7 @@ export const VideoView = ({ auth, getRegVideo, video, isLoading, addNote, downlo
                 type="text"
                 autoFocus
               />
-              <Box sx={centered_flex_box}>
+              <Box sx={left_flex_box}>
                 <Button
                   type="submit"
                   variant="contained"

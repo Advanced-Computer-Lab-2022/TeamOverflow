@@ -64,7 +64,7 @@ export const AllCourses = ({ auth, courses, getSubjects, filterCoursesAll, clear
 
   const handlePageChange = (event, value) => {
     setFormData({ ...formData, page: value })
-    filterCoursesAll({ token: auth.token, ...formData });
+    filterCoursesAll({ token: auth.token, ...formData, page: value });
   }
 
   const handleSearchFilter = (event) => {

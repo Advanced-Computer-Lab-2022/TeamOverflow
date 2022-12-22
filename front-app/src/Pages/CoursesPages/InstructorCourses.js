@@ -63,7 +63,7 @@ export const InstructorCourses = ({ auth, courses, getSubjects, filterCoursesIns
 
   const handlePageChange = (event, value) => {
     setFormData({ ...formData, page: value })
-    filterCoursesInstructor({ token: auth.token, ...formData });
+    filterCoursesInstructor({ token: auth.token, ...formData, page: value });
   }
 
   const handleSearchFilter = (event) => {
