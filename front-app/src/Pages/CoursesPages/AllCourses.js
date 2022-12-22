@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Typography, Paper, IconButton, InputBase, Box, Container, Pagination, TextField, Accordion, AccordionSummary, AccordionDetails, Button, Slider, Select, MenuItem, Card, FormHelperText, Grid } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
-import { filterCoursesAll, getSubjects } from '../../app/store/actions/coursesActions';
+import { clearCourses, filterCoursesAll, getSubjects } from '../../app/store/actions/coursesActions';
 import { CourseCard } from '../../app/components';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import FilterListIcon from '@mui/icons-material/FilterList';
@@ -11,12 +11,13 @@ import { centered_flex_box, main_button } from '../../app/components/Styles';
 
 const theme = createTheme();
 
-export const AllCourses = ({ auth, courses, getSubjects, filterCoursesAll }) => {
+export const AllCourses = ({ auth, courses, getSubjects, filterCoursesAll, clearCourses }) => {
 
   const role = auth.token.split(" ")[0];
 
   React.useEffect(() => {
     getSubjects()
+    clearCourses()
   }, [])
 
   const [formData, setFormData] = React.useState({
@@ -182,6 +183,6 @@ const mapStateToProps = (state) => ({
   courses: state?.courses
 });
 
-const mapDispatchToProps = { filterCoursesAll, getSubjects };
+const mapDispatchToProps = { filterCoursesAll, getSubjects, clearCourses };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AllCourses);

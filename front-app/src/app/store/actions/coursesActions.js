@@ -1,7 +1,11 @@
-import { COURSE, SINGLE_COURSE_SUCCESS, COURSE_SUCCESS, COURSE_FAIL, SUBJECT_SUCCESS } from "./types";
+import { COURSE, SINGLE_COURSE_SUCCESS, COURSE_SUCCESS, COURSE_FAIL, SUBJECT_SUCCESS, CLEAR_COURSES } from "./types";
 import { getRequest, postRequest } from "../../../core/network";
 import endpoints from "../../../constants/endPoints.json";
 import { notification } from "antd";
+
+export const clearCourses = () => (dispatch) => {
+  dispatch({ type: CLEAR_COURSES });
+} 
 
 export const filterCoursesAll = (data) => (dispatch) => {
   dispatch({ type: COURSE });
@@ -112,13 +116,13 @@ export const getSubjects = (data) => (dispatch) => {
     });
 };
 
-export const getRegisteredCourses = (token) => (dispatch) => {
+export const getRegisteredCourses = ({token, page}) => (dispatch) => {
   dispatch({ type: COURSE });
 
   var role = token.split(" ")[0]
     var end = role === "Trainee" ? endpoints.trainee : endpoints.corporatetrainee
 
-  getRequest(undefined, undefined, token, end.getRegisteredCourses)
+  getRequest({page: page}, undefined, token, end.getRegisteredCourses)
     .then((response) => {
       console.log(response)
       const { data } = response;
