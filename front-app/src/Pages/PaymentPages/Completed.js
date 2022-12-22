@@ -14,7 +14,7 @@ const theme = createTheme();
 
 export const PaymentDone = () => {
 
-    const {status, courseId} = useParams()
+    const {session_id, courseId} = useParams()
 
     return (
         <></>
