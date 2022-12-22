@@ -1,3 +1,3 @@
-import { PaymentDone } from "./Completed";
+import  PaymentDone from "./Completed";
 
 export {PaymentDone}
