@@ -3,42 +3,18 @@ import { getRequest, postRequest } from "../../../core/network";
 import endpoints from "../../../constants/endPoints.json";
 import { notification } from "antd";
 
-export const searchCoursesUsers = (data) => (dispatch) => {
-  dispatch({ type: COURSE });
-  var { searchQuery, token } = data
-
-  const info = {
-    query: searchQuery,
-  }
-
-  getRequest(info, undefined, token, endpoints.course.searchUsers)
-    .then((response) => {
-      console.log(response)
-      const { data } = response;
-      return dispatch({
-        type: COURSE_SUCCESS,
-        payload: data
-      });
-    })
-    .catch((err) => {
-      notification.error({ message: err.response.data.message })
-      console.log(err);
-      return dispatch({
-        type: COURSE_FAIL,
-      });
-    });
-};
-
 export const filterCoursesAll = (data) => (dispatch) => {
   dispatch({ type: COURSE });
-  var { subject, minRating, maxRating, minPrice, maxPrice, token } = data
+  var { subject, minRating, maxRating, minPrice, maxPrice, searchQuery, token, page } = data
 
   const info = {
     subject: subject,
     minRating: minRating,
     maxRating: maxRating,
     minPrice: minPrice,
-    maxPrice: maxPrice
+    maxPrice: maxPrice,
+    searchQuery: searchQuery,
+    page: page
   }
 
   getRequest(info, undefined, token, endpoints.course.filterUsers)
@@ -85,109 +61,19 @@ export const viewCourse = (data) => (dispatch) => {
     });
 };
 
-export const viewTitles = (data) => (dispatch) => {
-  dispatch({ type: COURSE });
-  var { token } = data
-
-  getRequest(undefined, undefined, token, endpoints.course.viewAll)
-    .then((response) => {
-      console.log(response)
-      const { data } = response;
-      return dispatch({
-        type: COURSE_SUCCESS,
-        payload: data
-      });
-    })
-    .catch((err) => {
-      notification.error({ message: err.response.data.message })
-      console.log(err);
-      return dispatch({
-        type: COURSE_FAIL,
-      });
-    });
-};
-
-export const viewPrices = (data) => (dispatch) => {
-  dispatch({ type: COURSE });
-  var { token } = data
-
-  getRequest(undefined, undefined, token, endpoints.course.viewAllPrices)
-    .then((response) => {
-      console.log(response)
-      const { data } = response;
-      return dispatch({
-        type: COURSE_SUCCESS,
-        payload: data
-      });
-    })
-    .catch((err) => {
-      notification.error({ message: err.response.data.message })
-      console.log(err);
-      return dispatch({
-        type: COURSE_FAIL,
-      });
-    });
-};
-
-export const viewTitlesInstructor = (data) => (dispatch) => {
-  dispatch({ type: COURSE });
-  var { token } = data
-
-  getRequest(undefined, undefined, token, endpoints.course.viewInstructor)
-    .then((response) => {
-      console.log(response)
-      const { data } = response;
-      return dispatch({
-        type: COURSE_SUCCESS,
-        payload: data
-      });
-    })
-    .catch((err) => {
-      notification.error({ message: err.response.data.message })
-      console.log(err);
-      return dispatch({
-        type: COURSE_FAIL,
-      });
-    });
-};
-
 export const filterCoursesInstructor = (data) => (dispatch) => {
   dispatch({ type: COURSE });
-  var { subject, minPrice, maxPrice, token } = data
+  var { subject, minPrice, maxPrice, searchQuery, page, token } = data
 
   const info = {
     subject: subject,
     minPrice: minPrice,
-    maxPrice: maxPrice
+    maxPrice: maxPrice,
+    searchQuery: searchQuery,
+    page: page
   }
 
   getRequest(info, undefined, token, endpoints.course.filterInstructor)
-    .then((response) => {
-      console.log(response)
-      const { data } = response;
-      return dispatch({
-        type: COURSE_SUCCESS,
-        payload: data
-      });
-    })
-    .catch((err) => {
-      notification.error({ message: err.response.data.message })
-      console.log(err);
-      return dispatch({
-        type: COURSE_FAIL,
-      });
-    });
-};
-
-export const searchCoursesInstructor = (data) => (dispatch) => {
-  dispatch({ type: COURSE });
-  var { searchQuery, token } = data
-
-  const info = {
-    query: searchQuery,
-  }
-
-  getRequest(info, undefined, token, endpoints.course.searchInstructor)
     .then((response) => {
       console.log(response)
       const { data } = response;

@@ -25,16 +25,6 @@ router.get('/allSubj', async function(req, res) {
   res.status(200).json(subjects)
 })
 
-// Instructor Search for course
-router.get('/search/instructor', verifyInstructor ,async function(req, res) {
-  try{
-    var results = await searchCourseInstructor(req.query, req.reqId)
-    res.status(200).json(results)
-  }catch(err){
-    res.status(400).json({message: err.message}) 
-  }
-});
-
 // View course
 router.get('/view', verifyAllUsers ,async function(req, res) {
   try{
@@ -75,30 +65,20 @@ router.get('/viewPrices', verifyAllUsers ,async function(req, res) {
   }
 });
 
-// Instructor filter courses
+// Instructor filter and search courses
 router.get('/filter/instructor', verifyInstructor ,async function(req, res) {
   try{
-    var results = await instructorFilterCourse(req.query, req.reqId)
+    var results = await instructorSearchAndFilterCourse(req.query, req.reqId)
     res.status(200).json(results)
   }catch(err){
     res.status(400).json({message: err.message}) 
   }
 });
 
-// Search for all courses
-router.get('/search/course', verifyAllUsersCorp ,async function(req, res) {
-  try{
-    var results = await searchforcourse(req.query, req.reqId)
-    res.status(200).json(results)
-  }catch(err){
-    res.status(400).json({message: err.message}) 
-  }
-});
-
-//filter course by everything
+//filter and search course by everything
 router.get('/filter', verifyAllUsersCorp ,async function(req, res) {
   try{
-    var results = await filterCourse(req.query, req.reqId)
+    var results = await searchAndFilterCourse(req.query, req.reqId)
     res.status(200).json(results)
   }catch(err){
     res.status(400).json({message: err.message}) 
@@ -133,74 +113,50 @@ router.post('/create', verifyInstructor ,async function(req, res) {
 
 /* Functions */
 
-async function searchCourseInstructor(data, instructorId){
+async function instructorSearchAndFilterCourse(data, instructorId){
   var user = await Instructor.findById(instructorId)
-  var query = ".*"+data.query+".*"
-  const mongoQuery = { $and: [{instructorId: mongoose.Types.ObjectId(instructorId)},{$or: [{subject: {$regex: new RegExp(query, 'i')}}, {title: {$regex: new RegExp(query, 'i')}}]}]}
-  var results = await Course.find(mongoQuery)
-  var allResults = []
-  for(let i=0; i<results.length; i++){
-    var courseObj = JSON.parse(JSON.stringify(results[i]))
-    courseObj.price = await forex(courseObj.price, user?.country)
-    courseObj.currency = getCode(user?.country)
-    allResults.push(courseObj)
-  }
-  return allResults
-}
-
-async function searchforcourse(data, reqId){
-  var user = (await Trainee.findById(reqId) || await Corporate.findById(reqId) || await Instructor.findById(reqId))
-  var query = ".*"+data.query+".*"
-  var instructors = await Instructor.find({name: {$regex: new RegExp(query, 'i')}},{_id: 1})
-  var instructorIds = instructors.map((instructor) => instructor._id.toString())
-  const mongoQuery = { $or : [{instructorId: {$in: instructorIds}  },{subject: {$regex: new RegExp(query, 'i')}}, {title: {$regex: new RegExp(query, 'i')}}]}
-  var results = await Course.find(mongoQuery)
-  var allResults = []
-  for(let i=0; i<results.length; i++){
-    var courseObj = JSON.parse(JSON.stringify(results[i]))
-    courseObj.price = await forex(courseObj.price, user?.country)
-    courseObj.currency = getCode(user?.country)
-    allResults.push(courseObj)
-  }
-  return allResults
-}
-
-async function instructorFilterCourse(data, instructorId){
-  var user = await Instructor.findById(instructorId)
-  var {subject, minPrice, maxPrice} = data
+  var {subject, minPrice, maxPrice, data, searchQuery, page} = data
+  var query = ".*"+searchQuery+".*"
+  const search = { $and: [{instructorId: mongoose.Types.ObjectId(instructorId)},{$or: [{subject: {$regex: new RegExp(query, 'i')}}, {title: {$regex: new RegExp(query, 'i')}}]}]}
   var sub = subject||{$regex: ".*"}
   var min = minPrice||0
   var max = maxPrice||10000
-  const mongoQuery = { $and: [{instructorId: mongoose.Types.ObjectId(instructorId)},{subject: sub}, {price: { $gte : min, $lt : max}}]}
-  var results = await Course.find(mongoQuery)
+  const mongoQuery = { $and: [{instructorId: mongoose.Types.ObjectId(instructorId)},{subject: sub}, {price: { $gte : min, $lt : max}}, search]}
+  var results = await Course.paginate(mongoQuery, {page: page, limit: 10})
   var allResults = []
-  for(let i=0; i<results.length; i++){
-    var courseObj = JSON.parse(JSON.stringify(results[i]))
+  for(let i=0; i<results.docs.length; i++){
+    var courseObj = JSON.parse(JSON.stringify(results.docs[i]))
     courseObj.price = await forex(courseObj.price, user?.country)
     courseObj.currency = getCode(user?.country)
     allResults.push(courseObj)
   }
-  return allResults
+  results.docs = allResults
+  return results
 }
 
-async function filterCourse(data, reqId){
+async function searchAndFilterCourse(data, reqId){
   var user = (await Trainee.findById(reqId) || await Corporate.findById(reqId) || await Instructor.findById(reqId))
-  var {subject, minPrice, maxPrice, minRating, maxRating} = data
+  var {subject, minPrice, maxPrice, minRating, maxRating, page, searchQuery} = data
+  var query = ".*"+searchQuery+".*"
+  var instructors = await Instructor.find({name: {$regex: new RegExp(query, 'i')}},{_id: 1})
+  var instructorIds = instructors.map((instructor) => instructor._id.toString())
+  const search = { $or : [{instructorId: {$in: instructorIds}  },{subject: {$regex: new RegExp(query, 'i')}}, {title: {$regex: new RegExp(query, 'i')}}]}
   var sub = subject||{$regex: ".*"}
   var minRate = minRating||0
   var maxRate = maxRating||5
   var min = minPrice||0
   var max = maxPrice||10000
-  const mongoQuery = { $and: [{price: { $gte : min, $lt : max}}, {subject: sub}, {rating: { $gte : minRate, $lte : maxRate}}]}
-  var results = await Course.find(mongoQuery)
+  const mongoQuery = { $and: [{price: { $gte : min, $lt : max}}, {subject: sub}, {rating: { $gte : minRate, $lte : maxRate}}, search]}
+  var results = await Course.paginate(mongoQuery, {page: page, limit: 10})
   var allResults = []
-  for(let i=0; i<results.length; i++){
-    var courseObj = JSON.parse(JSON.stringify(results[i]))
+  for(let i=0; i<results.docs.length; i++){
+    var courseObj = JSON.parse(JSON.stringify(results.docs[i]))
     courseObj.price = await forex(courseObj.price, user?.country)
     courseObj.currency = getCode(user?.country)
     allResults.push(courseObj)
   }
-  return allResults
+  results.docs = allResults
+  return results
 }
 
 async function sortCourse(data){

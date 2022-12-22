@@ -107,7 +107,7 @@ async function getRegistered(req, res) {
   try {
     var regCourses = await StudentCourses.find({ traineeId: req.reqId })
     var courseIds = regCourses?.map((course) => course.courseId.toString());
-    var results = await Course.find({ _id: { $in: courseIds } }).populate({ path: "instructorId", select: { name: 1 } })
+    var results = await Course.paginate({ _id: { $in: courseIds } }, { page: req.query.page, limit: 10, populate: { path: "instructorId", select: { name: 1 } }})
     res.status(200).json(results)
   } catch (err) {
     res.status(400).json({ message: err.message })
@@ -136,9 +136,9 @@ async function addNote(req, res) {
   try{
     const note = new Notes({
       traineeId: req.reqId,
-      videoId: req.query.videoId,
-      timestamp: req.query.timestamp,
-      content: req.query.content
+      videoId: req.body.videoId,
+      timestamp: req.body.timestamp,
+      content: req.body.content
     });
     await note.save();
     res.status(201).json({message: "New Note Added"})
