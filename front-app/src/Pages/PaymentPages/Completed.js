@@ -14,7 +14,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 const theme = createTheme();
 
-export const PaymentDone = ({token}) => {
+export const PaymentDone = ({token, user}) => {
 
     const {session_id, courseId} = useParams()
     React.useEffect(() => {
@@ -31,8 +31,8 @@ export const PaymentDone = ({token}) => {
         <Container component="main" maxWidth="xl">
           <CssBaseline />
           <Typography>Payment Completed</Typography>
-          <Typography>payment done {auth.user.username}</Typography>
-          <CheckCircleIcon sx={{ color: green[500] }} />
+          {/* <Typography>payment done {user.username}</Typography> */}
+          <CheckCircleIcon sx={{ color: "green[500]" }} />
 
           <NavLink to={`/courses/student/single/${courseId}`}>Open Course</NavLink>
         </Container>
