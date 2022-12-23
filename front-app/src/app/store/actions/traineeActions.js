@@ -18,7 +18,7 @@ export const selectCountry = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({ message: err.response.data.message })
+      notification.error({ message: err?.response?.data?.message })
       console.log(err);
       return dispatch({
         type: UPDATE_USER_FAIL,
@@ -40,7 +40,7 @@ export const editProfile = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({ message: err.response.data.message })
+      notification.error({ message: err?.response?.data?.message })
       console.log(err);
       return dispatch({
         type: UPDATE_USER_FAIL,
@@ -57,6 +57,6 @@ export const registerCourse = (data) => (dispatch) =>  {
       return notification.success({ message: "successful registrations " })
     })
     .catch((err) => {
-      return notification.error({ message: err.response.data.message })
+      return notification.error({ message: err?.response?.data?.message })
     });
 };

@@ -13,6 +13,7 @@ const Answer = require("../models/StudentAnswer");
 const Video = require("../models/Video");
 var StudentCourses = require("../models/StudentCourses");
 const { openExercise, getGrade, submitSolution, openCourse, watchVideo, getRegistered,  requestCourse} = require('../controllers/studentController');
+const { getNotes } = require("../controllers/pdfController")
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
@@ -225,16 +226,12 @@ router.get('/downloadCertificate', verifyCorpTrainee, async function (req, res) 
 //download notes as a pdf 
 router.get('/downloadNotes', verifyCorpTrainee, async function (req, res) {
   try {
-    const regCourse = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
-    if (regCourse) {
-      await downloadNotes(req, res, regCourse)
-    } else {
-      res.status(403).json({ message: "You are not registered to this course" })
-    }
+    await getNotes(req,res)
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
 });
+
 //report problem with course
 router.post('/reportProblem', verifyCorpTrainee, async function (req, res) {
   await reportProblem(req,res);

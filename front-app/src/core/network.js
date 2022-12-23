@@ -22,7 +22,8 @@ const getRequest = async (query, params, token, endPoint) => {
     headers: {
       "Accept": "json",
       "x-access-token": token
-    }
+    },
+    responseType : query?.responseType
   });
 };
 

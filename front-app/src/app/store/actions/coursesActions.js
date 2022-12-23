@@ -31,7 +31,7 @@ export const filterCoursesAll = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({ message: err.response.data.message })
+      notification.error({ message: err?.response?.data?.message })
       console.log(err);
       return dispatch({
         type: COURSE_FAIL,
@@ -57,7 +57,7 @@ export const viewCourse = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({ message: err.response.data.message })
+      notification.error({ message: err?.response?.data?.message })
       console.log(err);
       return dispatch({
         type: COURSE_FAIL,
@@ -87,7 +87,7 @@ export const filterCoursesInstructor = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({ message: err.response.data.message })
+      notification.error({ message: err?.response?.data?.message })
       console.log(err);
       return dispatch({
         type: COURSE_FAIL,
@@ -100,7 +100,6 @@ export const getSubjects = (data) => (dispatch) => {
 
   getRequest(undefined, undefined, undefined, endpoints.course.getSubjects)
     .then((response) => {
-      console.log(response)
       const { data } = response;
       return dispatch({
         type: SUBJECT_SUCCESS,
@@ -108,8 +107,7 @@ export const getSubjects = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({ message: err.response.data.message })
-      console.log(err);
+      notification.error({ message: err?.response?.data?.message })
       return dispatch({
         type: COURSE_FAIL,
       });
@@ -132,7 +130,7 @@ export const getRegisteredCourses = ({token, page}) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({ message: err.response.data.message })
+      notification.error({ message: err?.response?.data?.message })
       console.log(err);
       return dispatch({
         type: COURSE_FAIL,
@@ -157,7 +155,7 @@ export const openCourse = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({ message: err.response.data.message })
+      notification.error({ message: err?.response?.data?.message })
       console.log(err);
       return dispatch({
         type: COURSE_FAIL,

@@ -1,21 +1,21 @@
 import * as React from 'react';
-import { Typography, Paper, IconButton, InputBase, Box, Container, Pagination, TextField, Accordion, AccordionSummary, AccordionDetails, Button, Slider, Select, MenuItem, Card, FormHelperText, Grid } from '@mui/material';
+import { Typography, Paper, IconButton, InputBase, Box, Container, Pagination, CircularProgress, Accordion, AccordionSummary, AccordionDetails, Button, Slider, Select, MenuItem, Card, FormHelperText, Grid } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
-import { filterCoursesInstructor, getSubjects } from '../../app/store/actions/coursesActions';
+import { clearCourses, filterCoursesInstructor, getSubjects } from '../../app/store/actions/coursesActions';
 import { CourseCard } from '../../app/components';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import SearchIcon from '@mui/icons-material/Search';
 import { centered_flex_box, main_button } from '../../app/components/Styles';
 
 const theme = createTheme();
 
-export const InstructorCourses = ({ auth, courses, getSubjects, filterCoursesInstructor }) => {
+export const InstructorCourses = ({ auth, courses, getSubjects, filterCoursesInstructor, clearCourses }) => {
 
   const role = auth.token.split(" ")[0];
 
   React.useEffect(() => {
+    clearCourses()
     getSubjects()
   }, [])
 
@@ -63,7 +63,7 @@ export const InstructorCourses = ({ auth, courses, getSubjects, filterCoursesIns
 
   const handlePageChange = (event, value) => {
     setFormData({ ...formData, page: value })
-    filterCoursesInstructor({ token: auth.token, ...formData });
+    filterCoursesInstructor({ token: auth.token, ...formData, page: value });
   }
 
   const handleSearchFilter = (event) => {
@@ -159,16 +159,22 @@ export const InstructorCourses = ({ auth, courses, getSubjects, filterCoursesIns
         )}
         <hr />
         <Box>
-          <Grid container spacing={1}>
-            {courses.results?.docs?.map((course) => {
-              return (
-                <Grid item xs={12}>
-                  <CourseCard course={course} />
-                </Grid>
-              )
-            })}
-          </Grid>
-          <Box sx={{...centered_flex_box, m:1}}>
+          {!courses?.isLoading ? (
+            <Grid container spacing={1}>
+              {courses?.results?.docs?.map((course) => {
+                return (
+                  <Grid item xs={12}>
+                    <CourseCard course={course} />
+                  </Grid>
+                )
+              })}
+            </Grid>
+          ) : (
+            <Box sx={centered_flex_box}>
+              <CircularProgress sx={{ color: "var(--secColor)" }} />
+            </Box>
+          )}
+          <Box sx={{ ...centered_flex_box, m: 1 }}>
             <Pagination count={courses?.results?.pages || 1} page={page} onChange={handlePageChange} />
           </Box>
         </Box>
@@ -182,6 +188,6 @@ const mapStateToProps = (state) => ({
   courses: state?.courses
 });
 
-const mapDispatchToProps = { filterCoursesInstructor, getSubjects };
+const mapDispatchToProps = { filterCoursesInstructor, getSubjects, clearCourses };
 
 export default connect(mapStateToProps, mapDispatchToProps)(InstructorCourses);

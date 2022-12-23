@@ -50,7 +50,7 @@ function RegisteredCourseCard({ token, courseData, isLoading }) {
                     Open Course
                 </Button>
                 <Box sx={{my:1, color:"var(--secColor)"}}>
-                    <LinearProgress sx={{bgcolor: "var(--terColor)", borderRadius: 5, height: 8}} color="inherit" variant="determinate" value={progress} />
+                    <LinearProgress sx={{bgcolor: "var(--terColor2)", borderRadius: 5, height: 8}} color="inherit" variant="determinate" value={progress} />
                 </Box>
             </>)}
         </Card>

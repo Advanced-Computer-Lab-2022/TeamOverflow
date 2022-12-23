@@ -22,7 +22,11 @@ router.get('/', async function(req, res) {
 })
 
 router.get('/allSubj', async function(req, res) {
-  res.status(200).json(subjects)
+  try {
+    res.status(200).json(subjects)
+  } catch (err) {
+    res.status(400).json({message: err.message})
+  }
 })
 
 // View course
@@ -68,7 +72,7 @@ router.get('/viewPrices', verifyAllUsers ,async function(req, res) {
 // Instructor filter and search courses
 router.get('/filter/instructor', verifyInstructor ,async function(req, res) {
   try{
-    var results = await instructorSearchAndFilterCourse(req.query, req.reqId)
+    var results = await instructorSearchAndFilterCourse(req.query, req.user)
     res.status(200).json(results)
   }catch(err){
     res.status(400).json({message: err.message}) 
@@ -113,16 +117,15 @@ router.post('/create', verifyInstructor ,async function(req, res) {
 
 /* Functions */
 
-async function instructorSearchAndFilterCourse(data, instructorId){
-  var user = await Instructor.findById(instructorId)
+async function instructorSearchAndFilterCourse(data, user){
   var {subject, minPrice, maxPrice, data, searchQuery, page} = data
   var query = ".*"+searchQuery+".*"
-  const search = { $and: [{instructorId: mongoose.Types.ObjectId(instructorId)},{$or: [{subject: {$regex: new RegExp(query, 'i')}}, {title: {$regex: new RegExp(query, 'i')}}]}]}
+  const search = { $and: [{instructorId: user._id},{$or: [{subject: {$regex: new RegExp(query, 'i')}}, {title: {$regex: new RegExp(query, 'i')}}]}]}
   var sub = subject||{$regex: ".*"}
   var min = minPrice||0
   var max = maxPrice||10000
-  const mongoQuery = { $and: [{instructorId: mongoose.Types.ObjectId(instructorId)},{subject: sub}, {price: { $gte : min, $lt : max}}, search]}
-  var results = await Course.paginate(mongoQuery, {page: page, limit: 10})
+  const mongoQuery = { $and: [{instructorId: user._id},{subject: sub}, {price: { $gte : min, $lt : max}}, search]}
+  var results = await Course.paginate({mongoQuery}, {page: page, limit: 10})
   var allResults = []
   for(let i=0; i<results.docs.length; i++){
     var courseObj = JSON.parse(JSON.stringify(results.docs[i]))
@@ -147,7 +150,7 @@ async function searchAndFilterCourse(data, reqId){
   var min = minPrice||0
   var max = maxPrice||10000
   const mongoQuery = { $and: [{price: { $gte : min, $lt : max}}, {subject: sub}, {rating: { $gte : minRate, $lte : maxRate}}, search]}
-  var results = await Course.paginate(mongoQuery, {page: page, limit: 10})
+  var results = await Course.paginate({mongoQuery}, {page: page, limit: 10})
   var allResults = []
   for(let i=0; i<results.docs.length; i++){
     var courseObj = JSON.parse(JSON.stringify(results.docs[i]))

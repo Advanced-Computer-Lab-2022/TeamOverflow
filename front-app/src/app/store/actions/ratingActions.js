@@ -18,7 +18,7 @@ export const postRating = (data) => (dispatch) => {
             notification.success({ message: "Rating Posted" })
         })
         .catch((err) => {
-            notification.error({ message: err.response.data.message })
+            notification.error({ message: err?.response?.data?.message })
             console.log(err);
         });
 };
@@ -35,7 +35,7 @@ export const getInstructorRatings = (token) => (dispatch) => {
         });
       })
       .catch((err) => {
-        notification.error({ message: err.response.data.message })
+        notification.error({ message: err?.response?.data?.message })
         console.log(err);
         return dispatch({
           type: RATING_FAIL,
@@ -56,7 +56,7 @@ export const getCoursesRatings = (token) => (dispatch) => {
         });
       })
       .catch((err) => {
-        notification.error({ message: err.response.data.message })
+        notification.error({ message: err?.response?.data?.message })
         console.log(err);
         return dispatch({
           type: RATING_FAIL,

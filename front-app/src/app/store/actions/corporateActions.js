@@ -18,7 +18,7 @@ export const selectCountry = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({message: err.response.data.message})
+      notification.error({message: err?.response?.data?.message})
       console.log(err);
       return dispatch({
         type: UPDATE_USER_FAIL,
