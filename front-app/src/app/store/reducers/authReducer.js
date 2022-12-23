@@ -1,7 +1,8 @@
-import { LOGIN, LOGIN_FAIL, LOGIN_SUCCESS, LOGOUT_SUCCESS, GUEST, UPDATE_USER, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL, CREATE, CREATE_FAIL, CREATE_SUCCESS } from "../actions/types";
+import { WALLET, WALLET_FAIL, WALLET_SUCCESS, LOGIN, LOGIN_FAIL, LOGIN_SUCCESS, LOGOUT_SUCCESS, GUEST, UPDATE_USER, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL, CREATE, CREATE_FAIL, CREATE_SUCCESS } from "../actions/types";
 
 const initialState = {
   user: null,
+  wallet: null,
   token: null,
   isLoading: false,
   isError: false,
@@ -30,7 +31,7 @@ export default function store(state = initialState, action) {
     case GUEST:
       return {
         ...state,
-        user: {type: "Guest User"},
+        user: { type: "Guest User" },
         token: "Guest x",
         isLoading: false,
         isError: false,
@@ -61,30 +62,34 @@ export default function store(state = initialState, action) {
         isLoading: false,
         isError: false
       }
-    case UPDATE_USER_FAIL:
-      return{
+    case WALLET:
+    case CREATE:
+      return {
         ...state,
-        isError: true,
-        isLoading: false
+        isLoading: true,
+        isError: false
       }
-      case CREATE:
-        return{
-          ...state,
-          isLoading: true,
-          isError: false
-        }
-        case CREATE_SUCCESS:
-          return{
-            ...state,
-            isLoading: false,
-            isError: false
-          }
-          case CREATE_FAIL:
-            return{
-              ...state,
-              isLoading: false,
-              isError: true
-            }
+    case WALLET_SUCCESS:
+      return {
+        ...state,
+        wallet: payload,
+        isLoading: false,
+        isError: false
+      }
+    case CREATE_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        isError: false
+      }
+    case UPDATE_USER_FAIL:
+    case WALLET_FAIL:
+    case CREATE_FAIL:
+      return {
+        ...state,
+        isLoading: false,
+        isError: true
+      }
     default:
       return state;
   }

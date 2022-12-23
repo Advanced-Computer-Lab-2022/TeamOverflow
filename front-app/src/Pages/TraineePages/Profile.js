@@ -10,10 +10,10 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { connect } from "react-redux";
 import { useNavigate } from 'react-router-dom';
 import { Box } from '@mui/system';
-
+import { getWallet } from '../../app/store/actions/authActions';
 const theme = createTheme();
 
-export const TraineeProfile = ({ user, getWallet, token }) => {
+export const TraineeProfile = ({ user, wallet, getWallet, token }) => {
 
     const role = token.split(" ")[0];
 
@@ -26,6 +26,10 @@ export const TraineeProfile = ({ user, getWallet, token }) => {
         let path = `/Trainee/editPassword`;
         navigate(path);
     }
+
+    React.useEffect(() => {
+        token && getWallet(token)
+    }, [])
 
     return (
         <ThemeProvider theme={theme}>
@@ -69,7 +73,7 @@ export const TraineeProfile = ({ user, getWallet, token }) => {
                                 <AccountBalanceWalletIcon sx={{ fontSize: 25, marginTop: 0.3 }} />
                                 <Typography color={"var(--secColor)"} fontSize="20px">Wallet:</Typography>
                             </Box>
-                            <Typography color={"#5b5b5b"} fontSize="20px" sx={{ ml: 4 }}>{user?.walletId?.balance} USD</Typography>
+                            <Typography color={"#5b5b5b"} fontSize="20px" sx={{ ml: 4 }}>{wallet?.currency} {wallet?.balance}</Typography>
                         </Box>
                     )}
                 </Box>
@@ -82,8 +86,9 @@ export const TraineeProfile = ({ user, getWallet, token }) => {
 const mapStateToProps = (state) => ({
     user: state?.auth?.user,
     token: state?.auth?.token,
+    wallet: state?.auth?.wallet
 });
 
-const mapDispatchToProps = {};
+const mapDispatchToProps = { getWallet };
 
 export default connect(mapStateToProps, mapDispatchToProps)(TraineeProfile);

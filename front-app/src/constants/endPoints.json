@@ -35,7 +35,8 @@
       "viewCourseRatings":"instructor/viewCourseRatings",
       "editProfile":"instructor/editMinibiographyorEmail",
       "getContract":"instructor/getContract",
-      "respondContract":"instructor/contractResponse"
+      "respondContract":"instructor/contractResponse",
+      "getWallet":"instructor/wallet"
    },
    "corporatetrainee":{
       "setCountry":"corpTrainee/selectCountry",
@@ -60,7 +61,9 @@
       "editProfile": "trainee/edit",
       "registercourse" : "trainee/registerCourse",
       "addNote":"trainee/addNote",
-      "downloadNotes":"trainee/downloadNotes"
+      "downloadNotes":"trainee/downloadNotes",
+      "getWallet":"trainee/wallet",
+      "getPaymentLink":"trainee/checkOut"
    },
    "course":{
       "searchUsers":"course/search/course",

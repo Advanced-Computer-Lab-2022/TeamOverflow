@@ -18,7 +18,7 @@ const { processPayment, getPaymentLink, verifyPayment } = require('../controller
 const Subtitle = require('../models/Subtitle');
 const bcrypt = require('bcrypt');
 const Wallet = require('../models/Wallet');
-const { addAmountOwed } = require('../controllers/walletController');
+const { addAmountOwed, getWallet } = require('../controllers/walletController');
 const { getNotes } = require('../controllers/pdfController');
 
 /* GET trainees listing. */
@@ -56,7 +56,7 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const traineeLogin = req.body
-    await Trainee.findOne({ username: traineeLogin.username }).populate("walletId").then(async (trainee) => {
+    await Trainee.findOne({ username: traineeLogin.username }).then(async (trainee) => {
       if (trainee && await bcrypt.compare(traineeLogin.password, trainee.password)) {
         const payload = trainee.toJSON()
         jwt.sign(
@@ -72,7 +72,7 @@ router.post("/login", async (req, res) => {
         return res.status(400).json({ message: "Invalid username or password" })
       }
     })
-  } catch(err){
+  } catch (err) {
     return res.status(400).json({ message: err.message })
   }
 })
@@ -95,7 +95,7 @@ router.put("/edit", verifyTrainee, async (req, res) => {
       country: req.body.country ? req.body.country : undefined
     }
     console.log(update)
-    var user = await Trainee.findByIdAndUpdate(req.reqId, update, {new: true}).select({password: 0});
+    var user = await Trainee.findByIdAndUpdate(req.reqId, update, { new: true }).select({ password: 0 });
     return res.status(200).json(user)
   } catch (err) {
     return res.status(400).json({ message: "Edit Failed" })
@@ -106,9 +106,9 @@ module.exports = router;
 
 router.get('/checkOut', verifyTrainee, async function (req, res) {
   try {
-    const course = await Course.findById(req.body.courseId)
+    const course = await Course.findById(req.query.courseId)
     const user = await Trainee.findById(req.reqId)
-    const alreadyRegistered = await StudentCourses.findOne({ courseId: req.body.courseId, traineeId: req.reqId })
+    const alreadyRegistered = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
     if (alreadyRegistered) {
       return res.status(400).json({ message: "You are already registered to this course" })
     }
@@ -141,9 +141,10 @@ router.post('/registerCourse', verifyTrainee, async function (req, res) {
       courseId: req.body.courseId,
       completion: completion
     });
+    console.log(itemIds)
     const paymentSession = await verifyPayment(req, res)
     if (paymentSession.payment_status === "paid") {
-      await addAmountOwed(course.instructorId.walletId, paymentSession.amount_subtotal/100, paymentSession.currency.toUpperCase())
+      await addAmountOwed(course.instructorId.walletId, paymentSession.amount_subtotal / 100, paymentSession.currency.toUpperCase())
       const newTraineeCourse = await traineeCourse.save();
       course.$inc("enrolled", 1)
       await course.save()
@@ -263,7 +264,7 @@ router.get('/downloadCertificate', verifyTrainee, async function (req, res) {
 //download notes as a pdf 
 router.get('/downloadNotes', verifyTrainee, async function (req, res) {
   try {
-    await getNotes(req,res)
+    await getNotes(req, res)
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
@@ -276,12 +277,7 @@ router.post('/reportProblem', verifyTrainee, async function (req, res) {
 
 //view the amount available in their wallet from refunded courses
 router.get('/wallet', verifyTrainee, async function (req, res) {
-  try {
-    var result = await Wallet.findOne({id: req.reqId})
-    res.status(200).json(result)
-  } catch (err) {
-    res.status(400).json({ message: err.message })
-  }
+  await getWallet(req, res)
 })
 
 /* Functions */

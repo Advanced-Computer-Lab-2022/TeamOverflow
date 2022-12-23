@@ -107,23 +107,27 @@ async function getRegistered(req, res) {
     var results = await StudentCourses.paginate({ traineeId: req.reqId }, { page: req.query.page, limit: 10, populate: { path: "courseId" } })
     var allResults = []
     for (let i = 0; i < results.docs.length; i++) {
+      var progress = 0
       var reqCourse = results.docs[i].toJSON()
       var completion = reqCourse.completion
-      var keysbyindex = Object.keys(completion);
-      var total = keysbyindex.length;
-      var done = 0;
-      for (let i = 0; i < keysbyindex.length; i++) {
-        if (completion[keysbyindex[i]]) {
-          done++;
+      if (completion) {
+        var keysbyindex = Object.keys(completion);
+        var total = keysbyindex.length;
+        var done = 0;
+        for (let i = 0; i < keysbyindex.length; i++) {
+          if (completion[keysbyindex[i]]) {
+            done++;
+          }
         }
+        progress = (done / total) * 100
       }
-      const progress = (done / total) * 100
       reqCourse.progress = progress
       allResults.push(reqCourse)
     }
-    results.docs=allResults
+    results.docs = allResults
     res.status(200).json(results)
   } catch (err) {
+    console.log(err)
     res.status(400).json({ message: err.message })
   }
 }

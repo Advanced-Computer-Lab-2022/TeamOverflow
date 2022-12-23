@@ -7,14 +7,19 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Typography, Box, Card, Container, CssBaseline, Button, FormHelperText, Select, MenuItem } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
-import { NavLink, useParams } from 'react-router-dom';
+import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { viewCourse } from '../../app/store/actions/coursesActions';
 import moment from "moment";
+import { main_button } from '../../app/components/Styles';
+import { getPaymentLink } from '../../app/store/actions/traineeActions';
 
 const theme = createTheme();
 
-export const CoursePreview = ({ auth, viewCourse, course }) => {
+export const CoursePreview = ({ auth, viewCourse, course, getPaymentLink }) => {
 
+    const role = auth?.token?.split(" ")[0] 
+    const navigate = useNavigate()
+    
     const courseId = useParams().id
     React.useEffect(() => {
         viewCourse({
@@ -22,6 +27,13 @@ export const CoursePreview = ({ auth, viewCourse, course }) => {
             token: auth.token
         })
     }, [])
+
+    const handleEnroll = (event) => {
+        getPaymentLink({
+            courseId: courseId,
+            token: auth?.token
+        })
+    }
 
     return (
         <ThemeProvider theme={theme}>
@@ -43,6 +55,8 @@ export const CoursePreview = ({ auth, viewCourse, course }) => {
                 }
                 <Typography>Total Hours: {course?.totalHours}</Typography>
                 <Typography>Rating: {course?.rating}</Typography>
+                {role === "Trainee" && <Button onClick={handleEnroll} sx={main_button}>Enroll in Course</Button>}
+                {role === "Corporate" && <Button sx={main_button}>Request access to Course</Button>}
                 <hr />
                 <Typography>Subtitles</Typography>
                 <hr />
@@ -65,6 +79,6 @@ const mapStateToProps = (state) => ({
     course: state?.courses?.single
 });
 
-const mapDispatchToProps = { viewCourse };
+const mapDispatchToProps = { viewCourse, getPaymentLink };
 
 export default connect(mapStateToProps, mapDispatchToProps)(CoursePreview);
