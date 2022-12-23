@@ -56,7 +56,8 @@
       "watchVideo":"trainee/watchVideo",
       "register": "trainee/signup",
       "editProfile": "trainee/edit",
-      "registercourse" : "trainee/registerCourse"
+      "registercourse" : "trainee/registerCourse",
+      "addNote":"trainee/addNote"
    },
    "course":{
       "searchUsers":"course/search/course",
