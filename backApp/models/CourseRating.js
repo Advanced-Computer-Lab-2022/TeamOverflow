@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const paginate = require("mongoose-paginate")
 
 var courseRateSchema = new mongoose.Schema({
     rating: {type: Number, required: true},
@@ -8,6 +7,5 @@ var courseRateSchema = new mongoose.Schema({
     userId: {type: mongoose.Types.ObjectId, required: true},
 }, {timestamps: true})
 
-courseRateSchema.plugin(paginate)
 var CourseRating = mongoose.model("CourseRating",courseRateSchema);
 module.exports = CourseRating

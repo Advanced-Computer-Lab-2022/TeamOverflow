@@ -18,7 +18,7 @@ import { useNavigate } from 'react-router-dom';
 function MenuAppBar({ auth, logout }) {
     const navigate = useNavigate()
     const [anchorEl, setAnchorEl] = React.useState(null);
-
+    
     var token = auth.token || '';
     var header = token.split(' ')
     var role = header[0]
@@ -50,19 +50,14 @@ function MenuAppBar({ auth, logout }) {
         setAnchorEl(null);
         navigate("/");
     };
-    const routeChange = () => {
-        setAnchorEl(null);
-        let path = "/" + role + "/profile";
+    const routeChange = () =>{ 
+        let path = "/"+role+"/profile"; 
         navigate(path);
-    };
-    const routeLogin = () => {
-        setAnchorEl(null);
-        logout();
-    }
+      }
 
 
     return (
-        <Box sx={{ flexGrow: 1, marginBottom: 2, bgColor: "var(--primaryColor)", color: "var(--secColor)" }}>
+        <Box sx={{ flexGrow: 1, marginBottom: 2, bgColor:"var(--primaryColor)", color:"var(--secColor)" }}>
             {auth.user && (
                 <AppBar position="static" color='inherit'>
                     <Toolbar>
@@ -76,34 +71,28 @@ function MenuAppBar({ auth, logout }) {
                         >
                             <MenuIcon />
                         </IconButton>
-                        {role !== "Guest" && (
-                            <Menu
-                                id="menu-appbar"
-                                anchorEl={anchorEl}
-                                keepMounted
-                                open={Boolean(anchorEl)}
-                                onClose={handleClose}
-                            >
-
-                                <MenuItem onClick={handleHome}>Home</MenuItem>
-                                <MenuItem onClick={handleMyCourses}>My Courses</MenuItem>
-                                <MenuItem onClick={handleAllCourses}>Courses Menu</MenuItem>
-                                <MenuItem onClick={handleLogout}>Logout</MenuItem>
-
-                            </Menu>
-                        )}
+                        <Menu
+                            id="menu-appbar"
+                            anchorEl={anchorEl}
+                            keepMounted
+                            open={Boolean(anchorEl)}
+                            onClose={handleClose}
+                        >
+                            <MenuItem onClick={handleHome}>Home</MenuItem>
+                            <MenuItem onClick={handleMyCourses}>My Courses</MenuItem>
+                            <MenuItem onClick={handleAllCourses}>Courses Menu</MenuItem>
+                            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                        </Menu>
                         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                             CanCham Online Learning System
                         </Typography>
 
+                        
+                        <AccountCircle onClick={routeChange} sx={{cursor:'pointer'}}/>
+                        <Typography marginLeft={"5px"} onClick={routeChange} sx={{cursor:'pointer'}}>{auth.user.username}</Typography>
 
-                        {role !== "Guest" ? (<>
-                            <AccountCircle onClick={routeChange} sx={{ cursor: 'pointer' }} />
-                            <Typography marginLeft={"5px"} onClick={routeChange} sx={{ cursor: 'pointer' }}>{auth.user.username}</Typography>
-                        </>) : (<>
-                            <AccountCircle onClick={routeLogin} sx={{ cursor: 'pointer' }} />
-                            <Typography marginLeft={"5px"} onClick={routeChange} sx={{ cursor: 'pointer' }}>Login</Typography>
-                        </>)}
+                        
+
                     </Toolbar>
                 </AppBar>
             )}

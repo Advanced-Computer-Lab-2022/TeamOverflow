@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { Typography, Paper, IconButton, InputBase, Box, Container, Pagination, TextField, Accordion, AccordionSummary, AccordionDetails, Button, Slider, Select, MenuItem, Card, FormHelperText, Grid } from '@mui/material';
+import { Typography, Paper, IconButton, InputBase, Box, Container, Drawer, TextField, Accordion, AccordionSummary, AccordionDetails, Button, Slider, Select, MenuItem, Card, FormHelperText, Grid } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
-import { clearCourses, filterCoursesAll, getSubjects } from '../../app/store/actions/coursesActions';
+import { searchCoursesUsers, viewTitles, viewCourse, viewPrices, filterCoursesAll, getSubjects } from '../../app/store/actions/coursesActions';
 import { CourseCard } from '../../app/components';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import FilterListIcon from '@mui/icons-material/FilterList';
@@ -11,23 +11,30 @@ import { centered_flex_box, main_button } from '../../app/components/Styles';
 
 const theme = createTheme();
 
-export const AllCourses = ({ auth, courses, getSubjects, filterCoursesAll, clearCourses }) => {
+export const AllCourses = ({ auth, courses, getSubjects, searchCoursesUsers, filterCoursesAll }) => {
 
   const role = auth.token.split(" ")[0];
 
   React.useEffect(() => {
     getSubjects()
-    clearCourses()
   }, [])
+
+  const handleSearch = (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    var details = {
+      searchQuery: data.get('search'),
+      token: auth.token
+    }
+    searchCoursesUsers(details);
+  };
 
   const [formData, setFormData] = React.useState({
     minPrice: 0,
     maxPrice: 5000,
     minRating: 0,
     maxRating: 5,
-    subject: "",
-    searchQuery: "",
-    page: parseInt(courses?.results?.page) || 1
+    subject: ""
   })
 
   const handleClearFilter = (event) => {
@@ -36,13 +43,11 @@ export const AllCourses = ({ auth, courses, getSubjects, filterCoursesAll, clear
       maxPrice: 5000,
       minRating: 0,
       maxRating: 5,
-      subject: "",
-      searchQuery: "",
-      page: 1
+      subject: ""
     })
   }
 
-  const { minPrice, maxPrice, minRating, maxRating, searchQuery, page, subject } = formData
+  const { minPrice, maxPrice, minRating, maxRating, subject } = formData
 
   const [drawerOpen, setDrawerOpen] = React.useState(false)
 
@@ -58,16 +63,7 @@ export const AllCourses = ({ auth, courses, getSubjects, filterCoursesAll, clear
     setFormData({ ...formData, subject: event.target.value })
   }
 
-  const handleQueryChange = (event) => {
-    setFormData({ ...formData, searchQuery: event.target.value })
-  }
-
-  const handlePageChange = (event, value) => {
-    setFormData({ ...formData, page: value })
-    filterCoursesAll({ token: auth.token, ...formData });
-  }
-
-  const handleSearchFilter = (event) => {
+  const handleFilter = (event) => {
     filterCoursesAll({ token: auth.token, ...formData });
   }
 
@@ -79,6 +75,8 @@ export const AllCourses = ({ auth, courses, getSubjects, filterCoursesAll, clear
         </Box>
         <Box sx={centered_flex_box}>
           <Paper
+            component="form"
+            onSubmit={handleSearch}
             sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: "50%" }}
           >
             <IconButton sx={{ p: '10px' }} aria-label="menu" type="button" onClick={() => setDrawerOpen(!drawerOpen)}>
@@ -89,10 +87,8 @@ export const AllCourses = ({ auth, courses, getSubjects, filterCoursesAll, clear
               placeholder="Search For Courses"
               name="search"
               id="search"
-              value={searchQuery}
-              onChange={handleQueryChange}
             />
-            <IconButton sx={{ p: '10px' }} aria-label="search" onClick={handleSearchFilter}>
+            <IconButton sx={{ p: '10px' }} aria-label="search" type="submit">
               <SearchIcon />
             </IconButton>
           </Paper>
@@ -151,7 +147,7 @@ export const AllCourses = ({ auth, courses, getSubjects, filterCoursesAll, clear
                     })}
                   </Select>
                   <FormHelperText>Select subject to filter</FormHelperText>
-                  <Button sx={{ ...main_button, margin: 1 }} onClick={handleSearchFilter}>Apply Filters</Button>
+                  <Button sx={{ ...main_button, margin: 1 }} onClick={handleFilter}>Apply Filters</Button>
                   <Button sx={{ ...main_button, margin: 1 }} onClick={handleClearFilter}>Clear Filters</Button>
                 </AccordionDetails>
               </Accordion>
@@ -161,7 +157,7 @@ export const AllCourses = ({ auth, courses, getSubjects, filterCoursesAll, clear
         <hr />
         <Box>
           <Grid container spacing={1}>
-            {courses.results?.docs?.map((course) => {
+            {courses.results?.map((course) => {
               return (
                 <Grid item xs={12}>
                   <CourseCard course={course} />
@@ -169,9 +165,6 @@ export const AllCourses = ({ auth, courses, getSubjects, filterCoursesAll, clear
               )
             })}
           </Grid>
-          <Box sx={{...centered_flex_box, m:1}}>
-            <Pagination count={courses?.results?.pages || 1} page={page} onChange={handlePageChange} />
-          </Box>
         </Box>
       </Container>
     </ThemeProvider>
@@ -183,6 +176,6 @@ const mapStateToProps = (state) => ({
   courses: state?.courses
 });
 
-const mapDispatchToProps = { filterCoursesAll, getSubjects, clearCourses };
+const mapDispatchToProps = { searchCoursesUsers, viewTitles, viewCourse, viewPrices, filterCoursesAll, getSubjects };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AllCourses);

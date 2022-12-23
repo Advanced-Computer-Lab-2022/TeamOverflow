@@ -44,8 +44,7 @@
       "getGrade":"corpTrainee/viewGrade",
       "getRegisteredCourses":"corpTrainee/getRegisteredCourses",
       "openCourse":"corpTrainee/openCourse",
-      "watchVideo":"corpTrainee/watchVideo",
-      "addNote":"corpTrainee/addNote"
+      "watchVideo":"corpTrainee/watchVideo"
    },
    "trainee": {
       "setCountry":"trainee/selectCountry",

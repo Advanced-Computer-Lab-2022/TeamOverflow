@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Routes, Route } from "react-router-dom";
-import { TraineeProfile ,Register, Terms, Index, AddUsers, AdminHome, AllCourses, TraineeCourses, TraineeHome, InstructorCourses, InstructorHome, CreateCourse, Rate, SingleCourseInstructor, SingleCourse, InstructorVidView, CreateExam, UploadVideo, Discount, RatingList, InstructorProfile, InstructorEditProfile, InstructorContract, StudentVidView, Exam, Result, Forgot, Reset, PaymentDone, EditTraineeProfile, EditInstructorPassword, CoursePreview } from "./Pages";
+import { TraineeProfile ,Register, Terms, Index, AddUsers, AdminHome, AllCourses, TraineeCourses, TraineeHome, InstructorCourses, InstructorHome, CreateCourse, Rate, SingleCourseInstructor, SingleCourse, InstructorVidView, CreateExam, UploadVideo, Discount, RatingList, InstructorProfile, InstructorEditProfile, InstructorContract, StudentVidView, Exam, Result, Forgot, Reset, PaymentDone, EditTraineeProfile, EditInstructorPassword } from "./Pages";
 import { TopBar } from "./app/components";
 import { useLocation } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
@@ -48,7 +48,6 @@ export const Router = () => {
       </Route>
       <Route exact element={<ProtectedRoute allowed={["Corporate", "Trainee", "Guest", "Instructor"]} />}>
         <Route path="/courses" exact element={<AllCourses />} />
-        <Route path="/courses/preview/:id" exact element={<CoursePreview />} />
         <Route path="/course/video/:id" exact element={<InstructorVidView />} />
       </Route>
       <Route exact element={<ProtectedRoute allowed={["Corporate", "Trainee"]} />}>
