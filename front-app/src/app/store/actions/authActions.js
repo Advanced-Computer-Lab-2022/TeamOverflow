@@ -1,4 +1,4 @@
-import { LOGIN, LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT_SUCCESS, GUEST, CREATE, CREATE_FAIL, CREATE_SUCCESS, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL } from "./types";
+import { WALLET, WALLET_SUCCESS, WALLET_FAIL, LOGIN, LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT_SUCCESS, GUEST, CREATE, CREATE_FAIL, CREATE_SUCCESS, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL } from "./types";
 import { getRequest, postRequest, putRequest } from "../../../core/network";
 import endpoints from "../../../constants/endPoints.json";
 import { notification } from "antd";
@@ -24,10 +24,10 @@ export const loadUser = () => async (dispatch, getState) => {
   }
 };
 
-export const createUser = (data) =>  (dispatch) => {
+export const createUser = (data) => (dispatch) => {
 
-  dispatch({ 
-    type:CREATE,
+  dispatch({
+    type: CREATE,
   });
 
   var end;
@@ -43,23 +43,23 @@ export const createUser = (data) =>  (dispatch) => {
     acceptedTerms: data.acceptedTerms
   }
 
-  postRequest(info, undefined,undefined, undefined, end)
-  .then((response) => {
+  postRequest(info, undefined, undefined, undefined, end)
+    .then((response) => {
       console.log(response)
-      notification.success({message: "User has been created."})
+      notification.success({ message: "User has been created." })
       return dispatch({
         type: CREATE_SUCCESS,
       });
     })
     .catch((err) => {
-      notification.error({message: "User already exists."})
+      notification.error({ message: "User already exists." })
       console.log(err);
       return dispatch({
         type: CREATE_FAIL,
       });
     });
 
-  
+
 }
 
 export const logout = () => async (dispatch, getState) => {
@@ -72,7 +72,7 @@ export const logout = () => async (dispatch, getState) => {
 export const LoginUser = (data) => (dispatch) => {
   dispatch({ type: LOGIN });
   var end;
-  switch(data.type) {
+  switch (data.type) {
     case "Instructor": end = endpoints.auth.instructor.login; break;
     case "Admin": end = endpoints.auth.admin.login; break;
     case "Corporate": end = endpoints.auth.corporatetrainee.login; break;
@@ -87,7 +87,7 @@ export const LoginUser = (data) => (dispatch) => {
 
   postRequest(info, undefined, undefined, undefined, end)
     .then((response) => {
-      if(response.data.message === "Success"){
+      if (response.data.message === "Success") {
         notification.success({ message: "Welcome Back" })
       } else {
         notification.error({ message: response.data.message })
@@ -100,7 +100,7 @@ export const LoginUser = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({message: err?.response?.data?.message})
+      notification.error({ message: err?.response?.data?.message })
       console.log(err);
       return dispatch({
         type: LOGIN_FAIL,
@@ -112,11 +112,11 @@ export const forgotPassword = (data) => (dispatch) => {
 
   getRequest(data, undefined, undefined, endpoints.auth.forgot)
     .then((response) => {
-      const {data} = response;
+      const { data } = response;
       notification.success(data)
     })
     .catch((err) => {
-      notification.error({message: err?.response?.data?.message})
+      notification.error({ message: err?.response?.data?.message })
       console.log(err);
     });
 };
@@ -125,22 +125,22 @@ export const resetPassword = (data) => (dispatch) => {
 
   putRequest(data, undefined, undefined, undefined, endpoints.auth.reset)
     .then((response) => {
-      const {data} = response;
+      const { data } = response;
       notification.success(data)
     })
     .catch((err) => {
-      notification.error({message: err?.response?.data?.message})
+      notification.error({ message: err?.response?.data?.message })
       console.log(err);
     });
 };
 
 export const changePassword = (data) => (dispatch) => {
 
-  var{token} = data;
+  var { token } = data;
 
   putRequest(data, undefined, undefined, token, endpoints.auth.change)
     .then((response) => {
-      const {data} = response;
+      const { data } = response;
       notification.success(data)
       return dispatch({
         type: UPDATE_USER_SUCCESS,
@@ -149,10 +149,41 @@ export const changePassword = (data) => (dispatch) => {
 
     })
     .catch((err) => {
-      notification.error({message: err?.response?.data?.message})
+      notification.error({ message: err?.response?.data?.message })
       console.log(err);
       return dispatch({
         type: UPDATE_USER_FAIL,
+      });
+
+    });
+};
+
+export const getWallet = (token) => (dispatch) => {
+
+  dispatch({ type: WALLET })
+
+  const role = token.split(" ")[0];
+  var end;
+  switch (role) {
+    case "Trainee": end = endpoints.trainee.getWallet; break;
+    case "Instructor": end = endpoints.instructor.getWallet; break;
+    default: break;
+  }
+
+  getRequest(undefined, undefined, token, end)
+    .then((response) => {
+      const { data } = response;
+      return dispatch({
+        type: WALLET_SUCCESS,
+        payload: data
+      });
+
+    })
+    .catch((err) => {
+      notification.error({ message: err?.response?.data?.message })
+      console.log(err);
+      return dispatch({
+        type: WALLET_FAIL,
       });
 
     });

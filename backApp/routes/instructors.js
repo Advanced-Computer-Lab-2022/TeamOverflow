@@ -1,4 +1,4 @@
-const {verifyInstructor} = require('../auth/jwt-auth'); 
+const { verifyInstructor } = require('../auth/jwt-auth');
 var express = require('express');
 var router = express.Router();
 var Instructor = require("../models/Instructor");
@@ -13,6 +13,7 @@ const mongoose = require("mongoose");
 const Contract = require('../models/Contract');
 const Wallet = require('../models/Wallet');
 const bcrypt = require("bcrypt");
+const { getWallet } = require('../controllers/walletController');
 
 
 /* GET instructors listing. */
@@ -44,7 +45,7 @@ router.post("/login", async (req, res) => {
 //View contract
 router.get('/getContract', verifyInstructor, async function (req, res) {
   try {
-    var result = await Contract.findOne({instructorId: req.reqId})
+    var result = await Contract.findOne({ instructorId: req.reqId })
     res.status(200).json(result)
   } catch (err) {
     res.status(400).json({ message: err.message })
@@ -55,7 +56,7 @@ router.get('/getContract', verifyInstructor, async function (req, res) {
 //Accept or reject contract
 router.put('/contractResponse', verifyInstructor, async function (req, res) {
   try {
-    var result = await Contract.findByIdAndUpdate(req.body.contractId, { $set: { status: req.body.response} }, { new: true })
+    var result = await Contract.findByIdAndUpdate(req.body.contractId, { $set: { status: req.body.response } }, { new: true })
     res.status(200).json(result)
   } catch (err) {
     res.status(400).json({ message: err.message })
@@ -65,7 +66,7 @@ router.put('/contractResponse', verifyInstructor, async function (req, res) {
 //View wallet
 router.get('/getWallet', verifyInstructor, async function (req, res) {
   try {
-    var result = await Wallet.findOne({id: req.reqId})
+    var result = await Wallet.findOne({ id: req.reqId })
     res.status(200).json(result)
   } catch (err) {
     res.status(400).json({ message: err.message })
@@ -100,12 +101,12 @@ router.put("/editMinibiographyorEmail", verifyInstructor, async (req, res) => {
   try {
     var update = {
       name: req.body.name ? req.body.name : undefined,
-      bio: req.body.bio ? req.body.bio : undefined, 
+      bio: req.body.bio ? req.body.bio : undefined,
       email: req.body.email ? req.body.email : undefined,
       country: req.body.country ? req.body.country : undefined
     }
     console.log(update)
-    var user = await Instructor.findByIdAndUpdate(req.reqId, update, {new: true}).select({password: 0});
+    var user = await Instructor.findByIdAndUpdate(req.reqId, update, { new: true }).select({ password: 0 });
     return res.status(200).json(user)
   } catch (err) {
     return res.status(400).json({ message: "Edit Failed" })
@@ -118,7 +119,7 @@ router.get('/viewCourseRatings', verifyInstructor, async function (req, res) {
   try {
     var courses = await Course.find({ instructorId: req.reqId });
     var courseIds = courses.map((course) => course._id.toString());
-    var results = await CourseRating.find({ courseId: { $in: courseIds } }).populate({path: "courseId", select: {_id: 1, title: 1}}).select(["rating", "review", "courseId"]).sort("courseId")
+    var results = await CourseRating.find({ courseId: { $in: courseIds } }).populate({ path: "courseId", select: { _id: 1, title: 1 } }).select(["rating", "review", "courseId"]).sort("courseId")
     res.status(200).json(results)
   } catch (err) {
     res.status(400).json({ message: err.message })
@@ -157,57 +158,72 @@ router.post('/subtitleVideo', verifyInstructor, async function (req, res) {
   }
 })
 
+//Publish course
+router.post('/publish', verifyInstructor, async function (req, res) {
+  try {
+    var result = await Course.findByIdAndUpdate(req.body.courseId, { $set: { published: true } }, { new: true })
+    res.status(200).json(result)
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+})
+
 // create subtitle exercise
-router.post('/createSubtitleExercise', verifyInstructor ,async function(req, res) {
-  try{
+router.post('/createSubtitleExercise', verifyInstructor, async function (req, res) {
+  try {
     var subtitle = await Subtitle.findById(req.body.subtitleId).populate("courseId")
-    if(mongoose.Types.ObjectId(subtitle.courseId.instructorId).toString() === req.reqId){
+    if (mongoose.Types.ObjectId(subtitle.courseId.instructorId).toString() === req.reqId) {
       const exercise = new Exercise({
         questions: req.body.questions, //Comes in as an array of strings
         choices: req.body.choices, //Comes in as an array of arrays of strings
         marks: req.body.marks, //Comes in as an array of integers
         correctIndecies: req.body.correctIndecies, //Comes in as an array of integers
       })
-      const newExercise =  await exercise.save()
-      subtitle.$set("exerciseId",newExercise._id);
+      const newExercise = await exercise.save()
+      subtitle.$set("exerciseId", newExercise._id);
       await subtitle.save()
       res.status(201).json(newExercise)
     } else {
-      res.status(500).json({message: "You are not the instructor for this course"})
+      res.status(500).json({ message: "You are not the instructor for this course" })
     }
-  }catch(err){
+  } catch (err) {
     console.log(err)
-    res.status(400).json({message: err.message}) 
+    res.status(400).json({ message: err.message })
   }
 });
 
 // create course exam
-router.post('/createCourseExercise', verifyInstructor ,async function(req, res) {
-  try{
-    var course = await Course.findOne({_id: req.body.courseId, instructorId: req.reqId})
-    if(course){
+router.post('/createCourseExercise', verifyInstructor, async function (req, res) {
+  try {
+    var course = await Course.findOne({ _id: req.body.courseId, instructorId: req.reqId })
+    if (course) {
       const exercise = new Exercise({
         questions: req.body.questions, //Comes in as an array of strings
         choices: req.body.choices, //Comes in as an array of arrays of strings
         marks: req.body.marks, //Comes in as an array of integers
         correctIndecies: req.body.correctIndecies, //Comes in as an array of integers
       })
-      const newExercise =  await exercise.save()
-      course.$set("examId",newExercise._id);
+      const newExercise = await exercise.save()
+      course.$set("examId", newExercise._id);
       await course.save()
       res.status(201).json(newExercise)
     } else {
-      res.status(403).json({message: "You are not the instructor for this course"})
+      res.status(403).json({ message: "You are not the instructor for this course" })
     }
-  }catch(err){
+  } catch (err) {
     console.log(err)
-    res.status(400).json({message: err.message}) 
+    res.status(400).json({ message: err.message })
   }
 });
 
+//view the amount available in their wallet from refunded courses
+router.get('/wallet', verifyInstructor, async function (req, res) {
+  await getWallet(req, res);
+})
+
 //report problem with course
 router.post('/reportProblem', verifyInstructor, async function (req, res) {
-  await reportProblem(req,res);
+  await reportProblem(req, res);
 });
 /* Functions */
 

@@ -9,13 +9,14 @@ var courseSchema = new mongoose.Schema({
     discount: {type: Number},
     deadline: {type: Date},
     instructorId: {type: mongoose.Types.ObjectId, ref:"Instructor" ,required: true},
-    rating: {type: Number},
+    rating: {type: Number, default: 0},
     numberOfRatings: {type: Number, default: 0},
     totalHours: {type: Number, required: true},
     certificate: {type: String},
     notes: {type: String},
     videoId: {type: mongoose.Types.ObjectId, ref:"Video"},
     examId: {type: mongoose.Types.ObjectId, ref:"Exercise" },
+    published: {type: Boolean, default: false},
     enrolled: {type: Number, default: 0}
 }, {timestamps: true})
 

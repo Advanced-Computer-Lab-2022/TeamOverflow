@@ -23,10 +23,15 @@ export const CLEAR_COURSES = "CLEAR_COURSES";
 //Guest Dispatch
 export const GUEST = "GUEST";
 
-//Update USer
+//Update User
 export const UPDATE_USER_SUCCESS = "UPDATE_USER_SUCCESS";
 export const UPDATE_USER_FAIL = "UPDATE_USER_FAIL";
 export const UPDATE_USER = "UPDATE_USER";
+
+//Wallet
+export const WALLET_SUCCESS = "WALLET_SUCCESS";
+export const WALLET_FAIL = "WALLET_FAIL";
+export const WALLET = "WALLET";
 
 //Videos
 export const VIDEO_SUCCESS = "VIDEO_SUCCESS";

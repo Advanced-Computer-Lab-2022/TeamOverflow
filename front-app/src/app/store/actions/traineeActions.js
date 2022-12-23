@@ -1,5 +1,5 @@
 import { UPDATE_USER, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL } from "./types";
-import { postRequest, putRequest } from "../../../core/network";
+import { getRequest, postRequest, putRequest } from "../../../core/network";
 import endpoints from "../../../constants/endPoints.json";
 import { notification } from "antd";
 
@@ -48,13 +48,26 @@ export const editProfile = (data) => (dispatch) => {
     });
 };
 
-export const registerCourse = (data) => (dispatch) =>  {
+export const getPaymentLink = (data) => (dispatch) => {
+  var { courseId, token } = data
+
+  getRequest({ courseId: courseId }, undefined, token, endpoints.trainee.getPaymentLink)
+    .then((response) => {
+      const { data } = response;
+      window.open(data.paymentUrl)
+    })
+    .catch((err) => {
+      notification.error({ message: err?.response?.data?.message })
+    });
+};
+
+export const registerCourse = (data) => (dispatch) => {
   var { courseData, token } = data
 
   postRequest(courseData, undefined, undefined, token, endpoints.trainee.registercourse)
     .then((response) => {
       const { data } = response;
-      return notification.success({ message: "successful registrations " })
+      return notification.success({ message: "successful registration " })
     })
     .catch((err) => {
       return notification.error({ message: err?.response?.data?.message })
