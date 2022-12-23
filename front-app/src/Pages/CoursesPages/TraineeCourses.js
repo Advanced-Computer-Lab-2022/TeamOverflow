@@ -1,56 +1,58 @@
 import * as React from 'react';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import { Box, Container, CssBaseline, Rating, FormHelperText, Select, MenuItem } from '@mui/material';
+import { Typography, Paper, IconButton, InputBase, Box, Container, Pagination, TextField, Accordion, AccordionSummary, AccordionDetails, Button, Slider, Select, MenuItem, Card, FormHelperText, Grid, CircularProgress } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { NavLink } from "react-router-dom";
 import { connect } from "react-redux";
 import { getRegisteredCourses } from '../../app/store/actions/coursesActions';
+import { RegisteredCourseCard } from '../../app/components';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import SearchIcon from '@mui/icons-material/Search';
+import { centered_flex_box, main_button } from '../../app/components/Styles';
 
 const theme = createTheme();
-export const TraineeCoursesList = ({ auth, courses, getRegisteredCourses }) => {
+
+export const TraineeRegisteredCourses = ({ auth, courses, getRegisteredCourses }) => {
+
+    const role = auth?.token?.split(" ")[0];
+
+    const [page, setPage] = React.useState(parseInt(courses?.results?.page) || 1)
 
     React.useEffect(() => {
-        getRegisteredCourses(auth?.token)
+        getRegisteredCourses({ token: auth?.token, page });
     }, [])
+
+    const handlePageChange = (event, value) => {
+        setPage(value)
+        getRegisteredCourses({ token: auth?.token, page });
+    }
 
     return (
         <ThemeProvider theme={theme}>
             <Container component="main" maxWidth="xl">
-                <CssBaseline />
-                <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell align="center">Course</TableCell>
-                                <TableCell align="center">Rating</TableCell>
-                                <TableCell align="center">Instructor</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {courses?.map((row) => (
-                                <TableRow
-                                    key={row._id}
-                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                >
-                                    <TableCell align="center"><NavLink to={`/courses/student/single/${row._id}`}>{row.title}</NavLink></TableCell>
-                                    <TableCell align="center">
-                                        <Rating
-                                            fullWidth
-                                            value={row.rating}
-                                            readOnly
-                                        /></TableCell>
-                                    <TableCell align="center"><NavLink to={`/Rate/instructorId=${row.instructorId._id}`}>{row.instructorId.name}</NavLink></TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                <Box sx={{ ...centered_flex_box, marginY: 2 }}>
+                    <Typography variant="h3">Your Registered Courses</Typography>
+                </Box>
+                <hr />
+                <Box>
+                    {!courses?.isLoading ? (
+                        <Grid container spacing={1}>
+                            {courses?.results?.docs?.map((courseData) => {
+                                return (
+                                    <Grid item xs={12}>
+                                        <RegisteredCourseCard courseData={courseData} />
+                                    </Grid>
+                                )
+                            })}
+                        </Grid>
+                    ) : (
+                        <Box sx={centered_flex_box}>
+                            <CircularProgress sx={{ color: "var(--secColor)" }} />
+                        </Box>
+                    )}
+                    <Box sx={{ ...centered_flex_box, m: 1 }}>
+                        <Pagination count={courses?.results?.pages || 1} page={page} onChange={handlePageChange} />
+                    </Box>
+                </Box>
             </Container>
         </ThemeProvider>
     );
@@ -58,9 +60,9 @@ export const TraineeCoursesList = ({ auth, courses, getRegisteredCourses }) => {
 
 const mapStateToProps = (state) => ({
     auth: state?.auth,
-    courses: state?.courses?.results
+    courses: state?.courses
 });
 
-const mapDispatchToProps = {getRegisteredCourses};
+const mapDispatchToProps = { getRegisteredCourses };
 
-export default connect(mapStateToProps, mapDispatchToProps)(TraineeCoursesList);
+export default connect(mapStateToProps, mapDispatchToProps)(TraineeRegisteredCourses);

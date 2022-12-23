@@ -165,7 +165,7 @@ const Register = ({createUser}) => {
             })}
             </Select>
             
-            <NavLink to="/terms"> Please Read Terms and Conditions</NavLink>
+            <NavLink to="/terms" replace={false}> Please Read Terms and Conditions</NavLink>
             <Checkbox
                 required
                 sx={{ mt: 1, mb: 1}}

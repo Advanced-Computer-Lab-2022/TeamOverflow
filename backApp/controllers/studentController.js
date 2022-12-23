@@ -11,7 +11,7 @@ const Exercise = require("../models/Exercise");
 const Answer = require("../models/StudentAnswer");
 const Video = require("../models/Video");
 const StudentCourses = require("../models/StudentCourses");
-const {forex} = require('../controllers/currencyController');
+const { forex } = require('../controllers/currencyController');
 const Trainee = require('../models/Trainee');
 const Requests = require('../models/Requests');
 const Notes = require('../models/Notes');
@@ -36,7 +36,6 @@ async function getProgress(req, res, regCourse) {
         done++;
       }
     }
-    console.log(total)
     const progress = (done / total) * 100
     res.status(200).json({ progress: progress.toFixed(2), completion: completion })
   } catch (err) {
@@ -105,16 +104,31 @@ async function watchVideo(req, res, regCourse) {
 
 async function getRegistered(req, res) {
   try {
-    var regCourses = await StudentCourses.find({ traineeId: req.reqId })
-    var courseIds = regCourses?.map((course) => course.courseId.toString());
-    var results = await Course.find({ _id: { $in: courseIds } }).populate({ path: "instructorId", select: { name: 1 } })
+    var results = await StudentCourses.paginate({ traineeId: req.reqId }, { page: req.query.page, limit: 10, populate: { path: "courseId" } })
+    var allResults = []
+    for (let i = 0; i < results.docs.length; i++) {
+      var reqCourse = results.docs[i].toJSON()
+      var completion = reqCourse.completion
+      var keysbyindex = Object.keys(completion);
+      var total = keysbyindex.length;
+      var done = 0;
+      for (let i = 0; i < keysbyindex.length; i++) {
+        if (completion[keysbyindex[i]]) {
+          done++;
+        }
+      }
+      const progress = (done / total) * 100
+      reqCourse.progress = progress
+      allResults.push(reqCourse)
+    }
+    results.docs=allResults
     res.status(200).json(results)
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
 }
 
-async function requestCourse(req, res){
+async function requestCourse(req, res) {
   try {
     const regCourse = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
     if (!regCourse) {
@@ -123,7 +137,7 @@ async function requestCourse(req, res){
         courseId: req.query.courseId,
       });
       await request.save();
-      return res.status(200).json({message: "Request Made"})
+      return res.status(200).json({ message: "Request Made" })
     } else {
       res.status(403).json({ message: "You are already registered to this course" })
     }
@@ -133,16 +147,16 @@ async function requestCourse(req, res){
 }
 
 async function addNote(req, res) {
-  try{
+  try {
     const note = new Notes({
       traineeId: req.reqId,
-      videoId: req.query.videoId,
-      timestamp: req.query.timestamp,
-      content: req.query.content
+      videoId: req.body.videoId,
+      timestamp: req.body.timestamp,
+      content: req.body.content
     });
     await note.save();
-    res.status(201).json({message: "New Note Added"})
-  } catch(err) {
+    res.status(201).json({ message: "New Note Added" })
+  } catch (err) {
     res.status(400).json({ message: err.message })
   }
 }

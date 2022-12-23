@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+var paginate = require("mongoose-paginate");
 
 var courseSchema = new mongoose.Schema({
     title: {type: String, required: true},
@@ -18,5 +19,6 @@ var courseSchema = new mongoose.Schema({
     enrolled: {type: Number, default: 0}
 }, {timestamps: true})
 
+courseSchema.plugin(paginate);
 var Course = mongoose.model("Course",courseSchema);
 module.exports = Course

@@ -68,3 +68,26 @@ export const getRegVideo = (data) => (dispatch) => {
       });
     });
 };
+
+export const addNote = (data) => (dispatch) => {
+  var { creation, token } = data
+  const role = token.split(" ")[0]
+  var end;
+
+  switch(role){
+    case "Corporate": end = endpoints.corporatetrainee.addNote; break;
+    case "Trainee": end = endpoints.trainee.addNote; break;
+    default: break;
+  }
+
+  postRequest(creation, undefined, undefined, token, end)
+    .then((response) => {
+      console.log(response)
+      notification.success({ message: "Note Added" })
+    })
+    .catch((err) => {
+      notification.error({ message: err.message })
+      console.log(err);
+    });
+};
+

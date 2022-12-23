@@ -1,141 +1,175 @@
 import * as React from 'react';
-import { Typography, Box, Container, TextField, CssBaseline, Button, Slider, Select, MenuItem ,FormHelperText, Card } from '@mui/material';
+import { Typography, Paper, IconButton, InputBase, Box, Container, Pagination, TextField, Accordion, AccordionSummary, AccordionDetails, Button, Slider, Select, MenuItem, Card, FormHelperText, Grid } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
-import { viewTitlesInstructor, viewCourse, searchCoursesInstructor, filterCoursesInstructor, getSubjects } from '../../app/store/actions/coursesActions';
-import { useNavigate } from 'react-router-dom';
+import { filterCoursesInstructor, getSubjects } from '../../app/store/actions/coursesActions';
+import { CourseCard } from '../../app/components';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import SearchIcon from '@mui/icons-material/Search';
+import { centered_flex_box, main_button } from '../../app/components/Styles';
 
 const theme = createTheme();
 
-export const InstructorCourses = ({ auth, getSubjects ,courses, viewTitlesInstructor, viewCourse, searchCoursesInstructor, filterCoursesInstructor }) => {
-  const navigate = useNavigate();
+export const InstructorCourses = ({ auth, courses, getSubjects, filterCoursesInstructor }) => {
+
   const role = auth.token.split(" ")[0];
 
   React.useEffect(() => {
     getSubjects()
-  },[])
+  }, [])
 
-  const handleSearch = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    var details = {
-      searchQuery: data.get('search'),
-      token: auth.token
-    }
-    searchCoursesInstructor(details);
-  };
+  const [formData, setFormData] = React.useState({
+    minPrice: 0,
+    maxPrice: 5000,
+    minRating: 0,
+    maxRating: 5,
+    subject: "",
+    searchQuery: "",
+    page: parseInt(courses?.results?.page) || 1
+  })
 
-  const [priceRange, setPriceRange] = React.useState([10, 100])
-  const handlePriceChange = (event) => {
-    setPriceRange(event.target.value)
+  const handleClearFilter = (event) => {
+    setFormData({
+      minPrice: 0,
+      maxPrice: 5000,
+      minRating: 0,
+      maxRating: 5,
+      subject: "",
+      searchQuery: "",
+      page: 1
+    })
   }
 
-  const [subject, setSubject] = React.useState(null)
-  const handleFilter = (event) => {
-    filterCoursesInstructor({ token: auth.token, subject: subject, minPrice: priceRange[0], maxPrice: priceRange[1] });
+  const { minPrice, maxPrice, minRating, maxRating, searchQuery, page, subject } = formData
+
+  const [drawerOpen, setDrawerOpen] = React.useState(false)
+
+  const handlePriceChange = (event) => {
+    setFormData({ ...formData, minPrice: event.target.value[0], maxPrice: event.target.value[1] })
+  }
+
+  const handleRatingChange = (event) => {
+    setFormData({ ...formData, minRating: event.target.value[0], maxRating: event.target.value[1] })
+  }
+
+  const handleSubjectChange = (event) => {
+    setFormData({ ...formData, subject: event.target.value })
+  }
+
+  const handleQueryChange = (event) => {
+    setFormData({ ...formData, searchQuery: event.target.value })
+  }
+
+  const handlePageChange = (event, value) => {
+    setFormData({ ...formData, page: value })
+    filterCoursesInstructor({ token: auth.token, ...formData });
+  }
+
+  const handleSearchFilter = (event) => {
+    filterCoursesInstructor({ token: auth.token, ...formData });
   }
 
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xl">
-        <CssBaseline />
-        <Typography>Your Courses</Typography>
-        <Box>
-          <Button variant="contained" onClick={() => viewTitlesInstructor({ token: auth.token })}>View all my courses</Button>
+        <Box sx={{ ...centered_flex_box, marginY: 2 }}>
+          <Typography variant="h3">Your Courses</Typography>
         </Box>
-        <Box component="form" onSubmit={handleSearch} sx={{ mt: 1 }}>
-          <TextField
-            margin="normal"
-            fullWidth
-            id="search"
-            label="Search for my courses by subject or title"
-            name="search"
-            autoComplete="search"
-            autoFocus
-          />
-
-          <Button
-            type="submit"
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+        <Box sx={centered_flex_box}>
+          <Paper
+            sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: "50%" }}
           >
-            Search
-          </Button>
+            <IconButton sx={{ p: '10px' }} aria-label="menu" type="button" onClick={() => setDrawerOpen(!drawerOpen)}>
+              <FilterListIcon />
+            </IconButton>
+            <InputBase
+              sx={{ ml: 1, flex: 1 }}
+              placeholder="Search For Courses"
+              name="search"
+              id="search"
+              value={searchQuery}
+              onChange={handleQueryChange}
+            />
+            <IconButton sx={{ p: '10px' }} aria-label="search" onClick={handleSearchFilter}>
+              <SearchIcon />
+            </IconButton>
+          </Paper>
         </Box>
+        {drawerOpen && (
+          <Grid container direction="row" display="flex" justifyContent="space-evenly" alignItems="center">
+            <Grid item xs={6} display="flex-row" alignItems="center">
+              <Accordion expanded={drawerOpen}>
+                <AccordionSummary
+                  aria-controls="panel1a-content"
+                  id="panel1a-header"
+                >
+                  <Typography>Filters</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  Rating Filter:
+                  <Slider
+                    step={1}
+                    max={5}
+                    value={[minRating, maxRating]}
+                    aria-label="Rating"
+                    onChange={handleRatingChange}
+                    valueLabelDisplay="auto"
+                  />
+                  {role !== "Corporate" && (
+                    <>
+                      Price Filter (USD):
+                      <Slider
+                        step={10}
+                        max={5000}
+                        value={[minPrice, maxPrice]}
+                        getAriaLabel={() => 'Price range'}
+                        onChange={handlePriceChange}
+                        valueLabelDisplay="auto"
+                      />
+                    </>)}
+                  Subject Filter:
+                  <Select
+                    label="Subject"
+                    id="Subject"
+                    name="subj"
+                    onChange={handleSubjectChange}
+                    value={subject}
+                    defaultValue=""
+                    fullWidth
+                  >
+                    <MenuItem key={-1} value="">
+                      Any
+                    </MenuItem>
+                    {courses?.subjects?.map((subject, i) => {
+                      return (
+                        <MenuItem key={i} value={subject}>
+                          {subject}
+                        </MenuItem>
+                      )
+                    })}
+                  </Select>
+                  <FormHelperText>Select subject to filter</FormHelperText>
+                  <Button sx={{ ...main_button, margin: 1 }} onClick={handleSearchFilter}>Apply Filters</Button>
+                  <Button sx={{ ...main_button, margin: 1 }} onClick={handleClearFilter}>Clear Filters</Button>
+                </AccordionDetails>
+              </Accordion>
+            </Grid>
+          </Grid>
+        )}
         <hr />
         <Box>
-          <Typography>Filters</Typography>
-          Price (USD):
-          <Slider
-            step={10}
-            max={1000}
-            value={priceRange}
-            getAriaLabel={() => 'Price range'}
-            onChange={handlePriceChange}
-            valueLabelDisplay="auto"
-          />
-          <Select
-            label="Subject"
-            id="Subject"
-            name="subj"
-            onChange={(event) => setSubject(event.target.value)}
-            fullWidth
-          >
-            {courses?.subjects?.map((subject, i) => {
+          <Grid container spacing={1}>
+            {courses.results?.docs?.map((course) => {
               return (
-                <MenuItem key={i} value={subject}>
-                  {subject}
-                </MenuItem>
+                <Grid item xs={12}>
+                  <CourseCard course={course} />
+                </Grid>
               )
             })}
-          </Select>
-          <FormHelperText>Select subject to filter</FormHelperText>
-          <Button variant="contained" onClick={handleFilter}>Apply Price/Subject Filter</Button>
-        </Box>
-        <hr />
-        <Box>
-          <Typography>Results</Typography>
-          <Box>
-            {courses.results?.map((course) => {
-              return (
-                <Box className='m-2'>
-                <Card onClick={() =>  navigate(`/courses/instructor/single/${course._id}`) }>
-                    Title: {course.title}
-                    <br />
-                    {course.subject && 
-                    <>
-                    Subject: {course.subject}
-                    <br />
-                    </>}
-                    {course.summary && 
-                    <>
-                    Summary: {course.summary}
-                    <br />
-                    </>}
-                    {course.rating && 
-                    <>
-                    Rating: {course.rating}/5
-                    <br />
-                    </>}
-                    {course.price && 
-                    <>
-                    Price: {course.price}
-                    <br />
-                    </>}
-                    {course.discount && 
-                    <>
-                    Discount: {course.discount}
-                    <br />
-                    </>}
-                    {course.totalHours && 
-                    <>
-                    Total Hours: {course.totalHours}
-                    <br />
-                    </>}
-                  </Card>
-                </Box>
-              )
-            })}
+          </Grid>
+          <Box sx={{...centered_flex_box, m:1}}>
+            <Pagination count={courses?.results?.pages || 1} page={page} onChange={handlePageChange} />
           </Box>
         </Box>
       </Container>
@@ -148,6 +182,6 @@ const mapStateToProps = (state) => ({
   courses: state?.courses
 });
 
-const mapDispatchToProps = { viewTitlesInstructor, getSubjects, viewCourse, searchCoursesInstructor, filterCoursesInstructor };
+const mapDispatchToProps = { filterCoursesInstructor, getSubjects };
 
 export default connect(mapStateToProps, mapDispatchToProps)(InstructorCourses);
