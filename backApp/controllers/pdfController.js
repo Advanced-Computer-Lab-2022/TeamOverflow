@@ -2,6 +2,7 @@
 const PDFDocument = require('pdfkit');
 const fs = require("fs")
 const Notes = require("../models/Notes");
+const Certificate = require("../models/Certificate.js");
 const moment = require("moment");
 
 async function getNotes(req, res) {
@@ -23,4 +24,26 @@ async function getNotes(req, res) {
     doc.end();
 }
 
+
+async function getCertificate(req, res) {
+    const certificate = await (await Certificates.find({ traineeId: req.reqId, courseId: req.query.courseId }, undefined, {sort: "timestamp", populate:"courseId"}))
+    const doc = new PDFDocument({ font: 'Times-Roman' });
+    const filename = `${certificate[0].courseId.title} Certificate`;
+    doc.fontSize(42).text(`Certificate for ${certificate[0].courseId.title}`, { align: 'center' });
+    certificate.map((certificate) => {
+        doc.font("Times-Italic").fontSize(16).text(`${moment().startOf('day').seconds(certificate.timestamp).format('mm:ss')} :-`, { paragraphGap: 2 });
+        doc.font("Times-Roman").fontSize(20).text(certificate.content, { align: "justify", indent: 10, paragraphGap: 8 });
+    })
+    res.append('Access-Control-Expose-Headers', 'Filename, Content-Transfer-Encoding')
+    res.writeHead(201,{
+        'Filename': `${filename}.pdf`,
+        'Content-Type': 'application/pdf',
+        'Content-Transfer-Encoding': 'binary'
+    })
+    doc.pipe(res)
+    doc.end();
+}
+
+
+module.exports = { getCertificate }
 module.exports = { getNotes }

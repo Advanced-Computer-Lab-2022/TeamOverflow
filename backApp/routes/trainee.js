@@ -252,7 +252,7 @@ router.get('/downloadCertificate', verifyTrainee, async function (req, res) {
   try {
     const regCourse = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
     if (regCourse) {
-      await downloadCertificate(req, res, regCourse)
+      await getCertificate(req, res, regCourse)
     } else {
       res.status(403).json({ message: "You are not registered to this course" })
     }
