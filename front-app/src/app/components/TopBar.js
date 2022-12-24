@@ -6,14 +6,18 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import Switch from '@mui/material/Switch';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormGroup from '@mui/material/FormGroup';
+import HomeIcon from '@mui/icons-material/Home';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import AutoStoriesIcon from '@mui/icons-material/AutoStories';
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
+import FlagCircleIcon from '@mui/icons-material/FlagCircle';
+import LogoutIcon from '@mui/icons-material/Logout';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import { connect } from "react-redux";
 import { logout } from '../store/actions/authActions';
 import { useNavigate } from 'react-router-dom';
+import { Tooltip } from '@mui/material';
 
 function MenuAppBar({ auth, logout }) {
     const navigate = useNavigate()
@@ -41,6 +45,11 @@ function MenuAppBar({ auth, logout }) {
         navigate("/courses/student");
     };
 
+    const handleInstructorCourses = () => {
+        setAnchorEl(null);
+        navigate("/courses/instructor");
+    };
+
     const handleAllCourses = () => {
         setAnchorEl(null);
         navigate("/courses");
@@ -50,11 +59,25 @@ function MenuAppBar({ auth, logout }) {
         setAnchorEl(null);
         navigate("/");
     };
-    const routeChange = () => {
+
+    const handleAllReports = () => {
+        setAnchorEl(null);
+        let path = "/reports";
+        navigate(path);
+    };
+
+    const handleReport = () => {
+        setAnchorEl(null);
+        let path = "/reports/add";
+        navigate(path);
+    };
+
+    const handleProfile = () => {
         setAnchorEl(null);
         let path = "/" + role + "/profile";
         navigate(path);
     };
+    
     const routeLogin = () => {
         setAnchorEl(null);
         logout();
@@ -85,29 +108,37 @@ function MenuAppBar({ auth, logout }) {
                                 onClose={handleClose}
                             >
 
-                                <MenuItem onClick={handleHome}>Home</MenuItem>
-                                <MenuItem onClick={handleMyCourses}>My Courses</MenuItem>
-                                <MenuItem onClick={handleAllCourses}>Courses Menu</MenuItem>
-                                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                                <MenuItem onClick={handleHome}><HomeIcon /><Typography marginX={2}>Home</Typography></MenuItem>
+                                <MenuItem onClick={handleProfile}><AccountCircle /><Typography marginX={2}>Profile</Typography></MenuItem>
+                                {(role === "Trainee" || role === "Corporate") && <MenuItem onClick={handleMyCourses}><AutoStoriesIcon /><Typography marginX={2}>My Courses</Typography></MenuItem>}
+                                {role === "Instructor" && <MenuItem onClick={handleInstructorCourses}><AutoStoriesIcon /><Typography marginX={2}>My Courses</Typography></MenuItem>}
+                                <MenuItem onClick={handleAllCourses}><MenuBookIcon /><Typography marginX={2}>Courses Menu</Typography></MenuItem >
+                                <hr />
+                                <Tooltip placement="right" title="View status of your previously reported problems"><MenuItem onClick={handleAllReports}><FlagCircleIcon /><Typography marginX={2}>Reported Problems</Typography></MenuItem ></Tooltip>
+                                <Tooltip placement="right" title="Have an issue? Report it now"><MenuItem onClick={handleReport}><ReportProblemIcon /><Typography marginX={2}>Report a Problem</Typography></MenuItem ></Tooltip>
+                                <hr />
+                                <MenuItem onClick={handleLogout}><LogoutIcon /><Typography marginX={2}>Logout</Typography></MenuItem>
 
-                            </Menu>
+                            </Menu >
                         )}
-                        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                        <Typography onClick={handleHome} variant="h6" component="div" sx={{ flexGrow: 1, cursor: "pointer" }}>
                             CanCham Online Learning System
                         </Typography>
 
 
-                        {role !== "Guest" ? (<>
-                            <AccountCircle onClick={routeChange} sx={{ cursor: 'pointer' }} />
-                            <Typography marginLeft={"5px"} onClick={routeChange} sx={{ cursor: 'pointer' }}>{auth.user.username}</Typography>
-                        </>) : (<>
-                            <AccountCircle onClick={routeLogin} sx={{ cursor: 'pointer' }} />
-                            <Typography marginLeft={"5px"} onClick={routeChange} sx={{ cursor: 'pointer' }}>Login</Typography>
-                        </>)}
-                    </Toolbar>
-                </AppBar>
+                        {
+                            role !== "Guest" ? (<>
+                                <AccountCircle onClick={handleProfile} sx={{ cursor: 'pointer' }} />
+                                <Typography marginLeft={"5px"} onClick={handleProfile} sx={{ cursor: 'pointer' }}>{auth.user.username}</Typography>
+                            </>) : (<>
+                                <AccountCircle onClick={routeLogin} sx={{ cursor: 'pointer' }} />
+                                <Typography marginLeft={"5px"} onClick={routeLogin} sx={{ cursor: 'pointer' }}>Login</Typography>
+                            </>)
+                        }
+                    </Toolbar >
+                </AppBar >
             )}
-        </Box>
+        </Box >
     );
 }
 
