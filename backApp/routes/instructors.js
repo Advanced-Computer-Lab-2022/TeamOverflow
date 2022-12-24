@@ -139,9 +139,16 @@ router.post('/defineDiscount', verifyInstructor, async function (req, res) {
 //Add course preview video
 router.post('/coursePreview', verifyInstructor, async function (req, res) {
   try {
-    var newVid = await Video.create({ title: req.body.title, description: req.body.description, url: req.body.url })
-    var result = await Course.findByIdAndUpdate(req.body.courseId, { $set: { videoId: newVid._id } }, { new: true })
-    res.status(200).json(result)
+    var course = course.findById(req.body.courseId)
+    if (mongoose.Types.ObjectId(course?.instructorId).toString() === req.reqId) {
+      var newVid = await Video.create({ title: req.body.title, description: req.body.description, url: req.body.url })
+      var result = await Course.findByIdAndUpdate(req.body.courseId, { $set: { videoId: newVid._id } }, { new: true })
+      res.status(200).json(result)
+    } else if (course?.published) {
+      res.status(400).json({ message: "Course is already published" })
+    } else {
+      res.status(403).json({ message: "You are not the instructor for this course" })
+    }
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
@@ -150,9 +157,17 @@ router.post('/coursePreview', verifyInstructor, async function (req, res) {
 //Add subtitle video
 router.post('/subtitleVideo', verifyInstructor, async function (req, res) {
   try {
-    var newVid = await Video.create({ title: req.body.title, description: req.body.description, url: req.body.url })
-    var result = await Subtitle.findByIdAndUpdate(req.body.subtitleId, { $set: { videoId: newVid._id } }, { new: true })
-    res.status(200).json(result)
+    var subtitle = Subtitle.findById(req.body.subtitleId).populate("courseId")
+    var course = subtitle.course
+    if (mongoose.Types.ObjectId(course?.instructorId).toString() === req.reqId) {
+      var newVid = await Video.create({ title: req.body.title, description: req.body.description, url: req.body.url })
+      var result = await Subtitle.findByIdAndUpdate(req.body.subtitleId, { $set: { videoId: newVid._id } }, { new: true })
+      res.status(200).json(result)
+    } else if (course?.published) {
+      res.status(400).json({ message: "Course is already published" })
+    } else {
+      res.status(403).json({ message: "You are not the instructor for this course" })
+    }
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
@@ -168,11 +183,22 @@ router.post('/publish', verifyInstructor, async function (req, res) {
   }
 })
 
+//Unpublish a course
+router.post('/close', verifyInstructor, async function (req, res) {
+  try {
+    var result = await Course.findByIdAndUpdate(req.body.courseId, { $set: { published: false } }, { new: true })
+    res.status(200).json(result)
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+})
+
 // create subtitle exercise
 router.post('/createSubtitleExercise', verifyInstructor, async function (req, res) {
   try {
     var subtitle = await Subtitle.findById(req.body.subtitleId).populate("courseId")
-    if (mongoose.Types.ObjectId(subtitle.courseId.instructorId).toString() === req.reqId) {
+    var course = subtitle.courseId
+    if (mongoose.Types.ObjectId(course?.instructorId).toString() === req.reqId) {
       const exercise = new Exercise({
         questions: req.body.questions, //Comes in as an array of strings
         choices: req.body.choices, //Comes in as an array of arrays of strings
@@ -183,8 +209,10 @@ router.post('/createSubtitleExercise', verifyInstructor, async function (req, re
       subtitle.$set("exerciseId", newExercise._id);
       await subtitle.save()
       res.status(201).json(newExercise)
+    } else if (course?.published) {
+      res.status(400).json({ message: "Course is already published" })
     } else {
-      res.status(500).json({ message: "You are not the instructor for this course" })
+      res.status(403).json({ message: "You are not the instructor for this course" })
     }
   } catch (err) {
     console.log(err)
@@ -196,7 +224,7 @@ router.post('/createSubtitleExercise', verifyInstructor, async function (req, re
 router.post('/createCourseExercise', verifyInstructor, async function (req, res) {
   try {
     var course = await Course.findOne({ _id: req.body.courseId, instructorId: req.reqId })
-    if (course) {
+    if (course && !course.published) {
       const exercise = new Exercise({
         questions: req.body.questions, //Comes in as an array of strings
         choices: req.body.choices, //Comes in as an array of arrays of strings
@@ -207,6 +235,8 @@ router.post('/createCourseExercise', verifyInstructor, async function (req, res)
       course.$set("examId", newExercise._id);
       await course.save()
       res.status(201).json(newExercise)
+    } else if (course && course.published) {
+      res.status(400).json({ message: "Course is already published" })
     } else {
       res.status(403).json({ message: "You are not the instructor for this course" })
     }

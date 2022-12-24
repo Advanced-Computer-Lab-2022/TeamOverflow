@@ -2,8 +2,9 @@ const mongoose = require('mongoose');
 const paginate = require("mongoose-paginate");
 
 var RefundSchema = new mongoose.Schema({
-   amount : {type: Number},
-   walletId: {type: mongoose.Types.ObjectId, ref:"Wallet" , required: true}
+   registrationId: {type: mongoose.Types.ObjectId, ref:"StudentCourses" , required: true},
+   traineeId: {type: mongoose.Types.ObjectId, ref:"Trainee" , required: true},
+   instructorId : {type: mongoose.Types.ObjectId, ref:"Instructor" , required: true}
 }, {timestamp: true});
 
 RefundSchema.plugin(paginate)

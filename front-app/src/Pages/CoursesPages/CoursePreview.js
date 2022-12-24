@@ -10,16 +10,17 @@ import { connect } from "react-redux";
 import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { viewCourse } from '../../app/store/actions/coursesActions';
 import moment from "moment";
-import { main_button } from '../../app/components/Styles';
+import { centered_flex_box, main_button } from '../../app/components/Styles';
 import { getPaymentLink } from '../../app/store/actions/traineeActions';
+import ReactPlayer from 'react-player'
 
 const theme = createTheme();
 
 export const CoursePreview = ({ auth, viewCourse, course, getPaymentLink }) => {
 
-    const role = auth?.token?.split(" ")[0] 
+    const role = auth?.token?.split(" ")[0]
     const navigate = useNavigate()
-    
+
     const courseId = useParams().id
     React.useEffect(() => {
         viewCourse({
@@ -45,7 +46,7 @@ export const CoursePreview = ({ auth, viewCourse, course, getPaymentLink }) => {
                 {
                     (course?.deadline && moment().isBefore(course?.deadline)) ? (
                         <>
-                            <Typography>Price: <Typography sx={{textDecoration: "line-through"}}>{course?.currency} {course?.price}</Typography><Typography>{course?.currency} {(course?.price * ((100-course?.discount)/100)).toFixed(2)}</Typography></Typography><br />
+                            <Typography>Price: <Typography sx={{ textDecoration: "line-through" }}>{course?.currency} {course?.price}</Typography><Typography>{course?.currency} {(course?.price * ((100 - course?.discount) / 100)).toFixed(2)}</Typography></Typography><br />
                             <Typography>Discount: {course?.discount}%</Typography>
                             <Typography>Ends {moment(course?.deadline).fromNow()}</Typography>
                         </>
@@ -57,6 +58,13 @@ export const CoursePreview = ({ auth, viewCourse, course, getPaymentLink }) => {
                 <Typography>Rating: {course?.rating}</Typography>
                 {role === "Trainee" && <Button onClick={handleEnroll} sx={main_button}>Enroll in Course</Button>}
                 {role === "Corporate" && <Button sx={main_button}>Request access to Course</Button>}
+                {course?.videoId && (<>
+                    <hr />
+                    <Box controls={true} sx={centered_flex_box}>
+                        <ReactPlayer url={course?.videoId?.url} />
+                    </Box>
+                </>)
+                }
                 <hr />
                 <Typography>Subtitles</Typography>
                 <hr />
