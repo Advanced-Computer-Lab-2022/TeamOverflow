@@ -22,7 +22,12 @@
    "admin":{
       "viewReports":"admin/viewReports",
       "viewFollowups":"admin/viewFollowups",
-      "respondReport":"admin/respondReport"
+      "respondReport":"admin/respondReport",
+      "viewRequests":"admin/viewRequests",
+      "grantAccess":"admin/grantAccess",
+      "viewRefunds":"admin/viewRefunds",
+      "respondRefund":"admin/refundTraniee",
+      "defineDiscount":"admin/defineDiscount"
    },
    "instructor":{
       "setCountry":"instructor/selectCountry",

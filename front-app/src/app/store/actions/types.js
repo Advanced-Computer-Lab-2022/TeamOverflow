@@ -60,3 +60,8 @@ export const REPORTS = "REPORTS";
 export const SINGLE_REPORT_SUCCESS = "SINGLE_REPORT_SUCCESS";
 export const SINGLE_REPORT_FAIL = "SINGLE_REPORT_FAIL";
 export const CLEAR_REPORTS = "CLEAR_REPORTS";
+
+//Requests
+export const REQUESTS_SUCCESS = "REQUESTS_SUCCESS";
+export const REQUESTS_FAIL = "REQUESTS_FAIL";
+export const REQUESTS = "REQUESTS";

@@ -6,6 +6,7 @@ import ratingsReducer from "./ratingsReducer";
 import examReducer from "./examReducer";
 import contractReducer from "./contractReducer";
 import reportsReducer from "./reportsReducer";
+import requestsReducer from "./requestsReducer";
 
 export default combineReducers({
     auth: authReducer,
@@ -15,4 +16,5 @@ export default combineReducers({
     exercise: examReducer,
     contract: contractReducer,
     reports: reportsReducer,
+    requests: requestsReducer
 });

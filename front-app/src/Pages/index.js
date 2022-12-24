@@ -1,5 +1,5 @@
 import Index from "./IndexPage";
-import { Home as AdminHome, AddUsers } from "./AdminPages";
+import { Home as AdminHome, AddUsers, DefineDiscounts } from "./AdminPages";
 import { Home as TraineeHome, TraineeProfile, EditTraineeProfile, EditTraineePassword } from "./TraineePages";
 import { Home as InstructorHome, CreateCourse, SingleCourse as SingleCourseInstructor, CreateExam, UploadVideo, Discount, InstructorProfile, EditProfile as InstructorEditProfile, Contract as InstructorContract, EditInstructorPassword } from "./InstructorPages";
 import { AllCourses, InstructorCourses, TraineeCourses, SingleCourse, CoursePreview } from "./CoursesPages";
@@ -11,4 +11,4 @@ import { PaymentDone } from "./PaymentPages";
 import { Register, Terms } from "./RegisterPage";
 import { ReportedProblems, ReportProblem, Followup, ReportView } from "./ReportingPages";
 
-export { ReportView, Followup, ReportProblem, ReportedProblems, CoursePreview, EditInstructorPassword ,EditTraineePassword, EditTraineeProfile, TraineeProfile, Register, Terms, PaymentDone, Forgot, Reset, Result, Exam, Index, AddUsers, AdminHome, TraineeCourses, AllCourses, TraineeHome, InstructorCourses, InstructorHome, CreateCourse, SingleCourseInstructor, SingleCourse, Rate, RatingList, CreateExam, InstructorVidView, UploadVideo, Discount, InstructorProfile, InstructorEditProfile, InstructorContract, StudentVidView};
+export { DefineDiscounts, ReportView, Followup, ReportProblem, ReportedProblems, CoursePreview, EditInstructorPassword ,EditTraineePassword, EditTraineeProfile, TraineeProfile, Register, Terms, PaymentDone, Forgot, Reset, Result, Exam, Index, AddUsers, AdminHome, TraineeCourses, AllCourses, TraineeHome, InstructorCourses, InstructorHome, CreateCourse, SingleCourseInstructor, SingleCourse, Rate, RatingList, CreateExam, InstructorVidView, UploadVideo, Discount, InstructorProfile, InstructorEditProfile, InstructorContract, StudentVidView};

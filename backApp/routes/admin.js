@@ -135,21 +135,21 @@ router.post('/addTrainee', verifyAdmin, async function (req, res) {
 // a promotion for specific courses, several courses or all courses
 router.post('/defineDiscount', verifyAdmin, async function (req, res) {
   try {
-    const courses = req.body.courses
+    const courses = req.body.courseIds
     for (let i = 0; i < courses.length; i++) {
-      var result = await Course.findByIdAndUpdate(courses[i], { $set: { discount: req.body.discount, deadline: req.body.deadline } }, { new: true })
+      await Course.findByIdAndUpdate(courses[i], { $set: { discount: req.body.discount, deadline: req.body.deadline } })
     }
-    res.status(200).json(result)
+    res.status(200).json({message: `Discount added to ${courses.length} course(s)`})
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
 })
 
 //view course requests from corporate trainees
-router.get('/viewRequest', verifyAdmin, async function (req, res) {
+router.get('/viewRequests', verifyAdmin, async function (req, res) {
   try {
     var results = await Requests.paginate({}, { page: req.query.page, limit: 10, populate: ["courseId", { path: "traineeId", select: { _id: 1, name: 1, email: 1, corporation: 1 } }] })
-    res.status(200).json(results)
+    res.status(200).json({type: "Requests", results: results})
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
@@ -157,7 +157,7 @@ router.get('/viewRequest', verifyAdmin, async function (req, res) {
 });
 
 //grant access for corporate-trainee to a course
-router.post('/registerCourse', verifyAdmin, async function (req, res) {
+router.post('/grantAccess', verifyAdmin, async function (req, res) {
   try {
     var request = await Requests.findById(req.body.requestId)
     if (!(await StudentCourses.findOne({ traineeId: request.traineeId, courseId: request.courseId }))) {
@@ -182,7 +182,8 @@ router.post('/registerCourse', verifyAdmin, async function (req, res) {
       course.$inc("enrolled", 1)
       await course.save()
       await request.delete()
-      res.status(200).json(newTraineeCourse)
+      var results = await Requests.paginate({}, { page: req.query.page, limit: 10, populate: ["courseId", { path: "traineeId", select: { _id: 1, name: 1, email: 1, corporation: 1 } }] })
+      res.status(200).json({type: "Requests", results: results})
     } else {
       res.status(400).json({ message: "Trainee already registered to this course" })
     }
@@ -195,7 +196,7 @@ router.post('/registerCourse', verifyAdmin, async function (req, res) {
 router.get('/viewRefunds', verifyAdmin, async function (req, res) {
   try {
     var results = await Refund.paginate({}, { page: req.query.page, limit: 10, populate: ["registrationId", { path: "instructorId", select: { _id: 1, name: 1, email: 1 } }] })
-    res.status(200).json(results)
+    res.status(200).json({type: "Refunds", results: results})
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
@@ -204,12 +205,13 @@ router.get('/viewRefunds', verifyAdmin, async function (req, res) {
 //refund an amount to a trainee to their wallet
 router.post('/refundTraniee', verifyAdmin, async function (req, res) {
   try {
-    var refund = await Refund.findById(req.query.refundId).populate(["traineeId", "instructorId", "registrationId"])
+    var refund = await Refund.findById(req.body.refundId).populate(["traineeId", "instructorId", "registrationId"])
     if (refund) {
       await transfer(refund.instructorId.walletId, refund.traineeId.walletId, refund.registrationId.amountPaid)
       await StudentCourses.findByIdAndDelete(refund.registrationId._id)
       await refund.delete()
-      res.status(200).json({ message: "Refund fulfilled" })
+      var results = await Refund.paginate({}, { page: req.body.page, limit: 10, populate: ["registrationId", { path: "instructorId", select: { _id: 1, name: 1, email: 1 } }] })
+      res.status(200).json({type: "Refunds", results: results})
     } else {
       res.status(403).json({ message: "Refund request does not exist" })
     }
@@ -235,13 +237,13 @@ router.get('/viewFollowups', verifyAdmin, async function (req, res) {
   try {
     var result = await Report.findById(req.query.reportId)
     var report = result.toJSON()
-    switch(report.userRef) {
-      case "Trainee": report.userId = await Trainee.findById(report.userId, {_id: 1, name:1, email:1}); break;
-      case "CorporateTrainee": report.userId = await CorporateTrainee.findById(report.userId, {_id: 1, name:1, email:1}); break;
-      case "Instructor": report.userId = await Instructor.findById(report.userId, {_id: 1, name:1, email:1}); break;
+    switch (report.userRef) {
+      case "Trainee": report.userId = await Trainee.findById(report.userId, { _id: 1, name: 1, email: 1 }); break;
+      case "CorporateTrainee": report.userId = await CorporateTrainee.findById(report.userId, { _id: 1, name: 1, email: 1 }); break;
+      case "Instructor": report.userId = await Instructor.findById(report.userId, { _id: 1, name: 1, email: 1 }); break;
     }
     var followups = await Followup.find({ reportId: req.query.reportId })
-    res.status(200).json({ report: report, followups: followups})
+    res.status(200).json({ report: report, followups: followups })
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
@@ -250,12 +252,12 @@ router.get('/viewFollowups', verifyAdmin, async function (req, res) {
 //respond to a report
 router.post('/respondReport', verifyAdmin, async function (req, res) {
   try {
-    var result = await Report.findByIdAndUpdate(req.body.reportId, { $set: { status: req.body.status } }, {new: true})
+    var result = await Report.findByIdAndUpdate(req.body.reportId, { $set: { status: req.body.status } }, { new: true })
     var report = result.toJSON()
-    switch(report.userRef) {
-      case "Trainee": report.userId = await Trainee.findById(report.userId, {_id: 1, name:1, email:1}); break;
-      case "CorporateTrainee": report.userId = await CorporateTrainee.findById(report.userId, {_id: 1, name:1, email:1}); break;
-      case "Instructor": report.userId = await Instructor.findById(report.userId, {_id: 1, name:1, email:1}); break;
+    switch (report.userRef) {
+      case "Trainee": report.userId = await Trainee.findById(report.userId, { _id: 1, name: 1, email: 1 }); break;
+      case "CorporateTrainee": report.userId = await CorporateTrainee.findById(report.userId, { _id: 1, name: 1, email: 1 }); break;
+      case "Instructor": report.userId = await Instructor.findById(report.userId, { _id: 1, name: 1, email: 1 }); break;
     }
     res.status(200).json(report)
   } catch (err) {
