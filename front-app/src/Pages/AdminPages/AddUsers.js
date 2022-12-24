@@ -9,11 +9,13 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { addUser } from '../../app/store/actions/adminActions';
 import { MainInput, main_button } from '../../app/components/Styles';
+import { useNavigate } from 'react-router-dom';
 
 const theme = createTheme();
 
 export const AddUsers = ({addUser, auth}) => {
 
+  const navigate = useNavigate()
   const [isCorporate, setIsCorporate] = React.useState(false)
 
   const onUserTypeChange = (event) => {
@@ -34,7 +36,7 @@ export const AddUsers = ({addUser, auth}) => {
       type: data.get('type'),
       token: auth.token
     }
-    addUser(details)
+    addUser(details, navigate)
   };
 
   return (
@@ -49,7 +51,7 @@ export const AddUsers = ({addUser, auth}) => {
             alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+          <Avatar sx={{ m: 1, bgcolor: 'var(--secColor)' }}>
             <AccountCircleIcon />
           </Avatar>
           <Typography component="h1" variant="h5">

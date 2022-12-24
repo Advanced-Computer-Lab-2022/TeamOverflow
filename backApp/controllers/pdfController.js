@@ -1,6 +1,5 @@
 // require dependencies
 const PDFDocument = require('pdfkit');
-const fs = require("fs")
 const Notes = require("../models/Notes");
 const moment = require("moment");
 

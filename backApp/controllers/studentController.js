@@ -91,7 +91,7 @@ async function openCourse(req, res) {
     var subtitles = await Subtitle.find({ courseId: req.query.courseId }).populate(["videoId", { path: "exerciseId", select: { correctIndecies: 0 } }])
     var exerciseIds = [course.examId?._id]
     exerciseIds.push(subtitles.map((subtitle) => subtitle.exerciseId?._id))
-    var solutions = await Answer.find({ exerciseId: { $in: exerciseIds.flat() } })
+    var solutions = await Answer.find({ exerciseId: { $in: exerciseIds.flat() }, traineeId: req.reqId })
     res.status(200).json({ course: courseObj, subtitles: subtitles, examSolutions: solutions })
   } catch (err) {
     res.status(400).json({ message: err.message })
@@ -130,16 +130,19 @@ async function getRegistered(req, res) {
 
 async function requestCourse(req, res) {
   try {
-    const regCourse = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
-    if (!regCourse) {
+    const regCourse = await StudentCourses.findOne({ courseId: req.body.courseId, traineeId: req.reqId })
+    const requested = await Requests.findOne({ courseId: req.body.courseId, traineeId: req.reqId })
+    if (!regCourse && !requested) {
       const request = new Requests({
         traineeId: req.reqId,
-        courseId: req.query.courseId,
+        courseId: req.body.courseId,
       });
       await request.save();
       return res.status(200).json({ message: "Request Made" })
-    } else {
+    } else if (!requested) {
       res.status(403).json({ message: "You are already registered to this course" })
+    } else {
+      res.status(400).json({ message: "You have already requested this course" })
     }
   } catch (err) {
     res.status(400).json({ message: err.message })

@@ -22,6 +22,7 @@ const { addAmountOwed, getWallet } = require('../controllers/walletController');
 const { getNotes } = require('../controllers/pdfController');
 const Refund = require('../models/Refund');
 const { forexBack } = require('../controllers/currencyController');
+const { reportProblem, viewReports, viewOneReport, addFollowup } = require('../controllers/reportController');
 
 /* GET trainees listing. */
 router.get('/', async function (req, res) {
@@ -280,11 +281,6 @@ router.get('/downloadNotes', verifyTrainee, async function (req, res) {
   }
 });
 
-//report problem with course
-router.post('/reportProblem', verifyTrainee, async function (req, res) {
-  await reportProblem(req, res);
-});
-
 //view the amount available in their wallet from refunded courses
 router.get('/wallet', verifyTrainee, async function (req, res) {
   await getWallet(req, res)
@@ -313,6 +309,26 @@ router.post('/refund', verifyTrainee, async function (req, res) {
     res.status(400).json({ message: err.message })
   }
 })
+
+//report a problem
+router.post('/reportProblem', verifyTrainee, async function (req, res) {
+  await reportProblem(req, res);
+});
+
+//view problems
+router.get('/viewReports', verifyTrainee, async function (req, res) {
+  await viewReports(req, res);
+});
+
+//view a problem
+router.get('/viewFollowups', verifyTrainee, async function (req, res) {
+  await viewOneReport(req, res);
+});
+
+//add followup to a problem
+router.post('/addFollowup', verifyTrainee, async function (req, res) {
+  await addFollowup(req, res);
+});
 
 /* Functions */
 

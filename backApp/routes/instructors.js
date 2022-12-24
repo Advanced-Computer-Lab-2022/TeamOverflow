@@ -14,7 +14,7 @@ const Contract = require('../models/Contract');
 const Wallet = require('../models/Wallet');
 const bcrypt = require("bcrypt");
 const { getWallet } = require('../controllers/walletController');
-
+const { reportProblem, viewReports, viewOneReport, addFollowup } = require('../controllers/reportController');
 
 /* GET instructors listing. */
 router.get('/', async function (req, res) {
@@ -193,6 +193,26 @@ router.post('/close', verifyInstructor, async function (req, res) {
   }
 })
 
+//Delete an unpublished course
+router.delete('/course', verifyInstructor, async function (req, res) {
+  try {
+    var result = await Course.findOne({ _id: req.body.courseId, instructorId: req.reqId })
+    if (result && result.enrolled === 0 && !result.published) {
+      await result.delete()
+      res.status(200).json({ message: "Course Deleted" })
+    } else if (result && result.enrolled > 0) {
+      res.status(400).json({ message: "Students are enrolled in this course" })
+    } else if (result && result.published) {
+      res.status(400).json({ message: "Course is already published" })
+    } else {
+      res.status(403).json({ message: "You are not the instructor for this course" })
+    }
+
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+})
+
 // create subtitle exercise
 router.post('/createSubtitleExercise', verifyInstructor, async function (req, res) {
   try {
@@ -251,10 +271,26 @@ router.get('/wallet', verifyInstructor, async function (req, res) {
   await getWallet(req, res);
 })
 
-//report problem with course
+//report a problem
 router.post('/reportProblem', verifyInstructor, async function (req, res) {
   await reportProblem(req, res);
 });
+
+//view problems
+router.get('/viewReports', verifyInstructor, async function (req, res) {
+  await viewReports(req, res);
+});
+
+//view a problem
+router.get('/viewFollowups', verifyInstructor, async function (req, res) {
+  await viewOneReport(req, res);
+});
+
+//add followup to a problem
+router.post('/addFollowup', verifyInstructor, async function (req, res) {
+  await addFollowup(req, res);
+});
+
 /* Functions */
 
 

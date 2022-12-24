@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const CorporateTrainee = require("../models/CorporateTrainee");
 const Instructor = require("../models/Instructor");
 const Trainee = require("../models/Trainee");
+const Admin = require("../models/Admin");
 
 function verifyAdmin (req,res,next) {
     const header = req.headers['x-access-token']?.split(' ')
@@ -9,12 +10,12 @@ function verifyAdmin (req,res,next) {
     const token = header[1]
     if(role == "Admin" && token){
         jwt.verify(token, process.env.PASSPORTSECRET, async (err, decoded) => {
-            console.log(err)
             if(err){
                 return res.json({message: err, isValid: false})
             }
             req.reqId = decoded._id
             req.user = await Admin.findById(decoded._id)
+            req.userRef = "Admin"
             next()
         })
     } else {
@@ -33,6 +34,7 @@ function verifyInstructor (req,res,next) {
             }
             req.reqId = decoded._id
             req.user = await Instructor.findById(decoded._id)
+            req.userRef = "Instructor"
             next()
         })
     } else {
@@ -51,6 +53,7 @@ function verifyTrainee (req,res,next) {
             }
             req.reqId = decoded._id
             req.user = await Trainee.findById(decoded._id)
+            req.userRef = "Trainee"
             next()
         })
     } else {
@@ -69,6 +72,7 @@ function verifyCorpTrainee (req,res,next) {
             }
             req.reqId = decoded._id
             req.user = await CorporateTrainee.findById(decoded._id)
+            req.userRef = "CorporateTrainee"
             next()
         })
     } else {
@@ -116,7 +120,7 @@ function verifyAllUsersCorp (req,res,next) {
     const header = req.headers['x-access-token']?.split(' ')
     const role = header[0]
     const token = header[1]
-    if((role == "Instructor" || role == "Trainee" || role == "Corporate") && token){
+    if((role == "Instructor" || role == "Trainee" || role == "Corporate" || role == "Admin") && token){
         jwt.verify(token, process.env.PASSPORTSECRET, async (err, decoded) => {
             if(err){
                 return res.json({message: "Failed to authenticate", isValid: false})
