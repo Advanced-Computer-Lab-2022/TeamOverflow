@@ -214,7 +214,12 @@ router.get('/downloadCertificate', verifyCorpTrainee, async function (req, res) 
   try {
     const regCourse = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
     if (regCourse) {
-      await downloadCertificate(req, res, regCourse)
+      const progress = calculateProgress(registeredCourse.completion)
+      if(progress === 100){
+        await downloadCertificate(req, res, regCourse)
+      } else {
+        res.status(403).json({ message: "You have not completed this course" })
+      }
     } else {
       res.status(403).json({ message: "You are not registered to this course" })
     }

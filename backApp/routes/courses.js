@@ -29,10 +29,10 @@ router.get('/allSubj', async function(req, res) {
   }
 })
 
-// View course
+// preview course
 router.get('/view', verifyAllUsers ,async function(req, res) {
   try{
-    var result = await findCourseAndSubtitles(req.query.id, req.reqId)
+    var result = await coursePreview(req.query.id, req.reqId)
     res.status(200).json(result)
   }catch(err){
     res.status(400).json({message: err.message}) 
@@ -171,9 +171,9 @@ async function sortCourse(data){
 }
 
 
-async function findCourseAndSubtitles(id, reqId){
+async function coursePreview(id, reqId){
   var user = (await Trainee.findById(reqId) || await Corporate.findById(reqId) || await Instructor.findById(reqId))
-  var course = await Course.findById(id)
+  var course = await Course.findById(id).populate("videoId")
   var subtitles = await Subtitle.find({courseId: id})
   var courseObj = JSON.parse(JSON.stringify(course))
   courseObj.price = await forex(courseObj.price, user?.country)
