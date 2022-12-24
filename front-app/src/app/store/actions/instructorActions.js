@@ -20,7 +20,7 @@ export const selectCountry = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({message: err?.response?.data?.message})
+      notification.error({message: err?.response?.data?.message || "Network Error"})
       console.log(err);
       return dispatch({
         type: UPDATE_USER_FAIL,
@@ -42,7 +42,7 @@ export const editProfile = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({message: err?.response?.data?.message})
+      notification.error({message: err?.response?.data?.message || "Network Error"})
       console.log(err);
       return dispatch({
         type: UPDATE_USER_FAIL,
@@ -50,7 +50,7 @@ export const editProfile = (data) => (dispatch) => {
     });
 };
 
-export const createCourse = (data) => (dispatch) => {
+export const createCourse = (data, navigate) => (dispatch) => {
   dispatch({ type: COURSE });
   var {creation, token} = data
 
@@ -59,13 +59,14 @@ export const createCourse = (data) => (dispatch) => {
       console.log(response)
       const { data } = response;
       notification.success({message: "Course Added"})
+      navigate(-1)
       return dispatch({
         type: COURSE_SUCCESS,
         payload: data.payload
       });
     })
     .catch((err) => {
-      notification.error({message: err?.response?.data?.message})
+      notification.error({message: err?.response?.data?.message || "Network Error"})
       console.log(err);
       return dispatch({
         type: COURSE_FAIL,
@@ -73,7 +74,7 @@ export const createCourse = (data) => (dispatch) => {
     });
 };
 
-export const createExercise = (data) => (dispatch) => {
+export const createExercise = (data, navigate) => (dispatch) => {
   var {creation, token} = data
   var end;
   if(creation.subtitleId){
@@ -83,25 +84,26 @@ export const createExercise = (data) => (dispatch) => {
   }
   postRequest(creation, undefined, undefined, token, end)
     .then((response) => {
-      console.log(response)
       notification.success({message: "Exercise Added"})
+      navigate(-1);
     })
     .catch((err) => {
-      notification.error({message: err?.response?.data?.message})
+      notification.error({message: err?.response?.data?.message || "Network Error"})
       console.log(err);
     });
 };
 
-export const defineDiscount = (data) => (dispatch) => {
+export const defineDiscount = (data, navigate) => (dispatch) => {
   var {creation, token} = data
 
   postRequest(creation, undefined, undefined, token, endpoints.instructor.defineDiscount)
     .then((response) => {
       console.log(response)
       notification.success({message: "Discount Added"})
+      navigate(-1)
     })
     .catch((err) => {
-      notification.error({message: err?.response?.data?.message})
+      notification.error({message: err?.response?.data?.message || "Network Error"})
       console.log(err);
     });
 };
@@ -120,7 +122,7 @@ export const contractResponse = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({message: err?.response?.data?.message})
+      notification.error({message: err?.response?.data?.message || "Network Error"})
       console.log(err);
       return dispatch({
         type: CONTRACT_FAIL,
@@ -140,10 +142,11 @@ export const getContract = (token) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({message: err?.response?.data?.message})
+      notification.error({message: err?.response?.data?.message || "Network Error"})
       console.log(err);
       return dispatch({
         type: CONTRACT_FAIL,
       });
     });
 };
+

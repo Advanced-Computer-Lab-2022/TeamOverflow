@@ -7,13 +7,15 @@ import QuizIcon from '@mui/icons-material/Quiz';
 import { Typography, Radio, RadioGroup, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, FormHelperText, InputLabel, FormControl } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { getExam, submitSolution } from '../../app/store/actions/examActions';
+import { centered_flex_box, left_flex_box, main_button } from '../../app/components/Styles';
 const theme = createTheme();
 
 export const SitExam = ({ token, getExam, submitSolution, exam }) => {
 
-    const {courseId, exerciseId} = useParams()
+    const { courseId, exerciseId } = useParams()
+    const navigate = useNavigate();
 
     React.useEffect(() => {
         getExam({
@@ -23,7 +25,7 @@ export const SitExam = ({ token, getExam, submitSolution, exam }) => {
             },
             token: token
         });
-      }, [])
+    }, [])
 
     const [answers, setAnswers] = React.useState(new Array(exam?.questions?.length));
 
@@ -41,55 +43,56 @@ export const SitExam = ({ token, getExam, submitSolution, exam }) => {
             },
             token: token
         }
-        
-        submitSolution(details);
+
+        submitSolution(details, navigate);
     };
 
     return (
         <ThemeProvider theme={theme}>
-            <Container component="main" maxWidth="xs">
-                <CssBaseline />
+            <Container component="main">
                 <Box
                     sx={{
+                        minWidth: "80%",
                         marginTop: 8,
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                    <Avatar sx={{ m: 1, bgcolor: 'var(--secColor)' }}>
                         <QuizIcon />
                     </Avatar>
-                    <Typography component="h1" variant="h5">
+                    <Typography variant="h3">
                         Solve Exercise
                     </Typography>
-                    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+                    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, flexDirection: 'column', minWidth: "100%", ...centered_flex_box }}>
                         {exam?.questions?.map((question, idx) => {
                             return (
-                                <Box sx={{ mt: 1 }}>
-                                    <Typography>Question {idx + 1}</Typography>
-                                    <Typography>{question}</Typography>
-                                    <FormControl fullWidth>
+                                <Box sx={{ minWidth: "100%", mt: 1 }}>
+                                    <Typography fontWeight="bold">Question {idx + 1}</Typography>
+                                    <Typography fontSize={24}>{question}</Typography>
+                                    <FormControl>
                                         <RadioGroup
                                             onChange={(event) => handleAnswerChange(event.target.value, idx)}
                                             required
                                         >
-                                            {exam.choices[idx]?.map((ans, i) => ans !== null && <FormControlLabel value={i} control={<Radio />}  label={ans} />)}
+                                            {exam.choices[idx]?.map((ans, i) => ans !== null && <FormControlLabel fontSize={20} value={i} control={<Radio />} label={ans} />)}
                                         </RadioGroup>
                                     </FormControl>
-                                    <Typography>Total Mark: {exam?.marks[idx]}</Typography>
+                                    <Typography fontStyle="italic">Total Mark: {exam?.marks[idx]}</Typography>
                                     <hr />
                                 </Box>
                             )
                         })}
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
-                        >
-                            Submit Solution
-                        </Button>
+                        <Box sx={{ minWidth: "100%", ...left_flex_box }}>
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                sx={{ mt: 3, mb: 2, ...main_button }}
+                            >
+                                Submit Solution
+                            </Button>
+                        </Box>
                     </Box>
                 </Box>
 
@@ -104,6 +107,6 @@ const mapStateToProps = (state) => ({
     exam: state?.exercise?.exam
 });
 
-const mapDispatchToProps = {getExam, submitSolution};
+const mapDispatchToProps = { getExam, submitSolution };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SitExam);

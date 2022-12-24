@@ -27,7 +27,6 @@ export const Router = () => {
         <Route path="/Instructor/profile" exact element={<InstructorProfile />} />
         <Route path="/Instructor/edit" exact element={<InstructorEditProfile />} />
         <Route path="/Instructor/editPassword" exact element={<EditInstructorPassword />} />
-
         <Route path="/Instructor/ratings" exact element={<RatingList />} />
         <Route path="/Instructor/contract" exact element={<InstructorContract />} />
         <Route path="/courses/create" exact element={<CreateCourse />} />

@@ -7,14 +7,16 @@ import QuizIcon from '@mui/icons-material/Quiz';
 import { Typography, Radio, RadioGroup, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, FormHelperText, InputLabel, FormControl } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { createExercise } from '../../app/store/actions/instructorActions';
+import { main_button } from '../../app/components/Styles';
 const theme = createTheme();
 
 export const CreateExam = ({ token, createExercise }) => {
 
     const params = useParams().id.split("=");
     const id = params[1];
+    const navigate = useNavigate();
 
     const [subForm, setSubForm] = React.useState([""]);
     const [questions, setQuestions] = React.useState([]);
@@ -77,7 +79,7 @@ export const CreateExam = ({ token, createExercise }) => {
                 token: token
             }
         }
-        createExercise(details);
+        createExercise(details, navigate);
     };
 
     return (
@@ -92,7 +94,7 @@ export const CreateExam = ({ token, createExercise }) => {
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                    <Avatar sx={{ m: 1, bgcolor: 'var(--secColor)' }}>
                         <QuizIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
@@ -196,7 +198,7 @@ export const CreateExam = ({ token, createExercise }) => {
                             type="submit"
                             fullWidth
                             variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
+                            sx={{ mt: 3, mb: 2, ...main_button }}
                         >
                             Create
                         </Button>

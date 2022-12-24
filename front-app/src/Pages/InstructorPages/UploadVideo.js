@@ -5,6 +5,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { uploadVideo } from '../../app/store/actions/videoActions';
 import { useParams } from 'react-router-dom';
+import { MainInput, main_button } from '../../app/components/Styles';
 
 const theme = createTheme();
 
@@ -41,14 +42,14 @@ export const UploadVideo = ({ auth, uploadVideo }) => {
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                    <Avatar sx={{ m: 1, bgcolor: 'var(--secColor)' }}>
                         <OndemandVideoIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
                         Upload Video Link
                     </Typography>
                     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-                        <TextField
+                        <MainInput
                             margin="normal"
                             required
                             fullWidth
@@ -58,7 +59,7 @@ export const UploadVideo = ({ auth, uploadVideo }) => {
                             autoComplete="title"
                             autoFocus
                         />
-                        <TextField
+                        <MainInput
                             margin="normal"
                             required
                             fullWidth
@@ -67,7 +68,7 @@ export const UploadVideo = ({ auth, uploadVideo }) => {
                             type="text"
                             id="description"
                         />
-                        <TextField
+                        <MainInput
                             margin="normal"
                             required
                             fullWidth
@@ -80,7 +81,7 @@ export const UploadVideo = ({ auth, uploadVideo }) => {
                             type="submit"
                             fullWidth
                             variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
+                            sx={{ mt: 3, mb: 2, ...main_button }}
                         >
                             Upload
                         </Button>
