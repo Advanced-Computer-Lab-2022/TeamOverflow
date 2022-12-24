@@ -47,7 +47,8 @@
       "openCourse":"corpTrainee/openCourse",
       "watchVideo":"corpTrainee/watchVideo",
       "addNote":"corpTrainee/addNote",
-      "downloadNotes":"corpTrainee/downloadNotes"
+      "downloadNotes":"corpTrainee/downloadNotes",
+      "requestAccess":"corpTrainee/reqCourse"
    },
    "trainee": {
       "setCountry":"trainee/selectCountry",

@@ -12,10 +12,11 @@ const Exercise = require("../models/Exercise");
 const Answer = require("../models/StudentAnswer");
 const Video = require("../models/Video");
 var StudentCourses = require("../models/StudentCourses");
-const { openExercise, getGrade, submitSolution, openCourse, watchVideo, getRegistered,  requestCourse} = require('../controllers/studentController');
+const { openExercise, getGrade, submitSolution, openCourse, watchVideo, getRegistered, requestCourse } = require('../controllers/studentController');
 const { getNotes } = require("../controllers/pdfController")
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const { reportProblem, viewReports, viewOneReport, addFollowup } = require('../controllers/reportController');
 
 /* GET corporate trainees listing. */
 router.get('/', async function (req, res) {
@@ -51,7 +52,7 @@ router.post('/create', async function (req, res) {
 //Corporate Trainee Login
 router.post("/login", async (req, res) => {
   const traineeLogin = req.body
-  await CorporateTrainee.findOne({ username: traineeLogin.username }).then(async(trainee) => {
+  await CorporateTrainee.findOne({ username: traineeLogin.username }).then(async (trainee) => {
     if (trainee && await bcrypt.compare(traineeLogin.password, trainee.password)) {
       const payload = trainee.toJSON()
       jwt.sign(
@@ -123,11 +124,11 @@ router.post('/rate/course', verifyCorpTrainee, async function (req, res) {
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
-}); 
+});
 
 //submit the answers to the exercise after completing it
 router.post('/submitSolution', verifyCorpTrainee, async function (req, res) {
-  await submitSolution(req,res);
+  await submitSolution(req, res);
 });
 
 //delete student answer
@@ -145,7 +146,7 @@ router.delete('/deleteAnswer', verifyCorpTrainee, async function (req, res) {
 
 //view his/her grade from the exercise
 router.get('/viewGrade', verifyCorpTrainee, async function (req, res) {
-  await getGrade(req,res);
+  await getGrade(req, res);
 });
 
 
@@ -158,14 +159,14 @@ router.get('/viewExercise', verifyCorpTrainee, async function (req, res) {
 
 //watch a video from a course he/she is registered for
 router.get('/watchVideo', verifyCorpTrainee, async function (req, res) {
-  try{
-    if(await StudentCourses.findOne({courseId: req.query.courseId, traineeId: req.reqId})){
+  try {
+    if (await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })) {
       await watchVideo(req, res)
     } else {
-      res.status(403).json({message: "You are not registered to this course"})
+      res.status(403).json({ message: "You are not registered to this course" })
     }
-  } catch(err) {
-    res.status(400).json({message: err.message})
+  } catch (err) {
+    res.status(400).json({ message: err.message })
   }
 });
 
@@ -174,14 +175,14 @@ router.get('/getRegisteredCourses', verifyCorpTrainee, async function (req, res)
 });
 
 router.get('/openCourse', verifyCorpTrainee, async function (req, res) {
-  try{
-    if(await StudentCourses.findOne({courseId: req.query.courseId, traineeId: req.reqId})){
+  try {
+    if (await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })) {
       await openCourse(req, res)
     } else {
-      res.status(403).json({message: "You are not registered to this course"})
+      res.status(403).json({ message: "You are not registered to this course" })
     }
-  } catch(err) {
-    res.status(400).json({message: err.message})
+  } catch (err) {
+    res.status(400).json({ message: err.message })
   }
 });
 
@@ -205,8 +206,8 @@ router.post('/addNote', verifyCorpTrainee, async function (req, res) {
 });
 
 // request access to a specific course they do not have access to
-router.get('/reqCourse', verifyCorpTrainee, async function (req, res) {
-  await  requestCourse(req, res) ;
+router.post('/reqCourse', verifyCorpTrainee, async function (req, res) {
+  await requestCourse(req, res);
 });
 
 //download certificate as a pdf 
@@ -215,7 +216,7 @@ router.get('/downloadCertificate', verifyCorpTrainee, async function (req, res) 
     const regCourse = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
     if (regCourse) {
       const progress = calculateProgress(registeredCourse.completion)
-      if(progress === 100){
+      if (progress === 100) {
         await downloadCertificate(req, res, regCourse)
       } else {
         res.status(403).json({ message: "You have not completed this course" })
@@ -231,16 +232,32 @@ router.get('/downloadCertificate', verifyCorpTrainee, async function (req, res) 
 //download notes as a pdf 
 router.get('/downloadNotes', verifyCorpTrainee, async function (req, res) {
   try {
-    await getNotes(req,res)
+    await getNotes(req, res)
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
 });
 
-//report problem with course
+//report a problem
 router.post('/reportProblem', verifyCorpTrainee, async function (req, res) {
-  await reportProblem(req,res);
+  await reportProblem(req, res);
 });
+
+//view problems
+router.get('/viewReports', verifyCorpTrainee, async function (req, res) {
+  await viewReports(req, res);
+});
+
+//view a problem
+router.get('/viewFollowups', verifyCorpTrainee, async function (req, res) {
+  await viewOneReport(req, res);
+});
+
+//add followup to a problem
+router.post('/addFollowup', verifyCorpTrainee, async function (req, res) {
+  await addFollowup(req, res);
+});
+
 /* Functions */
 
 

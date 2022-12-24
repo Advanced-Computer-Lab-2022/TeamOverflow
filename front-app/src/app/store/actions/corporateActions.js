@@ -25,3 +25,19 @@ export const selectCountry = (data) => (dispatch) => {
       });
     });
 };
+
+export const requestAccess = (data) => (dispatch) => {
+  dispatch({ type: UPDATE_USER });
+  var {courseId, token} = data
+
+  postRequest({courseId: courseId}, undefined, undefined, token, endpoints.corporatetrainee.requestAccess)
+    .then((response) => {
+      console.log(response)
+      const { data } = response;
+      notification.success({message: data.message})
+    })
+    .catch((err) => {
+      notification.error({message: err?.response?.data?.message})
+      console.log(err);
+    });
+};

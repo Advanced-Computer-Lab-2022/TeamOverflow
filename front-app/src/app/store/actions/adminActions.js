@@ -3,7 +3,7 @@ import { postRequest } from "../../../core/network";
 import endpoints from "../../../constants/endPoints.json";
 import { notification } from "antd";
 
-export const addUser = (data) => (dispatch) => {
+export const addUser = (data, navigate) => (dispatch) => {
   dispatch({ type: CREATE });
   var {type, username, password, corporation, token} = data
   var end;
@@ -25,6 +25,7 @@ export const addUser = (data) => (dispatch) => {
       console.log(response)
       const { data } = response;
       notification.success({message: `${type} added`})
+      navigate(-1)
       return dispatch({
         type: CREATE_SUCCESS,
         payload: data.payload,

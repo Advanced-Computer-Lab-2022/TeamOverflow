@@ -3,7 +3,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
+import RequestPageIcon from '@mui/icons-material/RequestPage';
 import { Typography, Box, Card, Container, CssBaseline, Button, FormHelperText, Select, MenuItem } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
@@ -13,10 +14,11 @@ import moment from "moment";
 import { centered_flex_box, main_button } from '../../app/components/Styles';
 import { getPaymentLink } from '../../app/store/actions/traineeActions';
 import ReactPlayer from 'react-player'
+import { requestAccess } from '../../app/store/actions/corporateActions';
 
 const theme = createTheme();
 
-export const CoursePreview = ({ auth, viewCourse, course, getPaymentLink }) => {
+export const CoursePreview = ({ auth, viewCourse, course, getPaymentLink, requestAccess }) => {
 
     const role = auth?.token?.split(" ")[0]
     const navigate = useNavigate()
@@ -31,6 +33,13 @@ export const CoursePreview = ({ auth, viewCourse, course, getPaymentLink }) => {
 
     const handleEnroll = (event) => {
         getPaymentLink({
+            courseId: courseId,
+            token: auth?.token
+        })
+    }
+
+    const handleRequest = (event) => {
+        requestAccess({
             courseId: courseId,
             token: auth?.token
         })
@@ -56,8 +65,8 @@ export const CoursePreview = ({ auth, viewCourse, course, getPaymentLink }) => {
                 }
                 <Typography>Total Hours: {course?.totalHours}</Typography>
                 <Typography>Rating: {course?.rating}</Typography>
-                {role === "Trainee" && <Button onClick={handleEnroll} sx={main_button}>Enroll in Course</Button>}
-                {role === "Corporate" && <Button sx={main_button}>Request access to Course</Button>}
+                {role === "Trainee" && <Button onClick={handleEnroll} sx={main_button}><ShoppingCartCheckoutIcon/> Enroll in Course</Button>}
+                {role === "Corporate" && <Button onClick={handleRequest} sx={main_button}><RequestPageIcon/> Request access to Course</Button>}
                 {course?.videoId && (<>
                     <hr />
                     <Box controls={true} sx={centered_flex_box}>
@@ -87,6 +96,6 @@ const mapStateToProps = (state) => ({
     course: state?.courses?.single
 });
 
-const mapDispatchToProps = { viewCourse, getPaymentLink };
+const mapDispatchToProps = { viewCourse, getPaymentLink, requestAccess };
 
 export default connect(mapStateToProps, mapDispatchToProps)(CoursePreview);

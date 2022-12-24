@@ -17,9 +17,11 @@ const Requests = require('../models/Requests');
 const Refund = require('../models/Refund');
 const bcrypt = require("bcrypt");
 const Wallet = require('../models/Wallet');
-const {addAmountOwed, transfer} = require('../controllers/walletController');
+const { addAmountOwed, transfer } = require('../controllers/walletController');
 const moment = require("moment");
 const Trainee = require('../models/Trainee');
+const Report = require('../models/Report');
+const Followup = require('../models/ReportFollowup');
 
 /* GET admins listing. */
 router.get('/', function (req, res) {
@@ -146,7 +148,7 @@ router.post('/defineDiscount', verifyAdmin, async function (req, res) {
 //view course requests from corporate trainees
 router.get('/viewRequest', verifyAdmin, async function (req, res) {
   try {
-    var results = await Requests.paginate({}, {page: req.query.page, limit: 10, populate: ["courseId", {path: "traineeId", select:{_id: 1, name: 1, email: 1, corporation: 1}}]})
+    var results = await Requests.paginate({}, { page: req.query.page, limit: 10, populate: ["courseId", { path: "traineeId", select: { _id: 1, name: 1, email: 1, corporation: 1 } }] })
     res.status(200).json(results)
   } catch (err) {
     res.status(400).json({ message: err.message })
@@ -168,7 +170,7 @@ router.post('/registerCourse', verifyAdmin, async function (req, res) {
           completion[itemIds[i]] = false
         }
       }
-      var courseSubtotal = course.discount && moment().isBefore(course.deadline) ? course.price * ((100 - course.discount)/100) : course.price
+      var courseSubtotal = course.discount && moment().isBefore(course.deadline) ? course.price * ((100 - course.discount) / 100) : course.price
       const traineeCourse = new StudentCourses({
         traineeId: request.traineeId,
         courseId: request.courseId,
@@ -192,7 +194,7 @@ router.post('/registerCourse', verifyAdmin, async function (req, res) {
 //view refund requests from trainees
 router.get('/viewRefunds', verifyAdmin, async function (req, res) {
   try {
-    var results = await Refund.paginate({}, {page: req.query.page, limit: 10, populate: ["registrationId", {path: "instructorId", select:{_id: 1, name: 1, email: 1}}]})
+    var results = await Refund.paginate({}, { page: req.query.page, limit: 10, populate: ["registrationId", { path: "instructorId", select: { _id: 1, name: 1, email: 1 } }] })
     res.status(200).json(results)
   } catch (err) {
     res.status(400).json({ message: err.message })
@@ -201,22 +203,55 @@ router.get('/viewRefunds', verifyAdmin, async function (req, res) {
 
 //refund an amount to a trainee to their wallet
 router.post('/refundTraniee', verifyAdmin, async function (req, res) {
-  try{
+  try {
     var refund = await Refund.findById(req.query.refundId).populate(["traineeId", "instructorId", "registrationId"])
-    if(refund) {
+    if (refund) {
       await transfer(refund.instructorId.walletId, refund.traineeId.walletId, refund.registrationId.amountPaid)
       await StudentCourses.findByIdAndDelete(refund.registrationId._id)
       await refund.delete()
-      res.status(200).json({message: "Refund fulfilled"})
+      res.status(200).json({ message: "Refund fulfilled" })
     } else {
-      res.status(403).json({message: "Refund request does not exist"})
+      res.status(403).json({ message: "Refund request does not exist" })
     }
-  }catch (err){
+  } catch (err) {
     res.status(400).json({ message: err.message })
   }
-  
 })
 
+//view users reported problems
+router.get('/viewReports', verifyAdmin, async function (req, res) {
+  try {
+    const status = req.query.status || { $regex: ".*" }
+    const type = req.query.type || { $regex: ".*" }
+    var results = await Report.paginate({ status: status, type: type }, { page: req.query.page, limit: 10, populate: { path: "userId", select: { _id: 1, name: 1, email: 1 } } })
+    res.status(200).json(results)
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+})
+
+//view one reported problem with followups
+router.get('/viewFollowups', verifyAdmin, async function (req, res) {
+  try {
+    const status = req.query.status || { $regex: ".*" }
+    const type = req.query.type || { $regex: ".*" }
+    var reports = await Report.findById(req.query.reportId)
+    var followups = await Followup.find({ reportId: req.query.reportId })
+    res.status(200).json({ report: reports, followups: followups })
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+})
+
+//respond to a report
+router.post('/respondReport', verifyAdmin, async function (req, res) {
+  try {
+    var result = await Report.findByIdAndUpdate(req.body.reportId, { $set: { status: req.body.status } }, {new: true})
+    res.status(200).json(result)
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+})
 
 
 
