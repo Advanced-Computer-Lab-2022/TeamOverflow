@@ -1,5 +1,5 @@
-import { CREATE, CREATE_SUCCESS, CREATE_FAIL, REQUESTS, REQUESTS_FAIL, REQUESTS_SUCCESS } from "./types";
-import { getRequest, postRequest } from "../../../core/network";
+import {getRequest, postRequest, putRequest } from "../../../core/network";
+import { CREATE, CREATE_SUCCESS, CREATE_FAIL, UPDATE_USER, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL, REQUESTS, REQUESTS_FAIL, REQUESTS_SUCCESS } from "./types";
 import endpoints from "../../../constants/endPoints.json";
 import { notification } from "antd";
 
@@ -41,6 +41,29 @@ export const addUser = (data, navigate) => (dispatch) => {
     });
 };
 
+
+export const editProfile = (data) => (dispatch) => {
+  dispatch({ type: UPDATE_USER });
+  var {edits, token} = data
+
+  putRequest(edits, undefined, undefined, token, endpoints.admin.editProfile)
+    .then((response) => {
+      const { data } = response;
+      notification.success({message: "Profile updated"})
+      return dispatch({
+        type: UPDATE_USER_SUCCESS,
+        payload: data
+      });
+    })
+    .catch((err) => {
+      notification.error({message: err?.response?.data?.message})
+      console.log(err);
+      return dispatch({
+        type: UPDATE_USER_FAIL,
+      });
+    });
+};
+
 export const viewRefunds = (data) => (dispatch) => {
   dispatch({ type: REQUESTS });
   var { info, token } = data
@@ -62,6 +85,8 @@ export const viewRefunds = (data) => (dispatch) => {
       });
     });
 };
+
+      
 
 export const respondRefund = (data) => (dispatch) => {
   dispatch({ type: REQUESTS });
@@ -145,3 +170,4 @@ export const defineDiscount = (data) => (dispatch) => {
       });
     });
 };
+

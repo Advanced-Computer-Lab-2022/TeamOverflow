@@ -265,6 +265,21 @@ router.post('/respondReport', verifyAdmin, async function (req, res) {
   }
 })
 
+router.put("/edit", verifyAdmin, async (req, res) => {
+  try {
+    var update = {
+      name: req.body.name ? req.body.name : undefined,
+      email: req.body.email ? req.body.email : undefined,
+    }
+    console.log(update)
+    var user = await Admin.findByIdAndUpdate(req.reqId, update, { new: true }).select({ password: 0 });
+    return res.status(200).json(user)
+  } catch (err) {
+    return res.status(400).json({ message: "Edit Failed" })
+  }
+})
+
+
 
 
 /* Functions */

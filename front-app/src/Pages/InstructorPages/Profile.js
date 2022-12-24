@@ -8,8 +8,11 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Typography, Rating, Card, Container, CssBaseline, Button, FormHelperText, Select, MenuItem } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import EmailIcon from '@mui/icons-material/Email';
 import PublicIcon from '@mui/icons-material/Public';
+import EmailIcon from '@mui/icons-material/Email';
+import MaleIcon from '@mui/icons-material/Male';
+import FemaleIcon from '@mui/icons-material/Female';
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import StarIcon from '@mui/icons-material/Star';
 import { connect } from "react-redux";
 import { Navigate, NavLink, useNavigate, useParams } from 'react-router-dom';
@@ -37,52 +40,57 @@ export const InstructorProfile = ({ user, token, wallet, getWallet }) => {
 
     return (
         <ThemeProvider theme={theme}>
-            <Container component="main" maxWidth="xl" >
-                <CssBaseline />
-                <Box display="flex" justifyContent="right" gap={"5px"} sx={{ flexDirection: "row" }}>
-                    <Button onClick={routeChange} sx={{ color: "var(--secColor)" }}>Update Profile</Button>
-                    <Button onClick={routeChange1} sx={{ color: "var(--secColor)" }}>Update Password</Button>
-                </Box>
+        <Container>
+            <Box display="flex" justifyContent="right" gap={"5px"} sx={{ flexDirection: "row" }}>
+                <Button onClick={routeChange} sx={{ color: "var(--secColor)" }}>Update Profile</Button>
+                <Button onClick={routeChange1} sx={{ color: "var(--secColor)" }}>Change Password</Button>
 
+            </Box>
 
-                <Box display="flex" justifyContent="center" marginTop={"60px"} gap="5px" color={"var(--secColor)"}>
-                    <AccountCircleIcon sx={{ fontSize: 50, marginTop: 1.5 }} />
-                    <Typography fontWeight={"Bold"} fontSize="50px" color={"black"} >{user?.name}</Typography>
-                </Box>
-                {/* <Typography>Username: {user?.username}</Typography> */}
-                <Typography display="flex" justifyContent="center" color={"grey"}>{user?.bio}</Typography>
+            <Box sx={{ background: 'linear-gradient(to right, var(--secColor), var(--primaryColor))', maxHeight: 180, borderRadius: 2 }}>
+                <AccountCircleIcon sx={{ fontSize: 200, color: 'black', opacity: 1, mt: 8 }} />
+            </Box>
+            <Typography fontWeight={"Bold"} fontSize="50px" color={"black"} align='center'>{user?.name}</Typography>
+            <Box display="flex" justifyContent="left" gap={"5px"} color={"var(--secColor)"} sx={{ flexDirection: "row", mt: 4}}>
+                <LibraryBooksIcon sx={{ fontSize: 25, marginTop: 0.3 }}/>
+                <Typography fontSize="20px">Bio:</Typography>
+            </Box>
+            <Typography display="flex" justifyContent="center" color={"grey"}>{user?.bio}</Typography>
 
-                <Box display={"flex"} sx={{ flexDirection: "column" }}>
+            <Box display={"flex"} sx={{ flexDirection: "row" }}>
+                <Box display={"flex"} align='left' sx={{ flexDirection: "column", mt: 5, maxWidth: 250, ml: 5 }}>
                     <Box display="flex" justifyContent="left" gap={"5px"} color={"var(--secColor)"} sx={{ flexDirection: "row" }}>
-                        <EmailIcon sx={{ fontSize: 25, marginTop: 0.5 }} />
-                        <Typography color={"black"} fontSize="20px">{user?.email}</Typography>
+                        <EmailIcon sx={{ fontSize: 25, marginTop: 0.3 }} />
+                        <Typography fontSize="20px">Email:</Typography>
                     </Box>
-                    <Box display="flex" justifyContent="left" gap={"5px"} color={"var(--secColor)"} sx={{ flexDirection: "row" }}>
+                    <Typography color='#5b5b5b' fontSize="20px" sx={{ ml: 4 }}>{user?.email} </Typography>
+                    <Box display="flex" justifyContent="left" gap={"5px"} color={"var(--secColor)"} sx={{ flexDirection: "row", mt: 2 }}>
                         <PublicIcon sx={{ fontSize: 25, marginTop: 0.5 }} />
-                        <Typography color={"black"} fontSize="20px">{user?.country}</Typography>
+                        <Typography fontSize="20px">Country:</Typography>
                     </Box>
+                    <Typography color={"#5b5b5b"} fontSize="20px" sx={{ ml: 4 }}>{user?.country}</Typography>
+                    <Box display="flex" justifyContent="left" color={"var(--secColor)"} sx={{ flexDirection: "row", mt: 2 }}>
+                        <MaleIcon sx={{ fontSize: 20, marginTop: 0.5 }} />
+                        <Typography color={"var(--secColor)"} fontSize="20px">/</Typography>
+                        <FemaleIcon sx={{ fontSize: 20, marginTop: 0.5 }} />
 
-
-                    <Box display="flex" justifyContent="left" gap="5px">
-                        <AccountBalanceWalletIcon sx={{ fontSize: 25, marginTop: 0.3, color:"var(--secColor)" }} />
-                        <Typography fontSize="20px">Wallet: {wallet?.currency} {wallet?.balance}</Typography>
+                        <Typography fontSize="20px">Gender:</Typography>
                     </Box>
-
-                    <Box display="flex" justifyContent="left" gap={"10px"} color={"var(--secColor)"} sx={{ flexDirection: "row" }}>
-                        <Typography fontSize={"30px"} color={"var(--secColor)"}>{user?.rating || "0.0"}</Typography>
-                        <Rating
-                            fullWidth
-                            value={user?.rating}
-                            readOnly
-                            sx={{ marginTop: "10px" }}
-                        />
-                    </Box>
-
-
+                    <Typography color={"#5b5b5b"} fontSize="20px" sx={{ ml: 4 }}>{user?.gender}</Typography>
                 </Box>
 
-            </Container>
-        </ThemeProvider>
+                    <Box display={"flex"} align='left' sx={{ flexDirection: "column", mt: 5, maxWidth: 250, ml: 60 }}>
+                        <Box display="flex" justifyContent="left" gap="5px">
+                            <AccountBalanceWalletIcon sx={{ fontSize: 25, marginTop: 0.3, color:"var(--secColor)" }} />
+                            <Typography fontSize="20px" color={"var(--secColor)"}>Wallet:</Typography>
+                        </Box>
+                        <Typography color={"#5b5b5b"} fontSize="20px" sx={{ ml: 4 }}>{wallet?.currency} {wallet?.balance}</Typography>
+                    </Box>
+            </Box>
+        </Container>
+
+    </ThemeProvider>
+
     );
 }
 
