@@ -20,26 +20,21 @@ export const AllCourses = ({ auth, courses, getSubjects, filterCoursesAll, clear
     getSubjects()
   }, [])
 
-  const [formData, setFormData] = React.useState({
+  const initialState = {
     minPrice: 0,
     maxPrice: 5000,
     minRating: 0,
     maxRating: 5,
     subject: "",
     searchQuery: "",
-    page: parseInt(courses?.results?.page) || 1
-  })
+    page: 1
+  }
+
+  const [formData, setFormData] = React.useState(initialState)
 
   const handleClearFilter = (event) => {
-    setFormData({
-      minPrice: 0,
-      maxPrice: 5000,
-      minRating: 0,
-      maxRating: 5,
-      subject: "",
-      searchQuery: "",
-      page: 1
-    })
+    setFormData(initialState)
+    filterCoursesAll({ token: auth.token, ...initialState });
   }
 
   const { minPrice, maxPrice, minRating, maxRating, searchQuery, page, subject } = formData
@@ -68,7 +63,7 @@ export const AllCourses = ({ auth, courses, getSubjects, filterCoursesAll, clear
   }
 
   const handleSearchFilter = (event) => {
-    filterCoursesAll({ token: auth.token, ...formData });
+    filterCoursesAll({ token: auth.token, ...formData});
   }
 
   return (

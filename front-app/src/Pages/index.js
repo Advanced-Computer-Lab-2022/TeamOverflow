@@ -9,4 +9,6 @@ import { Exam, Result } from "./ExamPages";
 import { Forgot, Reset } from "./ForgotPasswordPages";
 import { PaymentDone } from "./PaymentPages";
 import { Register, Terms } from "./RegisterPage";
-export { CoursePreview, EditInstructorPassword ,EditTraineePassword, EditTraineeProfile, TraineeProfile, Register, Terms, PaymentDone, Forgot, Reset, Result, Exam, Index, AddUsers, AdminHome, TraineeCourses, AllCourses, TraineeHome, InstructorCourses, InstructorHome, CreateCourse, SingleCourseInstructor, SingleCourse, Rate, RatingList, CreateExam, InstructorVidView, UploadVideo, Discount, InstructorProfile, InstructorEditProfile, InstructorContract, StudentVidView};
+import { ReportedProblems, ReportProblem, Followup, ReportView } from "./ReportingPages";
+
+export { ReportView, Followup, ReportProblem, ReportedProblems, CoursePreview, EditInstructorPassword ,EditTraineePassword, EditTraineeProfile, TraineeProfile, Register, Terms, PaymentDone, Forgot, Reset, Result, Exam, Index, AddUsers, AdminHome, TraineeCourses, AllCourses, TraineeHome, InstructorCourses, InstructorHome, CreateCourse, SingleCourseInstructor, SingleCourse, Rate, RatingList, CreateExam, InstructorVidView, UploadVideo, Discount, InstructorProfile, InstructorEditProfile, InstructorContract, StudentVidView};

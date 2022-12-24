@@ -223,7 +223,7 @@ router.get('/viewReports', verifyAdmin, async function (req, res) {
   try {
     const status = req.query.status || { $regex: ".*" }
     const type = req.query.type || { $regex: ".*" }
-    var results = await Report.paginate({ status: status, type: type }, { page: req.query.page, limit: 10, populate: { path: "userId", select: { _id: 1, name: 1, email: 1 } } })
+    var results = await Report.paginate({ status: status, type: type }, { page: req.query.page, limit: 10 })
     res.status(200).json(results)
   } catch (err) {
     res.status(400).json({ message: err.message })
@@ -233,11 +233,15 @@ router.get('/viewReports', verifyAdmin, async function (req, res) {
 //view one reported problem with followups
 router.get('/viewFollowups', verifyAdmin, async function (req, res) {
   try {
-    const status = req.query.status || { $regex: ".*" }
-    const type = req.query.type || { $regex: ".*" }
-    var reports = await Report.findById(req.query.reportId)
+    var result = await Report.findById(req.query.reportId)
+    var report = result.toJSON()
+    switch(report.userRef) {
+      case "Trainee": report.userId = await Trainee.findById(report.userId, {_id: 1, name:1, email:1}); break;
+      case "CorporateTrainee": report.userId = await CorporateTrainee.findById(report.userId, {_id: 1, name:1, email:1}); break;
+      case "Instructor": report.userId = await Instructor.findById(report.userId, {_id: 1, name:1, email:1}); break;
+    }
     var followups = await Followup.find({ reportId: req.query.reportId })
-    res.status(200).json({ report: reports, followups: followups })
+    res.status(200).json({ report: report, followups: followups})
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
@@ -247,7 +251,13 @@ router.get('/viewFollowups', verifyAdmin, async function (req, res) {
 router.post('/respondReport', verifyAdmin, async function (req, res) {
   try {
     var result = await Report.findByIdAndUpdate(req.body.reportId, { $set: { status: req.body.status } }, {new: true})
-    res.status(200).json(result)
+    var report = result.toJSON()
+    switch(report.userRef) {
+      case "Trainee": report.userId = await Trainee.findById(report.userId, {_id: 1, name:1, email:1}); break;
+      case "CorporateTrainee": report.userId = await CorporateTrainee.findById(report.userId, {_id: 1, name:1, email:1}); break;
+      case "Instructor": report.userId = await Instructor.findById(report.userId, {_id: 1, name:1, email:1}); break;
+    }
+    res.status(200).json(report)
   } catch (err) {
     res.status(400).json({ message: err.message })
   }

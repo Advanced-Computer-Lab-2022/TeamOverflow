@@ -45,6 +45,12 @@ export const left_flex_box = {
     justifyContent: "flex-end"
 }
 
+export const right_flex_box = {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-start"
+}
+
 export const MainInput = styled(TextField)({
     '& label.Mui-focused': {
         color: 'var(--secColor)',

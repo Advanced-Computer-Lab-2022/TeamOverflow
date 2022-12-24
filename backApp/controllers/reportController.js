@@ -5,10 +5,11 @@ async function reportProblem(req, res) {
     try {
         var report = await Report.create({
             userId: req.reqId,
+            userRef: req.userRef,
             type: req.body.type,
             details: req.body.details
         })
-        res.status(201).json(report)
+        res.status(201).json({ message: "Report Successful" })
     } catch (err) {
         res.status(400).json({ message: err.message })
     }
@@ -16,7 +17,9 @@ async function reportProblem(req, res) {
 
 async function viewReports(req, res) {
     try {
-        var reports = await Report.paginate({ userId: req.reqId }, { page: req.query.page, limit: 10 })
+        const status = req.query.status || { $regex: ".*" }
+        const type = req.query.type || { $regex: ".*" }
+        var reports = await Report.paginate({ userId: req.reqId, type: type, status: status }, { page: req.query.page, limit: 10 })
         res.status(200).json(reports)
     } catch (err) {
         res.status(400).json({ message: err.message })
@@ -45,7 +48,7 @@ async function addFollowup(req, res) {
                 reportId: req.body.reportId,
                 content: req.body.content
             })
-            res.status(201).json(followup)
+            res.status(201).json({ message: "Follow Up Added" })
         } else if (Report) {
             res.status(403).json({ message: "Cannot add follow up to a resolved problem" })
         } else {

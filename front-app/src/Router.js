@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Routes, Route } from "react-router-dom";
-import { TraineeProfile ,Register, Terms, Index, AddUsers, AdminHome, AllCourses, TraineeCourses, TraineeHome, InstructorCourses, InstructorHome, CreateCourse, Rate, SingleCourseInstructor, SingleCourse, InstructorVidView, CreateExam, UploadVideo, Discount, RatingList, InstructorProfile, InstructorEditProfile, InstructorContract, StudentVidView, Exam, Result, Forgot, Reset, PaymentDone, EditTraineeProfile, EditInstructorPassword, CoursePreview } from "./Pages";
+import { ReportedProblems, TraineeProfile, Register, Terms, Index, AddUsers, AdminHome, AllCourses, TraineeCourses, TraineeHome, InstructorCourses, InstructorHome, CreateCourse, Rate, SingleCourseInstructor, SingleCourse, InstructorVidView, CreateExam, UploadVideo, Discount, RatingList, InstructorProfile, InstructorEditProfile, InstructorContract, StudentVidView, Exam, Result, Forgot, Reset, PaymentDone, EditTraineeProfile, EditInstructorPassword, CoursePreview, ReportProblem, Followup, ReportView } from "./Pages";
 import { TopBar } from "./app/components";
 import { useLocation } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
@@ -49,6 +49,14 @@ export const Router = () => {
         <Route path="/courses" exact element={<AllCourses />} />
         <Route path="/courses/preview/:id" exact element={<CoursePreview />} />
         <Route path="/course/video/:id" exact element={<InstructorVidView />} />
+      </Route>
+      <Route exact element={<ProtectedRoute allowed={["Corporate", "Trainee", "Instructor", "Admin"]} />}>
+        <Route path="/reports" exact element={<ReportedProblems />} />
+        <Route path="/reports/single/:id" exact element={<ReportView />} />
+      </Route>
+      <Route exact element={<ProtectedRoute allowed={["Corporate", "Trainee", "Instructor"]} />}>
+        <Route path="/reports/add" exact element={<ReportProblem />} />
+        <Route path="/reports/followup/:id" exact element={<Followup />} />
       </Route>
       <Route exact element={<ProtectedRoute allowed={["Corporate", "Trainee"]} />}>
         <Route path="/Rate/:id" exact element={<Rate />} />

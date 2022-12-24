@@ -52,3 +52,11 @@ export const CONTRACT = "CONTRACT";
 export const EXAM_SUCCESS = "EXAM_SUCCESS";
 export const EXAM_FAIL = "EXAM_FAIL";
 export const EXAM = "EXAM";
+
+//Reports 
+export const REPORTS_SUCCESS = "REPORTS_SUCCESS";
+export const REPORTS_FAIL = "REPORTS_FAIL";
+export const REPORTS = "REPORTS";
+export const SINGLE_REPORT_SUCCESS = "SINGLE_REPORT_SUCCESS";
+export const SINGLE_REPORT_FAIL = "SINGLE_REPORT_FAIL";
+export const CLEAR_REPORTS = "CLEAR_REPORTS";

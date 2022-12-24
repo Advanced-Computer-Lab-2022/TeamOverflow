@@ -20,7 +20,9 @@
       "change":"auth/changePassword"
       },
    "admin":{
-      
+      "viewReports":"admin/viewReports",
+      "viewFollowups":"admin/viewFollowups",
+      "respondReport":"admin/respondReport"
    },
    "instructor":{
       "setCountry":"instructor/selectCountry",
@@ -36,7 +38,11 @@
       "editProfile":"instructor/editMinibiographyorEmail",
       "getContract":"instructor/getContract",
       "respondContract":"instructor/contractResponse",
-      "getWallet":"instructor/wallet"
+      "getWallet":"instructor/wallet",
+      "reportProblem":"instructor/reportProblem",
+      "viewReports":"instructor/viewReports",
+      "viewFollowups":"instructor/viewFollowups",
+      "addFollowup":"instructor/addFollowup"
    },
    "corporatetrainee":{
       "setCountry":"corpTrainee/selectCountry",
@@ -48,7 +54,11 @@
       "watchVideo":"corpTrainee/watchVideo",
       "addNote":"corpTrainee/addNote",
       "downloadNotes":"corpTrainee/downloadNotes",
-      "requestAccess":"corpTrainee/reqCourse"
+      "requestAccess":"corpTrainee/reqCourse",
+      "reportProblem":"corpTrainee/reportProblem",
+      "viewReports":"corpTrainee/viewReports",
+      "viewFollowups":"corpTrainee/viewFollowups",
+      "addFollowup":"corpTrainee/addFollowup"
    },
    "trainee": {
       "setCountry":"trainee/selectCountry",
@@ -64,7 +74,11 @@
       "addNote":"trainee/addNote",
       "downloadNotes":"trainee/downloadNotes",
       "getWallet":"trainee/wallet",
-      "getPaymentLink":"trainee/checkOut"
+      "getPaymentLink":"trainee/checkOut",
+      "reportProblem":"trainee/reportProblem",
+      "viewReports":"trainee/viewReports",
+      "viewFollowups":"trainee/viewFollowups",
+      "addFollowup":"trainee/addFollowup"
    },
    "course":{
       "searchUsers":"course/search/course",

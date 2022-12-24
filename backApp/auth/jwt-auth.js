@@ -10,12 +10,12 @@ function verifyAdmin (req,res,next) {
     const token = header[1]
     if(role == "Admin" && token){
         jwt.verify(token, process.env.PASSPORTSECRET, async (err, decoded) => {
-            console.log(err)
             if(err){
                 return res.json({message: err, isValid: false})
             }
             req.reqId = decoded._id
             req.user = await Admin.findById(decoded._id)
+            req.userRef = "Admin"
             next()
         })
     } else {
@@ -34,6 +34,7 @@ function verifyInstructor (req,res,next) {
             }
             req.reqId = decoded._id
             req.user = await Instructor.findById(decoded._id)
+            req.userRef = "Instructor"
             next()
         })
     } else {
@@ -52,6 +53,7 @@ function verifyTrainee (req,res,next) {
             }
             req.reqId = decoded._id
             req.user = await Trainee.findById(decoded._id)
+            req.userRef = "Trainee"
             next()
         })
     } else {
@@ -70,6 +72,7 @@ function verifyCorpTrainee (req,res,next) {
             }
             req.reqId = decoded._id
             req.user = await CorporateTrainee.findById(decoded._id)
+            req.userRef = "CorporateTrainee"
             next()
         })
     } else {
