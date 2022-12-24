@@ -20,7 +20,7 @@
       "change":"auth/changePassword"
       },
    "admin":{
-      
+      "editProfile": "admin/edit" 
    },
    "instructor":{
       "setCountry":"instructor/selectCountry",

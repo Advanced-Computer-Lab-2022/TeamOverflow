@@ -7,6 +7,7 @@ import { useLocation } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import Profile from "./Pages/InstructorPages/Profile";
 import { EditTraineePassword } from "./Pages/TraineePages";
+import { AdminProfile, EditAdminPassword, EditAdminProfile } from "./Pages/AdminPages";
 
 export const Router = () => {
   return (
@@ -19,6 +20,11 @@ export const Router = () => {
       <Route exact element={<ProtectedRoute allowed={["Admin"]} />}>
         <Route path="/Admin" exact element={<AdminHome />} />
         <Route path="/Admin/addUsers" exact element={<AddUsers />} />
+        <Route path="/Admin/profile" exact element={<AdminProfile />} />
+        <Route path="/Admin/edit" exact element={<EditAdminProfile />} />
+        <Route path="/Admin/editPassword" exact element={<EditAdminPassword />} />
+
+
       </Route>
       <Route exact element={<ProtectedRoute allowed={["Instructor"]} />}>
         <Route path="/courses/instructor" exact element={<InstructorCourses />} />
