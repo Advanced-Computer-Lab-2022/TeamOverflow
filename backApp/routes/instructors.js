@@ -193,6 +193,26 @@ router.post('/close', verifyInstructor, async function (req, res) {
   }
 })
 
+//Delete an unpublished course
+router.delete('/course', verifyInstructor, async function (req, res) {
+  try {
+    var result = await Course.findOne({_id: req.body.courseId, instructorId: req.reqId})
+    if(result && result.enrolled === 0 && !result.published) {
+      await result.delete()
+      res.status(200).json({ message: "Course Deleted" })
+    } else if(result && result.enrolled > 0 ) {
+      res.status(400).json({ message: "Students are enrolled in this course" })
+    } else if(result && result.published) {
+      res.status(400).json({ message: "Course is already published" })
+    } else {
+      res.status(403).json({ message: "You are not the instructor for this course" })
+    }
+    
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+})
+
 // create subtitle exercise
 router.post('/createSubtitleExercise', verifyInstructor, async function (req, res) {
   try {
