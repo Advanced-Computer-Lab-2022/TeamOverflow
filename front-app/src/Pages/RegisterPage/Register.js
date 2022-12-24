@@ -6,6 +6,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import countryList from 'country-json/src/country-by-name.json'
 import { createUser } from '../../app/store/actions/authActions';
 import { Navigate, NavLink, useNavigate } from 'react-router-dom';
+import { MainInput, main_button } from '../../app/components/Styles';
 import { connect } from "react-redux";
 
 const theme = createTheme();
@@ -71,7 +72,7 @@ const Register = ({createUser}) => {
             Register
           </Typography>
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-            <TextField
+            <MainInput
               margin="normal"
               required
               fullWidth
@@ -81,7 +82,7 @@ const Register = ({createUser}) => {
               autoComplete="username"
               autoFocus
             />
-            <TextField
+            <MainInput
               margin="normal"
               required
               fullWidth
@@ -91,7 +92,7 @@ const Register = ({createUser}) => {
               id="password"
               autoComplete="current-password"
             />
-            <TextField
+            <MainInput
               margin="normal"
               required
               fullWidth
@@ -101,7 +102,7 @@ const Register = ({createUser}) => {
               autoComplete="email"
             />
 
-            <TextField
+            <MainInput
               margin="normal"
               required
               fullWidth
@@ -109,7 +110,7 @@ const Register = ({createUser}) => {
               label="Corporation"
               id="corporation"
             />
-            <TextField
+            <MainInput
               margin="normal"
               required
               fullWidth
@@ -117,7 +118,7 @@ const Register = ({createUser}) => {
               label="First Name"
               id="firstName"
             />
-            <TextField
+            <MainInput
               margin="normal"
               required
               fullWidth
@@ -180,7 +181,7 @@ const Register = ({createUser}) => {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 2, ...main_button }}
             >
               Register
             </Button>

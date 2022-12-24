@@ -22,6 +22,9 @@ export const VideoView = ({ auth, getRegVideo, video, isLoading, addNote, downlo
   const params = useParams();
   const courseId = params.courseId
   const videoId = params.videoId;
+  
+  const [timestamp, setTimestamp] = React.useState(0)
+  const [noteOpen, setNoteOpen] = React.useState(false)
 
   React.useEffect(() => {
     getRegVideo({
@@ -45,10 +48,8 @@ export const VideoView = ({ auth, getRegVideo, video, isLoading, addNote, downlo
       token: auth.token
     }
     addNote(details);
+    setNoteOpen(false);
   };
-
-  const [timestamp, setTimestamp] = React.useState(0)
-  const [noteOpen, setNoteOpen] = React.useState(false)
 
   const handleAddNote = (event) => {
     setTimestamp(time)

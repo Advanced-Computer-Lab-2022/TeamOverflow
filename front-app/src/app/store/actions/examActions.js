@@ -27,7 +27,7 @@ export const getExam = (data) => (dispatch) => {
         });
 };
 
-export const submitSolution = (data) => (dispatch) => {
+export const submitSolution = (data, navigate) => (dispatch) => {
     dispatch({ type: EXAM });
     var { solution, token } = data
 
@@ -38,6 +38,7 @@ export const submitSolution = (data) => (dispatch) => {
         .then((response) => {
             const {data} = response
             notification.success({ message: data.message })
+            navigate(-1)
         })
         .catch((err) => {
             notification.error({ message: err?.response?.data?.message })

@@ -3,7 +3,7 @@ import { Typography, Paper, IconButton, InputBase, Box, Container, Pagination, C
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { clearCourses, filterCoursesInstructor, getSubjects } from '../../app/store/actions/coursesActions';
-import { CourseCard } from '../../app/components';
+import { CourseCard, InstructorCourseCard } from '../../app/components';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import SearchIcon from '@mui/icons-material/Search';
 import { centered_flex_box, main_button } from '../../app/components/Styles';
@@ -164,7 +164,7 @@ export const InstructorCourses = ({ auth, courses, getSubjects, filterCoursesIns
               {courses?.results?.docs?.map((course) => {
                 return (
                   <Grid item xs={12}>
-                    <CourseCard course={course} />
+                    <InstructorCourseCard course={course} />
                   </Grid>
                 )
               })}

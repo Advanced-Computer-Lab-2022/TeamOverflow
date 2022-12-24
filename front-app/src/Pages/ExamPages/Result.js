@@ -7,13 +7,15 @@ import QuizIcon from '@mui/icons-material/Quiz';
 import { Typography, Radio, RadioGroup, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, FormHelperText, InputLabel, FormControl } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { getGrade } from '../../app/store/actions/examActions';
+import { centered_flex_box, left_flex_box, main_button } from '../../app/components/Styles';
 const theme = createTheme();
 
 export const SolvedExam = ({ token, getGrade, graded, yourSol, totalMark }) => {
 
-    const {answerId} = useParams()
+    const { answerId } = useParams()
+    const navigate = useNavigate();
 
     React.useEffect(() => {
         getGrade({
@@ -22,45 +24,54 @@ export const SolvedExam = ({ token, getGrade, graded, yourSol, totalMark }) => {
             },
             token: token
         });
-      }, [])
+    }, [])
 
     return (
         <ThemeProvider theme={theme}>
-            <Container component="main" maxWidth="xs">
-                <CssBaseline />
+            <Container component="main">
                 <Box
                     sx={{
+                        minWidth: "80%",
                         marginTop: 8,
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                    <Avatar sx={{ m: 1, bgcolor: 'var(--secColor)' }}>
                         <QuizIcon />
                     </Avatar>
-                    <Typography component="h1" variant="h5">
+                    <Typography variant="h3">
                         Your Grade: {totalMark}%
                     </Typography>
-                    <Box component="form" sx={{ mt: 1 }}>
+                    <Box component="form" sx={{ mt: 1, minWidth: "100%", flexDirection: "column", ...centered_flex_box }}>
                         {graded?.questions?.map((question, idx) => {
                             return (
-                                <Box sx={{ mt: 1 }}>
-                                    <Typography>Question {idx + 1}</Typography>
-                                    <Typography>{question}</Typography>
+                                <Box sx={{ minWidth: "100%", mt: 1 }}>
+                                    <Typography fontWeight="bold">Question {idx + 1}</Typography>
+                                    <Typography fontSize={24}>{question}</Typography>
                                     <FormControl fullWidth>
                                         <RadioGroup
                                             value={yourSol.answers[idx]}
                                         >
-                                            {graded.choices[idx]?.map((ans, i) => ans !== null && <FormControlLabel value={i} control={<Radio color={yourSol.answers[idx] !== graded?.correctIndecies[idx] ? 'error':'primary'}/>}  label={ans} />)}
+                                            {graded.choices[idx]?.map((ans, i) => ans !== null && <FormControlLabel value={i} control={<Radio color={yourSol.answers[idx] !== graded?.correctIndecies[idx] ? 'error' : 'primary'} />} label={ans} />)}
                                         </RadioGroup>
                                     </FormControl>
                                     {yourSol.answers[idx] !== graded?.correctIndecies[idx] && <Typography> Correct answer: {graded?.choices[idx][graded?.correctIndecies[idx]]} </Typography>}
-                                    <Typography>Question Mark: {graded?.marks[idx]}</Typography>
+                                    <Typography fontStyle="italic">Question Mark: {graded?.marks[idx]}</Typography>
                                     <hr />
                                 </Box>
                             )
                         })}
+                        <Box sx={{ minWidth: "100%", ...left_flex_box }}>
+                            <Button
+                                variant="contained"
+                                onClick={() => navigate(-1)}
+                                sx={{ mt: 3, mb: 2, ...main_button }}
+                            >
+                                Back to course
+                            </Button>
+                        </Box>
                     </Box>
                 </Box>
 
@@ -74,8 +85,8 @@ const mapStateToProps = (state) => ({
     token: state?.auth?.token,
     graded: state?.exercise?.exam?.payload,
     yourSol: state?.exercise?.exam?.yourSol,
-    totalMark:state?.exercise?.exam?.grade
+    totalMark: state?.exercise?.exam?.grade
 });
 
-const mapDispatchToProps = {getGrade}
+const mapDispatchToProps = { getGrade }
 export default connect(mapStateToProps, mapDispatchToProps)(SolvedExam);

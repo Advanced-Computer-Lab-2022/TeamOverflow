@@ -8,6 +8,7 @@ import {Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Sele
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { addUser } from '../../app/store/actions/adminActions';
+import { MainInput, main_button } from '../../app/components/Styles';
 
 const theme = createTheme();
 
@@ -55,7 +56,7 @@ export const AddUsers = ({addUser, auth}) => {
             Create a user
           </Typography>
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-            <TextField
+            <MainInput
               margin="normal"
               required
               fullWidth
@@ -65,7 +66,7 @@ export const AddUsers = ({addUser, auth}) => {
               autoComplete="username"
               autoFocus
             />
-            <TextField
+            <MainInput
               margin="normal"
               required
               fullWidth
@@ -76,7 +77,7 @@ export const AddUsers = ({addUser, auth}) => {
               autoComplete="current-password"
             />
             {isCorporate && (
-            <TextField
+            <MainInput
               margin="normal"
               required
               fullWidth
@@ -106,7 +107,7 @@ export const AddUsers = ({addUser, auth}) => {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 2, ...main_button }}
             >
               Create
             </Button>
