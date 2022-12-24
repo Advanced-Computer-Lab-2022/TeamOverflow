@@ -29,7 +29,7 @@ async function getCertificate(req, res) {
     const certificate = await (await Certificates.find({ traineeId: req.reqId, courseId: req.query.courseId }, undefined, {sort: "timestamp", populate:"courseId"}))
     const doc = new PDFDocument({ font: 'Times-Roman' });
     const filename = `${certificate[0].courseId.title} Certificate`;
-    doc.fontSize(42).text(`Certificate for ${certificate[0].courseId.title}`, { align: 'center' });
+    doc.fontSize(42).text(`Congratulations! You have completed course: ${certificate[0].courseId.title}`, { align: 'center' });
     certificate.map((certificate) => {
         doc.font("Times-Italic").fontSize(16).text(`${moment().startOf('day').seconds(certificate.timestamp).format('mm:ss')} :-`, { paragraphGap: 2 });
         doc.font("Times-Roman").fontSize(20).text(certificate.content, { align: "justify", indent: 10, paragraphGap: 8 });
@@ -45,5 +45,5 @@ async function getCertificate(req, res) {
 }
 
 
-module.exports = { getCertificate }
-module.exports = { getNotes }
+
+module.exports = { getNotes, getCertificate }
