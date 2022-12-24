@@ -5,6 +5,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { useParams } from 'react-router-dom';
 import { postRating } from '../../app/store/actions/ratingActions';
+import { MainInput, MainTextArea, main_button } from '../../app/components/Styles';
 
 const theme = createTheme();
 
@@ -42,7 +43,7 @@ return (
                     alignItems: 'center',
                 }}
             >
-                <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+                <Avatar sx={{ m: 1, bgcolor: 'var(--secColor)' }}>
                     <StarsIcon />
                 </Avatar>
                 <Typography component="h1" variant="h5">
@@ -58,7 +59,7 @@ return (
                             setRating(newValue);
                         }}
                     />
-                    <TextField
+                    <MainTextArea
                         margin="normal"
                         fullWidth
                         name="review"
@@ -71,7 +72,7 @@ return (
                         type="submit"
                         fullWidth
                         variant="contained"
-                        sx={{ mt: 3, mb: 2 }}
+                        sx={{ mt: 3, mb: 2, ...main_button }}
                     >
                         Submit
                     </Button>

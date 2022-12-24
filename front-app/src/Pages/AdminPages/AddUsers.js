@@ -8,11 +8,14 @@ import {Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Sele
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { addUser } from '../../app/store/actions/adminActions';
+import { MainInput, main_button } from '../../app/components/Styles';
+import { useNavigate } from 'react-router-dom';
 
 const theme = createTheme();
 
 export const AddUsers = ({addUser, auth}) => {
 
+  const navigate = useNavigate()
   const [isCorporate, setIsCorporate] = React.useState(false)
 
   const onUserTypeChange = (event) => {
@@ -33,7 +36,7 @@ export const AddUsers = ({addUser, auth}) => {
       type: data.get('type'),
       token: auth.token
     }
-    addUser(details)
+    addUser(details, navigate)
   };
 
   return (
@@ -48,14 +51,14 @@ export const AddUsers = ({addUser, auth}) => {
             alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+          <Avatar sx={{ m: 1, bgcolor: 'var(--secColor)' }}>
             <AccountCircleIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             Create a user
           </Typography>
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-            <TextField
+            <MainInput
               margin="normal"
               required
               fullWidth
@@ -65,7 +68,7 @@ export const AddUsers = ({addUser, auth}) => {
               autoComplete="username"
               autoFocus
             />
-            <TextField
+            <MainInput
               margin="normal"
               required
               fullWidth
@@ -76,7 +79,7 @@ export const AddUsers = ({addUser, auth}) => {
               autoComplete="current-password"
             />
             {isCorporate && (
-            <TextField
+            <MainInput
               margin="normal"
               required
               fullWidth
@@ -106,7 +109,7 @@ export const AddUsers = ({addUser, auth}) => {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 2, ...main_button }}
             >
               Create
             </Button>

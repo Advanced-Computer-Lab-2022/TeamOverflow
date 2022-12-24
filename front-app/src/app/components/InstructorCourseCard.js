@@ -7,13 +7,12 @@ import { Card } from '@mui/material';
 import { card_style, main_button } from './Styles';
 import moment from "moment"
 
-function CourseCard({ token, course, isLoading }) {
+function InstructorCourseCard({ token, course, isLoading }) {
 
-    const role = token.split(" ")[0];
     const navigate = useNavigate();
 
     const reroute = () => {
-        navigate(`/courses/preview/${course._id}`)
+        navigate(`/courses/instructor/single/${course._id}`)
     }
 
     return (
@@ -33,7 +32,7 @@ function CourseCard({ token, course, isLoading }) {
                         </Typography>
                     </Grid>
                     <Grid item direction="row" alignItems="center" display="flex" justifyContent="flex-end" xs={2}>
-                        {role!=="Corporate" && course?.deadline && moment().isBefore(course?.deadline) && <Chip sx={{ mx:1, color: "green", borderColor: "green" }} label={`${course?.discount}%`} variant="outlined" />}
+                        {course?.deadline && moment().isBefore(course?.deadline) && <Chip sx={{ mx: 1, color: "green", borderColor: "green" }} label={`${course?.discount}%`} variant="outlined" />}
                         <Chip sx={{ color: "var(--secColor)", borderColor: "var(--secColor)" }} label={`${course.totalHours}h`} variant="outlined" />
                     </Grid>
                 </Grid>
@@ -47,31 +46,25 @@ function CourseCard({ token, course, isLoading }) {
                     readOnly
                 />
                 <br />
-                {role !== "Corporate" ? (
-                    <Grid container >
-                        <Grid item xs={9}>
-                            {
-                                (course?.deadline && moment().isBefore(course?.deadline)) ? (
-                                    <>
-                                        <Typography sx={{ textDecoration: "line-through", color: "red", fontWeight:"bold" }}>{course?.currency} {course?.price}</Typography>
-                                        <Typography sx={{ color: "green", fontWeight:"bold" }}>{course?.currency} {(course?.price * ((100 - course?.discount) / 100)).toFixed(2)}</Typography>
-                                    </>
-                                ) : (
-                                    <Typography sx={{ fontWeight:"bold" }}>{course?.currency} {course?.price}</Typography>
-                                )
-                            }
-                        </Grid>
-                        <Grid item xs={3} direction="row" alignItems="center" display="flex" justifyContent="flex-end">
-                            <Button onClick={reroute} sx={{ ...main_button }}>
-                                View Course
-                            </Button>
-                        </Grid>
+                <Grid container >
+                    <Grid item xs={9}>
+                        {
+                            (course?.deadline && moment().isBefore(course?.deadline)) ? (
+                                <>
+                                    <Typography sx={{ textDecoration: "line-through", color: "red", fontWeight: "bold" }}>{course?.currency} {course?.price}</Typography>
+                                    <Typography sx={{ color: "green", fontWeight: "bold" }}>{course?.currency} {(course?.price * ((100 - course?.discount) / 100)).toFixed(2)}</Typography>
+                                </>
+                            ) : (
+                                <Typography sx={{ fontWeight: "bold" }}>{course?.currency} {course?.price}</Typography>
+                            )
+                        }
                     </Grid>
-                ) : (
-                    <Button onClick={reroute} sx={{ ...main_button }}>
-                        View Course
-                    </Button>
-                )}
+                    <Grid item xs={3} direction="row" alignItems="center" display="flex" justifyContent="flex-end">
+                        <Button onClick={reroute} sx={{ ...main_button }}>
+                            View Course
+                        </Button>
+                    </Grid>
+                </Grid>
             </>)}
         </Card>
     );
@@ -84,4 +77,4 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = { logout };
 
-export default connect(mapStateToProps, mapDispatchToProps)(CourseCard);
+export default connect(mapStateToProps, mapDispatchToProps)(InstructorCourseCard);

@@ -15,6 +15,17 @@ async function addAmountOwed(walletId, rawAmount, currency) {
     await wallet.save()
 }
 
+async function transfer(instructorWalletId, traineeWalletId, amount) {
+    const contract = await Contract.findOne({})
+    const deduct = amount * ((100 - contract.percentageTaken) / 100) * -1
+    const instructorWallet = await Wallet.findById(instructorWalletId)
+    const traineeWallet = await Wallet.findById(traineeWalletId) 
+    instructorWallet.$inc("balance", deduct)
+    traineeWallet.$inc("balance", amount)
+    await instructorWallet.save()
+    await traineeWallet.save()
+}
+
 async function getWallet(req, res) {
     try {
         var result = await Wallet.findById(req.user.walletId)
@@ -27,4 +38,4 @@ async function getWallet(req, res) {
     }
 }
 
-module.exports = { addAmountOwed, getWallet }
+module.exports = { addAmountOwed, getWallet, transfer }

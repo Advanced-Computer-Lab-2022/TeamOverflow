@@ -9,6 +9,7 @@ import { changePassword } from '../../app/store/actions/authActions';
 import countryList from 'country-json/src/country-by-name.json'
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { MainInput, main_button } from '../../app/components/Styles';
 
 
 const theme = createTheme();
@@ -67,7 +68,7 @@ export const EditProfile = ({ auth, editProfile }) => {
                     </Typography>
                     <Box  sx={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                         <Box   sx={{ mt: 1}}>
-                        <TextField
+                        <MainInput
                                 margin="normal"
                                 fullWidth
                                 name="email"
@@ -76,7 +77,7 @@ export const EditProfile = ({ auth, editProfile }) => {
                                 id="email"
                                 
                             />
-                        <TextField
+                        <MainInput
                                 margin="normal"
                                 fullWidth
                                 id="name"
@@ -110,7 +111,7 @@ export const EditProfile = ({ auth, editProfile }) => {
                         type="submit"
                         
                         variant="contained"
-                        sx={{ mt: 3, mb: 2, bgcolor: "var(--secColor)", width: "42%" }}
+                        sx={{ mt: 3, mb: 2, ...main_button }}
 
                    >
                         Update

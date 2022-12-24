@@ -17,8 +17,11 @@ const Requests = require('../models/Requests');
 const Refund = require('../models/Refund');
 const bcrypt = require("bcrypt");
 const Wallet = require('../models/Wallet');
-const {addAmountOwed} = require('../controllers/walletController');
+const { addAmountOwed, transfer } = require('../controllers/walletController');
 const moment = require("moment");
+const Trainee = require('../models/Trainee');
+const Report = require('../models/Report');
+const Followup = require('../models/ReportFollowup');
 
 /* GET admins listing. */
 router.get('/', function (req, res) {
@@ -129,8 +132,32 @@ router.post('/addTrainee', verifyAdmin, async function (req, res) {
   }
 });
 
-//register corporate-trainee to a course
-router.post('/registerCourse', verifyAdmin, async function (req, res) {
+// a promotion for specific courses, several courses or all courses
+router.post('/defineDiscount', verifyAdmin, async function (req, res) {
+  try {
+    const courses = req.body.courseIds
+    for (let i = 0; i < courses.length; i++) {
+      await Course.findByIdAndUpdate(courses[i], { $set: { discount: req.body.discount, deadline: req.body.deadline } })
+    }
+    res.status(200).json({message: `Discount added to ${courses.length} course(s)`})
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+})
+
+//view course requests from corporate trainees
+router.get('/viewRequests', verifyAdmin, async function (req, res) {
+  try {
+    var results = await Requests.paginate({}, { page: req.query.page, limit: 10, populate: ["courseId", { path: "traineeId", select: { _id: 1, name: 1, email: 1, corporation: 1 } }] })
+    res.status(200).json({type: "Requests", results: results})
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+
+});
+
+//grant access for corporate-trainee to a course
+router.post('/grantAccess', verifyAdmin, async function (req, res) {
   try {
     var request = await Requests.findById(req.body.requestId)
     if (!(await StudentCourses.findOne({ traineeId: request.traineeId, courseId: request.courseId }))) {
@@ -143,18 +170,20 @@ router.post('/registerCourse', verifyAdmin, async function (req, res) {
           completion[itemIds[i]] = false
         }
       }
+      var courseSubtotal = course.discount && moment().isBefore(course.deadline) ? course.price * ((100 - course.discount) / 100) : course.price
       const traineeCourse = new StudentCourses({
         traineeId: request.traineeId,
         courseId: request.courseId,
         completion: completion
       });
-      var courseSubtotal = course.discount && moment().isBefore(course.deadline) ? course.price * ((100 - course.discount)/100) : course.price
       await addAmountOwed(course.instructorId.walletId, courseSubtotal, "USD")
       const newTraineeCourse = await traineeCourse.save();
       await request.delete();
       course.$inc("enrolled", 1)
       await course.save()
-      res.status(200).json(newTraineeCourse)
+      await request.delete()
+      var results = await Requests.paginate({}, { page: req.query.page, limit: 10, populate: ["courseId", { path: "traineeId", select: { _id: 1, name: 1, email: 1, corporation: 1 } }] })
+      res.status(200).json({type: "Requests", results: results})
     } else {
       res.status(400).json({ message: "Trainee already registered to this course" })
     }
@@ -163,56 +192,77 @@ router.post('/registerCourse', verifyAdmin, async function (req, res) {
   }
 });
 
-// a promotion for specific courses, several courses or all courses
-router.post('/defineDiscount', verifyAdmin, async function (req, res) {
+//view refund requests from trainees
+router.get('/viewRefunds', verifyAdmin, async function (req, res) {
   try {
-    const courses = req.body.courses
-    for (let i = 0; i < courses.length; i++) {
-      var result = await Course.findByIdAndUpdate(courses[i], { $set: { discount: req.body.discount, deadline: req.body.deadline } }, { new: true })
-    }
-    res.status(200).json(result)
+    var results = await Refund.paginate({}, { page: req.query.page, limit: 10, populate: ["registrationId", { path: "instructorId", select: { _id: 1, name: 1, email: 1 } }] })
+    res.status(200).json({type: "Refunds", results: results})
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
 })
 
-//view course requests from corporate trainees
-router.get('/viewRequest', verifyAdmin, async function (req, res) {
+//refund an amount to a trainee to their wallet
+router.post('/refundTraniee', verifyAdmin, async function (req, res) {
   try {
-    var results = await Requests.find({}).populate([{ path: "courseId", select: { _id: 1, title: 1 } }, { path: "traineeId", select: { _id: 1, name: 1 } }])
+    var refund = await Refund.findById(req.body.refundId).populate(["traineeId", "instructorId", "registrationId"])
+    if (refund) {
+      await transfer(refund.instructorId.walletId, refund.traineeId.walletId, refund.registrationId.amountPaid)
+      await StudentCourses.findByIdAndDelete(refund.registrationId._id)
+      await refund.delete()
+      var results = await Refund.paginate({}, { page: req.body.page, limit: 10, populate: ["registrationId", { path: "instructorId", select: { _id: 1, name: 1, email: 1 } }] })
+      res.status(200).json({type: "Refunds", results: results})
+    } else {
+      res.status(403).json({ message: "Refund request does not exist" })
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+})
+
+//view users reported problems
+router.get('/viewReports', verifyAdmin, async function (req, res) {
+  try {
+    const status = req.query.status || { $regex: ".*" }
+    const type = req.query.type || { $regex: ".*" }
+    var results = await Report.paginate({ status: status, type: type }, { page: req.query.page, limit: 10 })
     res.status(200).json(results)
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
-
 })
 
-//grant corporate trainees access to specific courses
-router.post('/grandAccess', verifyInstructor, async function (req, res) {
+//view one reported problem with followups
+router.get('/viewFollowups', verifyAdmin, async function (req, res) {
   try {
-    const noRequests = req.body.noRequests
-    for (let i = 0; i < noRequests.lenght; i++) {
-      var traniee =  await Requests.findOne({ traineeId: req.body.traineeId })
-      var result = await Requests.findByIdAndUpdate(trainee._id, { $set: { status : req.body.status} }, { new: true }) 
+    var result = await Report.findById(req.query.reportId)
+    var report = result.toJSON()
+    switch (report.userRef) {
+      case "Trainee": report.userId = await Trainee.findById(report.userId, { _id: 1, name: 1, email: 1 }); break;
+      case "CorporateTrainee": report.userId = await CorporateTrainee.findById(report.userId, { _id: 1, name: 1, email: 1 }); break;
+      case "Instructor": report.userId = await Instructor.findById(report.userId, { _id: 1, name: 1, email: 1 }); break;
     }
-    res.status(200).json(result)
+    var followups = await Followup.find({ reportId: req.query.reportId })
+    res.status(200).json({ report: report, followups: followups })
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
 })
 
-
-//refund an amount to a trainee to their wallet
-router.post('/refundTraniee', verifyInstructor, async function (req, res) {
-  try{
-    var wallet =  await Refund.findOne({ walletId: req.body.walletId })
-    var refundAmount = await Refund.findOne({ walletId: req.body.walletId },{amount:1})
-    var result = await Wallet.findByIdAndUpdate(wallet._id, { $inc: { balance : refundAmount } }, { new: true }) 
-    res.status(200).json(result)
-  }catch (err){
+//respond to a report
+router.post('/respondReport', verifyAdmin, async function (req, res) {
+  try {
+    var result = await Report.findByIdAndUpdate(req.body.reportId, { $set: { status: req.body.status } }, { new: true })
+    var report = result.toJSON()
+    switch (report.userRef) {
+      case "Trainee": report.userId = await Trainee.findById(report.userId, { _id: 1, name: 1, email: 1 }); break;
+      case "CorporateTrainee": report.userId = await CorporateTrainee.findById(report.userId, { _id: 1, name: 1, email: 1 }); break;
+      case "Instructor": report.userId = await Instructor.findById(report.userId, { _id: 1, name: 1, email: 1 }); break;
+    }
+    res.status(200).json(report)
+  } catch (err) {
     res.status(400).json({ message: err.message })
   }
-  
 })
 
 router.put("/edit", verifyAdmin, async (req, res) => {
@@ -228,7 +278,6 @@ router.put("/edit", verifyAdmin, async (req, res) => {
     return res.status(400).json({ message: "Edit Failed" })
   }
 })
-
 
 
 

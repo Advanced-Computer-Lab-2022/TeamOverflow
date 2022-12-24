@@ -9,6 +9,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { LoginUser, guestVisit } from '../../app/store/actions/authActions';
 import {Navigate, NavLink, Route, Routes} from "react-router-dom";
+import { MainInput, main_button } from '../../app/components/Styles';
 
 const theme = createTheme();
 
@@ -37,20 +38,20 @@ export const Index = ({LoginUser, user, token, guestVisit}) => {
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 8,
+            paddingTop: 8,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+        <Avatar sx={{ m: 1, bgcolor: 'var(--secColor)' }}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-            <TextField
+            <MainInput
               margin="normal"
               required
               fullWidth
@@ -60,7 +61,7 @@ export const Index = ({LoginUser, user, token, guestVisit}) => {
               autoComplete="username"
               autoFocus
             />
-            <TextField
+            <MainInput
               margin="normal"
               required
               fullWidth
@@ -91,7 +92,7 @@ export const Index = ({LoginUser, user, token, guestVisit}) => {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 2, ...main_button }}
             >
               Sign In
             </Button>

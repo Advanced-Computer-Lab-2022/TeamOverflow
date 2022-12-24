@@ -16,6 +16,22 @@ const Trainee = require('../models/Trainee');
 const Requests = require('../models/Requests');
 const Notes = require('../models/Notes');
 
+function calculateProgress(completion) {
+  var progress = 0
+  if (completion) {
+    var keysbyindex = Object.keys(completion);
+    var total = keysbyindex.length;
+    var done = 0;
+    for (let i = 0; i < keysbyindex.length; i++) {
+      if (completion[keysbyindex[i]]) {
+        done++;
+      }
+    }
+    progress = ((done / total) * 100).toFixed(0)
+  }
+  return progress
+}
+
 async function openExercise(req, res) {
   try {
     var exercise = await Exercise.findById(req.query.exerciseId, { correctIndecies: 0 })
@@ -28,16 +44,8 @@ async function openExercise(req, res) {
 async function getProgress(req, res, regCourse) {
   try {
     var completion = regCourse.completion
-    var keysbyindex = Object.keys(completion);
-    var total = keysbyindex.length;
-    var done = 0;
-    for (let i = 0; i < keysbyindex.length; i++) {
-      if (completion[keysbyindex[i]]) {
-        done++;
-      }
-    }
-    const progress = (done / total) * 100
-    res.status(200).json({ progress: progress.toFixed(2), completion: completion })
+    const progress = calculateProgress(completion)
+    res.status(200).json({ progress: progress, completion: completion })
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
@@ -77,13 +85,13 @@ async function submitSolution(req, res, regCourse) {
 
 async function openCourse(req, res) {
   try {
-    var course = await Course.findById(req.query.courseId).populate(["videoId", { path: "examId", select: { correctIndecies: 0 } }]).select({ examId: { correctIndecies: 0 } })
+    var course = await Course.findById(req.query.courseId).populate(["videoId", { path: "examId", select: { correctIndecies: 0 } }, {path: "instructorId", select:{name: 1, email: 1, bio: 1, rating:1, numberOfRatings: 1}}]).select({ examId: { correctIndecies: 0 } })
     var courseObj = JSON.parse(JSON.stringify(course))
     courseObj.price = await forex(courseObj.price, req.user.country)
     var subtitles = await Subtitle.find({ courseId: req.query.courseId }).populate(["videoId", { path: "exerciseId", select: { correctIndecies: 0 } }])
     var exerciseIds = [course.examId?._id]
     exerciseIds.push(subtitles.map((subtitle) => subtitle.exerciseId?._id))
-    var solutions = await Answer.find({ exerciseId: { $in: exerciseIds.flat() } })
+    var solutions = await Answer.find({ exerciseId: { $in: exerciseIds.flat() }, traineeId: req.reqId })
     res.status(200).json({ course: courseObj, subtitles: subtitles, examSolutions: solutions })
   } catch (err) {
     res.status(400).json({ message: err.message })
@@ -104,24 +112,12 @@ async function watchVideo(req, res, regCourse) {
 
 async function getRegistered(req, res) {
   try {
-    var results = await StudentCourses.paginate({ traineeId: req.reqId }, { page: req.query.page, limit: 10, populate: { path: "courseId" } })
+    var results = await StudentCourses.paginate({ traineeId: req.reqId, onHold: false }, { page: req.query.page, limit: 10, populate: { path: "courseId" } })
     var allResults = []
     for (let i = 0; i < results.docs.length; i++) {
-      var progress = 0
       var reqCourse = results.docs[i].toJSON()
       var completion = reqCourse.completion
-      if (completion) {
-        var keysbyindex = Object.keys(completion);
-        var total = keysbyindex.length;
-        var done = 0;
-        for (let i = 0; i < keysbyindex.length; i++) {
-          if (completion[keysbyindex[i]]) {
-            done++;
-          }
-        }
-        progress = (done / total) * 100
-      }
-      reqCourse.progress = progress
+      reqCourse.progress = calculateProgress(completion)
       allResults.push(reqCourse)
     }
     results.docs = allResults
@@ -134,16 +130,19 @@ async function getRegistered(req, res) {
 
 async function requestCourse(req, res) {
   try {
-    const regCourse = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
-    if (!regCourse) {
+    const regCourse = await StudentCourses.findOne({ courseId: req.body.courseId, traineeId: req.reqId })
+    const requested = await Requests.findOne({ courseId: req.body.courseId, traineeId: req.reqId })
+    if (!regCourse && !requested) {
       const request = new Requests({
         traineeId: req.reqId,
-        courseId: req.query.courseId,
+        courseId: req.body.courseId,
       });
       await request.save();
       return res.status(200).json({ message: "Request Made" })
-    } else {
+    } else if (!requested) {
       res.status(403).json({ message: "You are already registered to this course" })
+    } else {
+      res.status(400).json({ message: "You have already requested this course" })
     }
   } catch (err) {
     res.status(400).json({ message: err.message })
@@ -165,4 +164,4 @@ async function addNote(req, res) {
   }
 }
 
-module.exports = { getGrade, openExercise, submitSolution, openCourse, watchVideo, getRegistered, getProgress, requestCourse, addNote };
+module.exports = { calculateProgress, getGrade, openExercise, submitSolution, openCourse, watchVideo, getRegistered, getProgress, requestCourse, addNote };

@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Routes, Route } from "react-router-dom";
-import { TraineeProfile ,Register, Terms, Index, AddUsers, AdminHome, AllCourses, TraineeCourses, TraineeHome, InstructorCourses, InstructorHome, CreateCourse, Rate, SingleCourseInstructor, SingleCourse, InstructorVidView, CreateExam, UploadVideo, Discount, RatingList, InstructorProfile, InstructorEditProfile, InstructorContract, StudentVidView, Exam, Result, Forgot, Reset, PaymentDone, EditTraineeProfile, EditInstructorPassword, CoursePreview } from "./Pages";
+import { ReportedProblems, TraineeProfile, Register, Terms, Index, AddUsers, AdminHome, AllCourses, TraineeCourses, TraineeHome, InstructorCourses, InstructorHome, CreateCourse, Rate, SingleCourseInstructor, SingleCourse, InstructorVidView, CreateExam, UploadVideo, Discount, RatingList, InstructorProfile, InstructorEditProfile, InstructorContract, StudentVidView, Exam, Result, Forgot, Reset, PaymentDone, EditTraineeProfile, EditInstructorPassword, CoursePreview, ReportProblem, Followup, ReportView, DefineDiscounts } from "./Pages";
 import { TopBar } from "./app/components";
 import { useLocation } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
@@ -23,7 +23,7 @@ export const Router = () => {
         <Route path="/Admin/profile" exact element={<AdminProfile />} />
         <Route path="/Admin/edit" exact element={<EditAdminProfile />} />
         <Route path="/Admin/editPassword" exact element={<EditAdminPassword />} />
-
+        <Route path="/Admin/promotions" exact element={<DefineDiscounts />} />
 
       </Route>
       <Route exact element={<ProtectedRoute allowed={["Instructor"]} />}>
@@ -33,7 +33,6 @@ export const Router = () => {
         <Route path="/Instructor/profile" exact element={<InstructorProfile />} />
         <Route path="/Instructor/edit" exact element={<InstructorEditProfile />} />
         <Route path="/Instructor/editPassword" exact element={<EditInstructorPassword />} />
-
         <Route path="/Instructor/ratings" exact element={<RatingList />} />
         <Route path="/Instructor/contract" exact element={<InstructorContract />} />
         <Route path="/courses/create" exact element={<CreateCourse />} />
@@ -56,6 +55,14 @@ export const Router = () => {
         <Route path="/courses" exact element={<AllCourses />} />
         <Route path="/courses/preview/:id" exact element={<CoursePreview />} />
         <Route path="/course/video/:id" exact element={<InstructorVidView />} />
+      </Route>
+      <Route exact element={<ProtectedRoute allowed={["Corporate", "Trainee", "Instructor", "Admin"]} />}>
+        <Route path="/reports" exact element={<ReportedProblems />} />
+        <Route path="/reports/single/:id" exact element={<ReportView />} />
+      </Route>
+      <Route exact element={<ProtectedRoute allowed={["Corporate", "Trainee", "Instructor"]} />}>
+        <Route path="/reports/add" exact element={<ReportProblem />} />
+        <Route path="/reports/followup/:id" exact element={<Followup />} />
       </Route>
       <Route exact element={<ProtectedRoute allowed={["Corporate", "Trainee"]} />}>
         <Route path="/Rate/:id" exact element={<Rate />} />

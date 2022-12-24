@@ -5,8 +5,7 @@ import { connect } from "react-redux";
 import { changePassword } from '../../app/store/actions/authActions';
 import LockIcon from '@mui/icons-material/Lock';
 import { useNavigate } from 'react-router-dom';
-
-
+import { MainInput, main_button } from '../../app/components/Styles';
 
 const theme = createTheme();
 
@@ -53,7 +52,7 @@ export const EditPassword = ({ auth,  changePassword }) => {
                     </Typography>
                     <Box  sx={{ maxWidth:"300px"}}>
 
-                            <TextField
+                            <MainInput
                                 margin="normal"
                                 fullWidth
                                 name='prevPassword'
@@ -61,7 +60,7 @@ export const EditPassword = ({ auth,  changePassword }) => {
                                 label="Old Password"
                                 autoFocus                            
                             />
-                            <TextField
+                            <MainInput
                                 margin="normal"
                                 fullWidth
                                 name='password'
@@ -74,7 +73,7 @@ export const EditPassword = ({ auth,  changePassword }) => {
                     <Button
                         type="submit"
                         variant="contained"
-                        sx={{ mt: 3, mb: 2, bgcolor: "var(--secColor)", width:"26%"}}
+                        sx={{ mt: 3, mb: 2, ...main_button}}
 
                    >
                         Update

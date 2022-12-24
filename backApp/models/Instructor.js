@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 var instructorSchema = new mongoose.Schema({
     username: {type: String, required: true},
     password: {type: String, required: true},
-    country: {type: String},
+    country: {type: String, default: "Canada"},
     name: {type: String},
     email: {type: String},
     bio: {type: String},

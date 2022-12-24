@@ -3,7 +3,7 @@ import { Typography, Paper, IconButton, InputBase, Box, Container, Pagination, C
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { clearCourses, filterCoursesInstructor, getSubjects } from '../../app/store/actions/coursesActions';
-import { CourseCard } from '../../app/components';
+import { CourseCard, InstructorCourseCard } from '../../app/components';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import SearchIcon from '@mui/icons-material/Search';
 import { centered_flex_box, main_button } from '../../app/components/Styles';
@@ -19,26 +19,21 @@ export const InstructorCourses = ({ auth, courses, getSubjects, filterCoursesIns
     getSubjects()
   }, [])
 
-  const [formData, setFormData] = React.useState({
+  const initialState = {
     minPrice: 0,
     maxPrice: 5000,
     minRating: 0,
     maxRating: 5,
     subject: "",
     searchQuery: "",
-    page: parseInt(courses?.results?.page) || 1
-  })
+    page: 1
+  }
+
+  const [formData, setFormData] = React.useState(initialState)
 
   const handleClearFilter = (event) => {
-    setFormData({
-      minPrice: 0,
-      maxPrice: 5000,
-      minRating: 0,
-      maxRating: 5,
-      subject: "",
-      searchQuery: "",
-      page: 1
-    })
+    setFormData(initialState)
+    filterCoursesInstructor({ token: auth.token, ...initialState });
   }
 
   const { minPrice, maxPrice, minRating, maxRating, searchQuery, page, subject } = formData
@@ -164,7 +159,7 @@ export const InstructorCourses = ({ auth, courses, getSubjects, filterCoursesIns
               {courses?.results?.docs?.map((course) => {
                 return (
                   <Grid item xs={12}>
-                    <CourseCard course={course} />
+                    <InstructorCourseCard course={course} />
                   </Grid>
                 )
               })}
