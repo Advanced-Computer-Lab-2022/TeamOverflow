@@ -4,17 +4,17 @@ import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, FormHelperText, InputLabel } from '@mui/material';
+import { Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, FormHelperText, InputLabel , Card, Toolbar } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
-import { Navigate, NavLink, Route, Routes, useParams } from "react-router-dom";
+import { useNavigate , Navigate, NavLink, Route, Routes, useParams } from "react-router-dom";
 import { registerCourse } from '../../app/store/actions/traineeActions';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 const theme = createTheme();
 
 export const Completed = ({ token, user, registerCourse }) => {
-
+  const navigate = useNavigate();
   const { session_id, courseId } = useParams()
 
   React.useEffect(() => {
@@ -31,10 +31,17 @@ export const Completed = ({ token, user, registerCourse }) => {
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xl">
         <CssBaseline />
-        <Typography>Payment Completed</Typography>
-        <CheckCircleIcon sx={{ color: "green" }} />
-
-        <NavLink to={`/courses/student/single/${courseId}`}>Open Course</NavLink>
+       <Box display={"flex"} align='left' sx={{flexDirection:"column" ,mt:5, maxWidth:250, ml: 60}}>
+           <Box color={"var(--secColor)"} >
+             <CheckCircleIcon color="success"  sx={{ fontSize: 60 , mt: 12, ml: 12}} />
+               <Typography  color={"var(--secColor)"} fontSize="30px"  align="center">Payment Completed</Typography> 
+               <Button onClick={() => navigate (`/courses/student/single/${courseId}`) } type="submit" 
+                 variant="contained"
+                  sx={{ mt: 4, ml: 6.5, backgroundColor: "var(--secColor)" }}
+           >
+            go to course </Button>
+         </Box>
+        </Box>        
       </Container>
     </ThemeProvider>
   )
