@@ -36,11 +36,11 @@ export const TraineeProfile = ({ user, token }) => {
 
                 <Box display={"flex"} sx={{ flexDirection: "row" }}>
                     <Box display={"flex"} align='left' sx={{ flexDirection: "column", mt: 5, maxWidth: 250, ml: 5 }}>
-                        <Box display="flex" justifyContent="left" gap={"5px"} color={"var(--secColor)"} sx={{ flexDirection: "row" }}>
+                        {user?.email && <><Box display="flex" justifyContent="left" gap={"5px"} color={"var(--secColor)"} sx={{ flexDirection: "row" }}>
                             <EmailIcon sx={{ fontSize: 25, marginTop: 0.3 }} />
                             <Typography color={"var(--secColor)"} fontSize="20px">Email:</Typography>
                         </Box>
-                        <Typography color='#5b5b5b' fontSize="20px" sx={{ ml: 4 }}>{user?.email} </Typography>
+                        <Typography color='#5b5b5b' fontSize="20px" sx={{ ml: 4 }}>{user?.email} </Typography></>}
                     </Box>
                 </Box>
             </Container>

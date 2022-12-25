@@ -1,11 +1,6 @@
 import * as React from 'react';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { Typography, Rating, Card, Container, CssBaseline, Button, FormHelperText, Select, MenuItem } from '@mui/material';
+import { Typography, Container,Button } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import PublicIcon from '@mui/icons-material/Public';
@@ -13,10 +8,8 @@ import EmailIcon from '@mui/icons-material/Email';
 import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
-import StarIcon from '@mui/icons-material/Star';
 import { connect } from "react-redux";
-import { Navigate, NavLink, useNavigate, useParams } from 'react-router-dom';
-import moment from "moment";
+import {useNavigate} from 'react-router-dom';
 import { Box } from '@mui/system';
 import { getWallet } from '../../app/store/actions/authActions';
 
@@ -51,32 +44,35 @@ export const InstructorProfile = ({ user, token, wallet, getWallet }) => {
                 <AccountCircleIcon sx={{ fontSize: 200, color: 'black', opacity: 1, mt: 8 }} />
             </Box>
             <Typography fontWeight={"Bold"} fontSize="50px" color={"black"} align='center'>{user?.name}</Typography>
-            <Box display="flex" justifyContent="left" gap={"5px"} color={"var(--secColor)"} sx={{ flexDirection: "row", mt: 4}}>
+            {user?.bio && <><Box display="flex" justifyContent="left" gap={"5px"} color={"var(--secColor)"} sx={{ flexDirection: "row", mt: 4}}>
                 <LibraryBooksIcon sx={{ fontSize: 25, marginTop: 0.3 }}/>
                 <Typography fontSize="20px">Bio:</Typography>
             </Box>
-            <Typography display="flex" justifyContent="center" color={"grey"}>{user?.bio}</Typography>
+            <Typography display="flex" justifyContent="center" color={"grey"}>{user?.bio}</Typography></>}
 
             <Box display={"flex"} sx={{ flexDirection: "row" }}>
                 <Box display={"flex"} align='left' sx={{ flexDirection: "column", mt: 5, maxWidth: 250, ml: 5 }}>
-                    <Box display="flex" justifyContent="left" gap={"5px"} color={"var(--secColor)"} sx={{ flexDirection: "row" }}>
+                    {user?.email && <><Box display="flex" justifyContent="left" gap={"5px"} color={"var(--secColor)"} sx={{ flexDirection: "row" }}>
                         <EmailIcon sx={{ fontSize: 25, marginTop: 0.3 }} />
                         <Typography fontSize="20px">Email:</Typography>
                     </Box>
-                    <Typography color='#5b5b5b' fontSize="20px" sx={{ ml: 4 }}>{user?.email} </Typography>
-                    <Box display="flex" justifyContent="left" gap={"5px"} color={"var(--secColor)"} sx={{ flexDirection: "row", mt: 2 }}>
+                    <Typography color='#5b5b5b' fontSize="20px" sx={{ ml: 4 }}>{user?.email} </Typography></>}
+
+                    {user?.country && <><Box display="flex" justifyContent="left" gap={"5px"} color={"var(--secColor)"} sx={{ flexDirection: "row", mt: 2 }}>
                         <PublicIcon sx={{ fontSize: 25, marginTop: 0.5 }} />
                         <Typography fontSize="20px">Country:</Typography>
                     </Box>
-                    <Typography color={"#5b5b5b"} fontSize="20px" sx={{ ml: 4 }}>{user?.country}</Typography>
-                    <Box display="flex" justifyContent="left" color={"var(--secColor)"} sx={{ flexDirection: "row", mt: 2 }}>
+                    <Typography color={"#5b5b5b"} fontSize="20px" sx={{ ml: 4 }}>{user?.country}</Typography></>}
+
+                    {user?.gender && <><Box display="flex" justifyContent="left" color={"var(--secColor)"} sx={{ flexDirection: "row", mt: 2 }}>
                         <MaleIcon sx={{ fontSize: 20, marginTop: 0.5 }} />
                         <Typography color={"var(--secColor)"} fontSize="20px">/</Typography>
                         <FemaleIcon sx={{ fontSize: 20, marginTop: 0.5 }} />
 
                         <Typography fontSize="20px">Gender:</Typography>
                     </Box>
-                    <Typography color={"#5b5b5b"} fontSize="20px" sx={{ ml: 4 }}>{user?.gender}</Typography>
+                    <Typography color={"#5b5b5b"} fontSize="20px" sx={{ ml: 4 }}>{user?.gender}</Typography></>}
+
                 </Box>
 
                     <Box display={"flex"} align='left' sx={{ flexDirection: "column", mt: 5, maxWidth: 250, ml: 60 }}>
