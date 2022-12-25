@@ -67,7 +67,21 @@ export const registerCourse = (data) => (dispatch) => {
   postRequest(courseData, undefined, undefined, token, endpoints.trainee.registercourse)
     .then((response) => {
       const { data } = response;
-      return notification.success({ message: "successful registration " })
+      return notification.success({ message: "Registration Successful" })
+    })
+    .catch((err) => {
+      return notification.error({ message: err?.response?.data?.message })
+    });
+};
+
+export const requestRefund = (data, navigate) => (dispatch) => {
+  var { courseData, token } = data
+
+  postRequest(courseData, undefined, undefined, token, endpoints.trainee.requestRefund)
+    .then((response) => {
+      const { data } = response;
+      navigate("/")
+      return notification.success({ message: data.message })
     })
     .catch((err) => {
       return notification.error({ message: err?.response?.data?.message })
