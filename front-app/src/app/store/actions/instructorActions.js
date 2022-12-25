@@ -1,8 +1,8 @@
 import { UPDATE_USER, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL } from "./types";
-import { COURSE, COURSE_SUCCESS, COURSE_FAIL, SUBJECT_SUCCESS } from "./types";
+import { COURSE, SINGLE_COURSE_SUCCESS, COURSE_SUCCESS, COURSE_FAIL, SUBJECT_SUCCESS } from "./types";
 import { CONTRACT, CONTRACT_SUCCESS, CONTRACT_FAIL } from "./types";
 
-import { postRequest, putRequest, getRequest } from "../../../core/network";
+import { postRequest, putRequest, getRequest, delRequest } from "../../../core/network";
 import endpoints from "../../../constants/endPoints.json";
 import { notification } from "antd";
 
@@ -71,6 +71,69 @@ export const createCourse = (data, navigate) => (dispatch) => {
       return dispatch({
         type: COURSE_FAIL,
       });
+    });
+};
+
+export const publishCourse = (data) => (dispatch) => {
+  dispatch({ type: COURSE });
+  var {info, token} = data
+
+  postRequest(info, undefined, undefined, token, endpoints.instructor.publishCourse)
+    .then((response) => {
+      console.log(response)
+      const { data } = response;
+      notification.success({message: "Course Published"})
+      return dispatch({
+        type: SINGLE_COURSE_SUCCESS,
+        payload: data
+      });
+    })
+    .catch((err) => {
+      notification.error({message: err?.response?.data?.message || "Network Error"})
+      console.log(err);
+      return dispatch({
+        type: COURSE_FAIL,
+      });
+    });
+};
+
+export const closeCourse = (data) => (dispatch) => {
+  dispatch({ type: COURSE });
+  var {info, token} = data
+
+  postRequest(info, undefined, undefined, token, endpoints.instructor.closeCourse)
+    .then((response) => {
+      console.log(response)
+      const { data } = response;
+      notification.success({message: "Course Closed"})
+      return dispatch({
+        type: SINGLE_COURSE_SUCCESS,
+        payload: data
+      });
+    })
+    .catch((err) => {
+      notification.error({message: err?.response?.data?.message || "Network Error"})
+      console.log(err);
+      return dispatch({
+        type: COURSE_FAIL,
+      });
+    });
+};
+
+export const deleteCourse = (data, navigate) => (dispatch) => {
+  dispatch({ type: COURSE });
+  var {info, token} = data
+
+  delRequest(info, undefined, token, endpoints.instructor.deleteCourse)
+    .then((response) => {
+      console.log(response)
+      const { data } = response;
+      notification.success({message: data.message})
+      navigate(-1)
+    })
+    .catch((err) => {
+      notification.error({message: err?.response?.data?.message || "Network Error"})
+      console.log(err);
     });
 };
 

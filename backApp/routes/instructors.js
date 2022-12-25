@@ -192,11 +192,11 @@ router.post('/close', verifyInstructor, async function (req, res) {
 //Delete an unpublished course
 router.delete('/course', verifyInstructor, async function (req, res) {
   try {
-    var result = await Course.findOne({ _id: req.body.courseId, instructorId: req.reqId })
+    var result = await Course.findOne({ _id: req.query.courseId, instructorId: req.reqId })
     if (result && result.enrolled === 0 && !result.published) {
       await Exercise.findByIdAndDelete(result.examId)
       await Video.findByIdAndDelete(result.videoId)
-      var subtitles = await Subtitle.find({ courseId: req.body.courseId })
+      var subtitles = await Subtitle.find({ courseId: req.query.courseId })
       subtitles.map(async (subtitle) => {
         await Exercise.findByIdAndDelete(subtitle.exerciseId)
         await Video.findByIdAndDelete(subtitle.videoId)

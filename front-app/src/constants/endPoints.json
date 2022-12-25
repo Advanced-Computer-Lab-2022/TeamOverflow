@@ -50,7 +50,10 @@
       "reportProblem":"instructor/reportProblem",
       "viewReports":"instructor/viewReports",
       "viewFollowups":"instructor/viewFollowups",
-      "addFollowup":"instructor/addFollowup"
+      "addFollowup":"instructor/addFollowup",
+      "publishCourse":"instructor/publish",
+      "closeCourse":"instructor/close",
+      "deleteCourse":"instructor/course"
    },
    "corporatetrainee":{
       "setCountry":"corpTrainee/selectCountry",
