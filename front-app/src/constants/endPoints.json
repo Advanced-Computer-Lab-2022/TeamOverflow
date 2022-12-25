@@ -36,6 +36,7 @@
       "createCourse":"course/create",
       "createExercise":"instructor/createSubtitleExercise",
       "createExam":"instructor/createCourseExercise",
+      "getExercise":"instructor/exercise",
       "getVideo":"video/",
       "uploadSubVid":"instructor/subtitleVideo",
       "uploadCourseVid":"instructor/coursePreview",

@@ -58,7 +58,8 @@ export const EditPassword = ({ auth,  changePassword }) => {
                                 name='prevPassword'
                                 id="prevPassword"
                                 label="Old Password"
-                                autoFocus                            
+                                autoFocus
+                                required={true}                           
                             />
                             <MainInput
                                 margin="normal"
@@ -66,7 +67,8 @@ export const EditPassword = ({ auth,  changePassword }) => {
                                 name='password'
                                 id="password"
                                 label="New Password"
-                                autoFocus                            
+                                autoFocus
+                                required={true}                           
                             />
 
                     </Box>

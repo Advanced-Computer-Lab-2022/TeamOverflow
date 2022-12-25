@@ -4,8 +4,8 @@ import { Typography, Box, Container, TextField, CssBaseline, Button, Avatar } fr
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { uploadVideo } from '../../app/store/actions/videoActions';
-import { useParams } from 'react-router-dom';
-import { MainInput, main_button } from '../../app/components/Styles';
+import { useNavigate, useParams } from 'react-router-dom';
+import { MainInput, MainTextArea, main_button } from '../../app/components/Styles';
 
 const theme = createTheme();
 
@@ -13,6 +13,7 @@ export const UploadVideo = ({ auth, uploadVideo }) => {
 
     const params = useParams().id.split("=");
     const id = params[1];
+    const navigate = useNavigate();
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -27,7 +28,7 @@ export const UploadVideo = ({ auth, uploadVideo }) => {
             },
             token: auth.token
         }
-        uploadVideo(details);
+        uploadVideo(details, navigate);
     };
 
     return (
@@ -59,7 +60,7 @@ export const UploadVideo = ({ auth, uploadVideo }) => {
                             autoComplete="title"
                             autoFocus
                         />
-                        <MainInput
+                        <MainTextArea
                             margin="normal"
                             required
                             fullWidth

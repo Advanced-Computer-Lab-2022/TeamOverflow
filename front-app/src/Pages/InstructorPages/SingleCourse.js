@@ -4,21 +4,30 @@ import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { Typography, Box, Card, Container, CssBaseline, Button, FormHelperText, Select, MenuItem } from '@mui/material';
+import { Typography, Box, Card, Container, CssBaseline, Button, FormHelperText, Select, MenuItem, CircularProgress } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { NavLink, useParams } from 'react-router-dom';
 import { viewCourse } from '../../app/store/actions/coursesActions';
 import moment from "moment";
+import { centered_flex_box } from '../../app/components/Styles';
 
 const theme = createTheme();
 
-export const InstructorSingleCourse = ({ auth, viewCourse, course }) => {
+export const InstructorSingleCourse = ({ auth, viewCourse, course, isLoading }) => {
 
     const courseId = useParams().id
     React.useEffect(() => {
         viewCourse({ id: courseId, token: auth.token })
     }, [])
+
+    if (isLoading) {
+        return (
+            <Box sx={{...centered_flex_box, minHeight: "100vh"}}>
+                <CircularProgress sx={{ color: "var(--secColor)" }} />
+            </Box>
+        )
+    }
 
     return (
         <ThemeProvider theme={theme}>
@@ -40,8 +49,8 @@ export const InstructorSingleCourse = ({ auth, viewCourse, course }) => {
                 }
                 <Typography>Total Hours: {course?.totalHours}</Typography>
                 <Typography>Rating: {course?.rating}</Typography>
-                <Typography>Video: {course?.videoId ? <NavLink to={`/course/video/${course?.videoId}`}>View Preview Video</NavLink> : <NavLink to={`/course/video/upload/courseId=${course?._id}`}>Add Preview Video</NavLink>}</Typography>
-                <Typography>Exercise: {course?.exerciseId ? <NavLink to={`/course/exercise/${course?.exerciseId}`}>View Exam</NavLink> : <NavLink to={`/course/exercise/create/courseId=${course?._id}`}>Add Exercise</NavLink>}</Typography>
+                <Typography>Video: {course?.videoId ? <NavLink to={`/course/video/${course?.videoId?._id}`}>View Preview Video</NavLink> : <NavLink to={`/course/video/upload/courseId=${course?._id}`}>Add Preview Video</NavLink>}</Typography>
+                <Typography>Exercise: {course?.examId ? <NavLink to={`/course/exercise/view/${course?.examId}`}>View Exam</NavLink> : <NavLink to={`/course/exercise/create/courseId=${course?._id}`}>Add Exercise</NavLink>}</Typography>
                 <hr />
                 <Typography>Subtitles</Typography>
                 <hr />
@@ -51,7 +60,7 @@ export const InstructorSingleCourse = ({ auth, viewCourse, course }) => {
                             <Typography>Title: {subtitle?.title}</Typography>
                             <Typography>Time: {subtitle?.time}</Typography>
                             <Typography>Video: {subtitle?.videoId ? <NavLink to={`/course/video/${subtitle?.videoId}`}>View Subtitle Video</NavLink> : <NavLink to={`/course/video/upload/subId=${subtitle?._id}`}>Add Subtitle Video</NavLink>}</Typography>
-                            <Typography>Exercise: {subtitle?.exerciseId ? <NavLink to={`/course/exercise/${subtitle?.exerciseId}`}>View Exercise</NavLink> : <NavLink to={`/course/exercise/create/subId=${subtitle?._id}`}>Add Exercise</NavLink>}</Typography>
+                            <Typography>Exercise: {subtitle?.exerciseId ? <NavLink to={`/course/exercise/view/${subtitle?.exerciseId}`}>View Exercise</NavLink> : <NavLink to={`/course/exercise/create/subId=${subtitle?._id}`}>Add Exercise</NavLink>}</Typography>
                             <hr />
                         </>
                     })
@@ -63,7 +72,8 @@ export const InstructorSingleCourse = ({ auth, viewCourse, course }) => {
 
 const mapStateToProps = (state) => ({
     auth: state?.auth,
-    course: state?.courses?.single
+    course: state?.courses?.single,
+    isLoading: state?.courses?.isLoading
 });
 
 const mapDispatchToProps = { viewCourse };

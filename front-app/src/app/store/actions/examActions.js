@@ -69,3 +69,24 @@ export const getGrade = (data) => (dispatch) => {
             });
         });
 };
+
+export const viewExam = (data) => (dispatch) => {
+    dispatch({ type: EXAM });
+    var { query, token } = data
+
+    getRequest(query, undefined, token, endpoints.instructor.getExercise)
+        .then((response) => {
+            const { data } = response;
+            return dispatch({
+                type: EXAM_SUCCESS,
+                payload: data
+            });
+        })
+        .catch((err) => {
+            notification.error({ message: err?.response?.data?.message })
+            console.log(err);
+            return dispatch({
+                type: EXAM_FAIL,
+            });
+        });
+};

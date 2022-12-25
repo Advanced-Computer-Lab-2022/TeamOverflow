@@ -6,7 +6,7 @@ var exchange
 var currencies = require("country-json/src/country-by-currency-code.json")
 
 function getCode(country) {
-    return currencies.filter((elem) => elem.country === country)[0]?.currency_code
+    return currencies.filter((elem) => elem.country === country)[0]?.currency_code || "USD"
 }
 
 async function forex(amount, country) {

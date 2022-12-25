@@ -44,7 +44,7 @@ export const Discount = ({ auth, defineDiscount }) => {
                         <PercentIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
-                        Upload Video Link
+                        Add Discount
                     </Typography>
                     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
                         <MainInput

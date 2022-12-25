@@ -4,16 +4,16 @@ import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import {Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, FormHelperText, InputLabel} from '@mui/material';
+import { Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, FormHelperText, InputLabel, CircularProgress, FormControl } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { LoginUser, guestVisit } from '../../app/store/actions/authActions';
-import {Navigate, NavLink, Route, Routes} from "react-router-dom";
-import { MainInput, main_button } from '../../app/components/Styles';
+import { Navigate, NavLink, Route, Routes } from "react-router-dom";
+import { centered_flex_box, MainInput, main_button } from '../../app/components/Styles';
 
 const theme = createTheme();
 
-export const Index = ({LoginUser, user, token, guestVisit}) => {
+export const Index = ({ LoginUser, user, token, guestVisit, isLoading }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -26,10 +26,18 @@ export const Index = ({LoginUser, user, token, guestVisit}) => {
     LoginUser(details)
   };
 
-  if(user?.type === "Guest User"){
-    return (<Navigate to={"/courses"} replace/>)
-  } else if(user) {
-    return (<Navigate to={`/${token.split(" ")[0]}`} replace/>)
+  if (user?.type === "Guest User") {
+    return (<Navigate to={"/courses"} replace />)
+  } else if (user) {
+    return (<Navigate to={`/${token.split(" ")[0]}`} replace />)
+  }
+
+  if (isLoading) {
+    return (
+      <Box sx={{ ...centered_flex_box, minHeight: "100vh" }}>
+        <CircularProgress sx={{ color: "var(--secColor)" }} />
+      </Box>
+    )
   }
 
   return (
@@ -44,7 +52,7 @@ export const Index = ({LoginUser, user, token, guestVisit}) => {
             alignItems: 'center',
           }}
         >
-        <Avatar sx={{ m: 1, bgcolor: 'var(--secColor)' }}>
+          <Avatar sx={{ m: 1, bgcolor: 'var(--secColor)' }}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
@@ -71,23 +79,27 @@ export const Index = ({LoginUser, user, token, guestVisit}) => {
               id="password"
               autoComplete="current-password"
             />
-            <Select
-              margin="normal"
-              required
-              fullWidth
-              autoFocus
-              labelId='select-label'
-              id="type"
-              label="User Type"
-              name="type"
-              
-            >
-              <MenuItem value={"Admin"}>Admin</MenuItem>
-              <MenuItem value={"Instructor"}>Instructor</MenuItem>
-              <MenuItem value={"Corporate"}>Corporate Trainee</MenuItem>
-              <MenuItem value={"Trainee"}>Individual Trainee</MenuItem>
-            </Select>
-            <FormHelperText>User type to log in as</FormHelperText>
+            <FormControl sx={{ minWidth: "100%", mt: 1 }}>
+              <InputLabel id="type-label">User Type</InputLabel>
+              <Select
+                margin="normal"
+                required
+                fullWidth
+                autoFocus
+                labelId='type-label'
+                id="type"
+                label="User Type"
+                name="type"
+
+              >
+                <MenuItem value={"Admin"}>Admin</MenuItem>
+                <MenuItem value={"Instructor"}>Instructor</MenuItem>
+                <MenuItem value={"Corporate"}>Corporate Trainee</MenuItem>
+                <MenuItem value={"Trainee"}>Individual Trainee</MenuItem>
+              </Select>
+              <FormHelperText>User type to log in as</FormHelperText>
+            </FormControl>
+
             <Button
               type="submit"
               fullWidth
@@ -97,7 +109,7 @@ export const Index = ({LoginUser, user, token, guestVisit}) => {
               Sign In
             </Button>
             <Grid container>
-            <Grid item xs={12}>
+              <Grid item xs={12}>
                 <NavLink to="/register">
                   Register
                 </NavLink>
@@ -121,10 +133,11 @@ export const Index = ({LoginUser, user, token, guestVisit}) => {
 }
 
 const mapStateToProps = (state) => ({
-  user : state?.auth?.user,
-  token : state?.auth?.token
+  user: state?.auth?.user,
+  isLoading: state?.auth?.isLoading,
+  token: state?.auth?.token
 });
 
-const mapDispatchToProps = {LoginUser, guestVisit};
+const mapDispatchToProps = { LoginUser, guestVisit };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Index);

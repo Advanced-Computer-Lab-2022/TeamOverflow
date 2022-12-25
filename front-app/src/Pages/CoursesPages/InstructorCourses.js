@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Typography, Paper, IconButton, InputBase, Box, Container, Pagination, CircularProgress, Accordion, AccordionSummary, AccordionDetails, Button, Slider, Select, MenuItem, Card, FormHelperText, Grid } from '@mui/material';
+import { Typography, Paper, IconButton, InputBase, Box, Container, Pagination, CircularProgress, Accordion, AccordionSummary, AccordionDetails, Button, Slider, Select, MenuItem, Card, FormHelperText, Grid, FormControl, InputLabel } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { clearCourses, filterCoursesInstructor, getSubjects } from '../../app/store/actions/coursesActions';
@@ -113,10 +113,10 @@ export const InstructorCourses = ({ auth, courses, getSubjects, filterCoursesIns
                   />
                   {role !== "Corporate" && (
                     <>
-                      Price Filter (USD):
+                      Price Filter:
                       <Slider
                         step={10}
-                        max={5000}
+                        max={10000}
                         value={[minPrice, maxPrice]}
                         getAriaLabel={() => 'Price range'}
                         onChange={handlePriceChange}
@@ -124,27 +124,31 @@ export const InstructorCourses = ({ auth, courses, getSubjects, filterCoursesIns
                       />
                     </>)}
                   Subject Filter:
-                  <Select
-                    label="Subject"
-                    id="Subject"
-                    name="subj"
-                    onChange={handleSubjectChange}
-                    value={subject}
-                    defaultValue=""
-                    fullWidth
-                  >
-                    <MenuItem key={-1} value="">
-                      Any
-                    </MenuItem>
-                    {courses?.subjects?.map((subject, i) => {
-                      return (
-                        <MenuItem key={i} value={subject}>
-                          {subject}
-                        </MenuItem>
-                      )
-                    })}
-                  </Select>
-                  <FormHelperText>Select subject to filter</FormHelperText>
+                  <FormControl sx={{ minWidth: "100%", mt: 1 }}>
+                    <InputLabel id="subject-label">Subject</InputLabel>
+                    <Select
+                      label="Subject"
+                      id="Subject"
+                      name="subj"
+                      onChange={handleSubjectChange}
+                      value={subject}
+                      labelId="subject-label"
+                      defaultValue=""
+                      fullWidth
+                    >
+                      <MenuItem key={-1} value="">
+                        Any
+                      </MenuItem>
+                      {courses?.subjects?.map((subject, i) => {
+                        return (
+                          <MenuItem key={i} value={subject}>
+                            {subject}
+                          </MenuItem>
+                        )
+                      })}
+                    </Select>
+                    <FormHelperText>Select subject to filter</FormHelperText>
+                  </FormControl>
                   <Button sx={{ ...main_button, margin: 1 }} onClick={handleSearchFilter}>Apply Filters</Button>
                   <Button sx={{ ...main_button, margin: 1 }} onClick={handleClearFilter}>Clear Filters</Button>
                 </AccordionDetails>

@@ -22,7 +22,7 @@ export const VideoView = ({ auth, getRegVideo, video, isLoading, addNote, downlo
   const params = useParams();
   const courseId = params.courseId
   const videoId = params.videoId;
-  
+
   const [timestamp, setTimestamp] = React.useState(0)
   const [noteOpen, setNoteOpen] = React.useState(false)
 
@@ -74,10 +74,10 @@ export const VideoView = ({ auth, getRegVideo, video, isLoading, addNote, downlo
             </Box>
             <Accordion sx={{ m: 4 }}>
               <AccordionSummary>
-                Description
+                <Typography fontWeight="bold">Description</Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <Typography>{video?.description}</Typography>
+                <Typography textAlign="justify">{video?.description}</Typography>
               </AccordionDetails>
             </Accordion>
             <Box sx={left_flex_box}>

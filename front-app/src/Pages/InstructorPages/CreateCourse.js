@@ -11,14 +11,19 @@ import { getSubjects } from '../../app/store/actions/coursesActions';
 import { MainTextArea, MainInput, main_button } from '../../app/components/Styles';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { useNavigate } from 'react-router-dom';
+import { notification } from 'antd';
 
 const theme = createTheme();
 
-export const CreateCourse = ({ token, createCourse, subjects, getSubjects }) => {
+export const CreateCourse = ({ user, token, createCourse, subjects, getSubjects }) => {
     const navigate = useNavigate()
 
     React.useEffect(() => {
         getSubjects()
+        if(!user.acceptedContract){
+            notification.info({message: "You need to accept the contract before proceeding"})
+            navigate("/Instructor/contract")
+        }
     }, [])
 
     const [subject, setSubject] = React.useState(null)
@@ -112,9 +117,10 @@ export const CreateCourse = ({ token, createCourse, subjects, getSubjects }) => 
                             required
                             fullWidth
                             name="price"
-                            label="Course Price (USD)"
+                            label="Course Price"
                             id="price"
                             type="number"
+                            inputProps={{min:0}}
                         />
                         <Select
                             label="Subject"
@@ -153,6 +159,7 @@ export const CreateCourse = ({ token, createCourse, subjects, getSubjects }) => 
                                         label="Subtitle Time"
                                         id={`time${idx}`}
                                         type="number"
+                                        inputProps={{min:0}}
                                     />
                                     <hr />
                                 </Box>
