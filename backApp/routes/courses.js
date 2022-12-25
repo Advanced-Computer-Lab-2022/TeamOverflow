@@ -13,7 +13,7 @@ var subjects = require("../public/jsons/subjects.json")
 router.use(express.json())
 const { verifyAllUsers, verifyInstructor, verifyAllUsersCorp } = require("../auth/jwt-auth");
 const { default: mongoose } = require("mongoose");
-const { forex, getCode, forexCode } = require("../controllers/currencyController");
+const { forex, getCode, forexCode, forexBack } = require("../controllers/currencyController");
 
 // General Purpose endpoints
 router.get('/', async function (req, res) {
@@ -141,15 +141,16 @@ async function instructorSearchAndFilterCourse(data, user) {
   var query = ".*" + searchQuery + ".*"
   const search = { $and: [{ instructorId: user._id }, { $or: [{ subject: { $regex: new RegExp(query, 'i') } }, { title: { $regex: new RegExp(query, 'i') } }] }] }
   var sub = subject || { $regex: ".*" }
-  var min = minPrice || 0
-  var max = maxPrice || 10000
+  const currency = getCode(user?.country)
+  var min = minPrice ? await forexBack(minPrice, currency) : 0
+  var max = maxPrice ? await forexBack(maxPrice, currency) : 10000
   const mongoQuery = { instructorId: user._id, subject: sub, price: { $gte: min, $lt: max }, ...search }
   var results = await Course.paginate(mongoQuery, { page: page, limit: 10 })
   var allResults = []
   for (let i = 0; i < results.docs.length; i++) {
     var courseObj = JSON.parse(JSON.stringify(results.docs[i]))
-    courseObj.price = await forex(courseObj.price, user?.country)
-    courseObj.currency = getCode(user?.country)
+    courseObj.price = await forexCode(courseObj.price, currency)
+    courseObj.currency = currency
     allResults.push(courseObj)
   }
   results.docs = allResults
@@ -166,15 +167,17 @@ async function searchAndFilterCourse(data, reqId) {
   var sub = subject || { $regex: ".*" }
   var minRate = minRating || 0
   var maxRate = maxRating || 5
-  var min = minPrice || 0
-  var max = maxPrice || 10000
+  const currency = getCode(user?.country)
+  var min = minPrice ? await forexBack(minPrice, currency): 0
+  var max = maxPrice ? await forexBack(maxPrice, currency) : 10000
+  console.log(min, max)
   const mongoQuery = { published: true, price: { $gte: min, $lt: max }, subject: sub, rating: { $gte: minRate, $lte: maxRate }, ...search }
   var results = await Course.paginate(mongoQuery, { page: page, limit: 10 })
   var allResults = []
   for (let i = 0; i < results.docs.length; i++) {
     var courseObj = JSON.parse(JSON.stringify(results.docs[i]))
-    courseObj.price = await forex(courseObj.price, user?.country)
-    courseObj.currency = getCode(user?.country)
+    courseObj.price = await forexCode(courseObj.price, currency)
+    courseObj.currency = currency
     allResults.push(courseObj)
   }
   results.docs = allResults

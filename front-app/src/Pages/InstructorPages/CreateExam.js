@@ -133,12 +133,14 @@ export const CreateExam = ({ token, createExercise }) => {
                                         id={`question${idx}`}
                                         label="Question Head"
                                         name={`question${idx}`}
+                                        value={questions[idx]}
                                         autoFocus
                                         onChange={(event) => handleQuestionChange(event.target.value, idx)}
                                     />
                                     <FormControl fullWidth>
                                         <RadioGroup
                                             onChange={(event) => handleIndexChange(event.target.value, idx)}
+                                            value={correct[idx]}
                                         >
                                             <FormControlLabel value={0} control={<Radio />}  label={<TextField
                                                 margin="normal"
@@ -148,6 +150,7 @@ export const CreateExam = ({ token, createExercise }) => {
                                                 label="Option 1"
                                                 name="option1"
                                                 autoFocus
+                                                value={options[idx][0]}
                                                 onChange={(event) => handleOptionChange(event.target.value, idx, 0)}
                                             />} />
                                             <FormControlLabel value={1} control={<Radio />} label={<TextField
@@ -158,6 +161,7 @@ export const CreateExam = ({ token, createExercise }) => {
                                                 label="Option 2"
                                                 name="option2"
                                                 autoFocus
+                                                value={options[idx][1]}
                                                 onChange={(event) => handleOptionChange(event.target.value, idx, 1)}
                                             />} />
                                             <FormControlLabel value={2} control={<Radio />} label={<TextField
@@ -167,6 +171,7 @@ export const CreateExam = ({ token, createExercise }) => {
                                                 label="Option 3"
                                                 name="option3"
                                                 autoFocus
+                                                value={options[idx][2]}
                                                 onChange={(event) => handleOptionChange(event.target.value, idx, 2)}
                                             />} />
                                             <FormControlLabel value={3} control={<Radio />} label={<TextField
@@ -176,6 +181,7 @@ export const CreateExam = ({ token, createExercise }) => {
                                                 label="Option 4"
                                                 name="option4"
                                                 autoFocus
+                                                value={options[idx][4]}
                                                 onChange={(event) => handleOptionChange(event.target.value, idx, 3)}
                                             />} />
                                         </RadioGroup>
@@ -188,6 +194,8 @@ export const CreateExam = ({ token, createExercise }) => {
                                         label="Marks"
                                         id={`marks${idx}`}
                                         type="number"
+                                        value={marks[idx]}
+                                        inputProps={{min:1}}
                                         onChange={(event) => handleMarksChange(event.target.value, idx)}
                                     />
                                     <hr />

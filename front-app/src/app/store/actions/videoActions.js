@@ -25,7 +25,7 @@ export const getVideo = (videoId) => (dispatch) => {
     });
 };
 
-export const uploadVideo = (data) => (dispatch) => {
+export const uploadVideo = (data, navigate) => (dispatch) => {
   var { creation, token } = data
   var end;
   if (creation.subtitleId) {
@@ -38,6 +38,7 @@ export const uploadVideo = (data) => (dispatch) => {
     .then((response) => {
       console.log(response)
       notification.success({ message: "Video Added" })
+      navigate(-1)
     })
     .catch((err) => {
       notification.error({ message: err?.response?.data?.message })

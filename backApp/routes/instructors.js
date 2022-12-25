@@ -15,6 +15,7 @@ const Wallet = require('../models/Wallet');
 const bcrypt = require("bcrypt");
 const { getWallet } = require('../controllers/walletController');
 const { reportProblem, viewReports, viewOneReport, addFollowup } = require('../controllers/reportController');
+const { findByIdAndDelete } = require('../models/Instructor');
 
 /* GET instructors listing. */
 router.get('/', async function (req, res) {
@@ -53,20 +54,11 @@ router.get('/getContract', verifyInstructor, async function (req, res) {
 })
 
 
-//Accept or reject contract
+//Accept contract
 router.put('/contractResponse', verifyInstructor, async function (req, res) {
   try {
-    var result = await Contract.findByIdAndUpdate(req.body.contractId, { $set: { status: req.body.response } }, { new: true })
-    res.status(200).json(result)
-  } catch (err) {
-    res.status(400).json({ message: err.message })
-  }
-})
-
-//View wallet
-router.get('/getWallet', verifyInstructor, async function (req, res) {
-  try {
-    var result = await Wallet.findOne({ id: req.reqId })
+    req.user.$set("acceptedContract", true)
+    var result = await req.user.save()
     res.status(200).json(result)
   } catch (err) {
     res.status(400).json({ message: err.message })
@@ -139,8 +131,8 @@ router.post('/defineDiscount', verifyInstructor, async function (req, res) {
 //Add course preview video
 router.post('/coursePreview', verifyInstructor, async function (req, res) {
   try {
-    var course = course.findById(req.body.courseId)
-    if (mongoose.Types.ObjectId(course?.instructorId).toString() === req.reqId) {
+    var course = await Course.findOne({ _id: req.body.courseId, instructorId: req.reqId })
+    if (course) {
       var newVid = await Video.create({ title: req.body.title, description: req.body.description, url: req.body.url })
       var result = await Course.findByIdAndUpdate(req.body.courseId, { $set: { videoId: newVid._id } }, { new: true })
       res.status(200).json(result)
@@ -157,9 +149,9 @@ router.post('/coursePreview', verifyInstructor, async function (req, res) {
 //Add subtitle video
 router.post('/subtitleVideo', verifyInstructor, async function (req, res) {
   try {
-    var subtitle = Subtitle.findById(req.body.subtitleId).populate("courseId")
-    var course = subtitle.course
-    if (mongoose.Types.ObjectId(course?.instructorId).toString() === req.reqId) {
+    var subtitle = await Subtitle.findById(req.body.subtitleId)
+    var course = await Course.findOne({ _id: subtitle.courseId, instructorId: req.reqId })
+    if (course) {
       var newVid = await Video.create({ title: req.body.title, description: req.body.description, url: req.body.url })
       var result = await Subtitle.findByIdAndUpdate(req.body.subtitleId, { $set: { videoId: newVid._id } }, { new: true })
       res.status(200).json(result)
@@ -176,8 +168,12 @@ router.post('/subtitleVideo', verifyInstructor, async function (req, res) {
 //Publish course
 router.post('/publish', verifyInstructor, async function (req, res) {
   try {
-    var result = await Course.findByIdAndUpdate(req.body.courseId, { $set: { published: true } }, { new: true })
-    res.status(200).json(result)
+    var result = await Course.findOneAndUpdate({ _id: req.body.courseId, instructorId: req.reqId, closed: false }, { $set: { published: true } }, { new: true })
+    if (result) {
+      res.status(200).json(result)
+    } else {
+      res.status(403).json({ message: "You are not allowed to publish this course" })
+    }
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
@@ -186,7 +182,7 @@ router.post('/publish', verifyInstructor, async function (req, res) {
 //Unpublish a course
 router.post('/close', verifyInstructor, async function (req, res) {
   try {
-    var result = await Course.findByIdAndUpdate(req.body.courseId, { $set: { published: false } }, { new: true })
+    var result = await Course.findByIdAndUpdate(req.body.courseId, { $set: { published: false, closed: true } }, { new: true })
     res.status(200).json(result)
   } catch (err) {
     res.status(400).json({ message: err.message })
@@ -198,6 +194,14 @@ router.delete('/course', verifyInstructor, async function (req, res) {
   try {
     var result = await Course.findOne({ _id: req.body.courseId, instructorId: req.reqId })
     if (result && result.enrolled === 0 && !result.published) {
+      await Exercise.findByIdAndDelete(result.examId)
+      await Video.findByIdAndDelete(result.videoId)
+      var subtitles = await Subtitle.find({ courseId: req.body.courseId })
+      subtitles.map(async (subtitle) => {
+        await Exercise.findByIdAndDelete(subtitle.exerciseId)
+        await Video.findByIdAndDelete(subtitle.videoId)
+        await subtitle.delete()
+      })
       await result.delete()
       res.status(200).json({ message: "Course Deleted" })
     } else if (result && result.enrolled > 0) {
@@ -265,6 +269,16 @@ router.post('/createCourseExercise', verifyInstructor, async function (req, res)
     res.status(400).json({ message: err.message })
   }
 });
+
+//view exam they created
+router.get('/exercise', verifyInstructor, async function (req, res) {
+  try {
+    var result = await Exercise.findById(req.query.exerciseId)
+    res.status(200).json(result)
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+})
 
 //view the amount available in their wallet from refunded courses
 router.get('/wallet', verifyInstructor, async function (req, res) {

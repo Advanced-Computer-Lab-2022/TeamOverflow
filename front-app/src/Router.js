@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Routes, Route } from "react-router-dom";
-import { ReportedProblems, TraineeProfile, Register, Terms, Index, AddUsers, AdminHome, AllCourses, TraineeCourses, TraineeHome, InstructorCourses, InstructorHome, CreateCourse, Rate, SingleCourseInstructor, SingleCourse, InstructorVidView, CreateExam, UploadVideo, Discount, RatingList, InstructorProfile, InstructorEditProfile, InstructorContract, StudentVidView, Exam, Result, Forgot, Reset, PaymentDone, EditTraineeProfile, EditInstructorPassword, CoursePreview, ReportProblem, Followup, ReportView, DefineDiscounts } from "./Pages";
+import { ReportedProblems, TraineeProfile, Register, Terms, Index, AddUsers, AdminHome, AllCourses, TraineeCourses, TraineeHome, InstructorCourses, InstructorHome, CreateCourse, Rate, SingleCourseInstructor, SingleCourse, InstructorVidView, CreateExam, UploadVideo, Discount, RatingList, InstructorProfile, InstructorEditProfile, InstructorContract, StudentVidView, Exam, Result, Forgot, Reset, PaymentDone, EditTraineeProfile, EditInstructorPassword, CoursePreview, ReportProblem, Followup, ReportView, DefineDiscounts, ViewExam } from "./Pages";
 import { TopBar } from "./app/components";
 import { useLocation } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
@@ -38,6 +38,7 @@ export const Router = () => {
         <Route path="/courses/create" exact element={<CreateCourse />} />
         <Route path="/courses/ratings" exact element={<RatingList />} />
         <Route path="/course/exercise/create/:id" exact element={<CreateExam />} />
+        <Route path="/course/exercise/view/:id" exact element={<ViewExam />} />
         <Route path="/course/video/upload/:id" exact element={<UploadVideo />} />
         <Route path="/course/discount/:id" exact element={<Discount />} />
       </Route>

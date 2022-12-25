@@ -4,9 +4,11 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
+import GavelIcon from '@mui/icons-material/Gavel';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import HomeIcon from '@mui/icons-material/Home';
+import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
@@ -119,6 +121,19 @@ function MenuAppBar({ auth, logout }) {
         navigate(path);
     };
 
+    const handleCourseCreate = () => {
+        setAnchorEl(null);
+        let path = "/courses/create";
+        navigate(path);
+    };    
+    
+    const handleInstructorContract = () => {
+        setAnchorEl(null);
+        let path = "/Instructor/contract";
+        navigate(path);
+    };
+
+    
     const routeLogin = () => {
         setAnchorEl(null);
         logout();
@@ -150,15 +165,18 @@ function MenuAppBar({ auth, logout }) {
                             >
 
                                 <MenuItem onClick={handleHome}><HomeIcon /><Typography marginX={2}>Home</Typography></MenuItem>
-                                {role !== "Admin" && <MenuItem onClick={handleProfile}><AccountCircle /><Typography marginX={2}>Profile</Typography></MenuItem>}
+                                <MenuItem onClick={handleProfile}><AccountCircle /><Typography marginX={2}>Profile</Typography></MenuItem>
                                 {(role === "Trainee" || role === "Corporate") && <MenuItem onClick={handleMyCourses}><AutoStoriesIcon /><Typography marginX={2}>My Courses</Typography></MenuItem>}
-                                {role === "Instructor" && (<>
-                                    <MenuItem onClick={handleInstructorRating}><StarRateIcon /><Typography marginX={2}>My Ratings</Typography></MenuItem>
-                                    <MenuItem onClick={handleInstructorCourses}><AutoStoriesIcon /><Typography marginX={2}>My Courses</Typography></MenuItem>
-                                    <MenuItem onClick={handleCoursesRating}><LocalActivityIcon /><Typography marginX={2}>My Courses Ratings</Typography></MenuItem>
-                                </>)}
                                 {role !== "Admin" && <MenuItem onClick={handleAllCourses}><MenuBookIcon /><Typography marginX={2}>Courses Menu</Typography></MenuItem >}
                                 <hr />
+                                {role === "Instructor" && (<>
+                                    <MenuItem onClick={handleCourseCreate}><NoteAddIcon /><Typography marginX={2}>Add A Course</Typography></MenuItem>
+                                    <MenuItem onClick={handleInstructorCourses}><AutoStoriesIcon /><Typography marginX={2}>My Courses</Typography></MenuItem>
+                                    <MenuItem onClick={handleCoursesRating}><LocalActivityIcon /><Typography marginX={2}>My Courses Ratings</Typography></MenuItem>
+                                    <MenuItem onClick={handleInstructorRating}><StarRateIcon /><Typography marginX={2}>My Ratings</Typography></MenuItem>
+                                    <MenuItem onClick={handleInstructorContract}><GavelIcon /><Typography marginX={2}>Contract</Typography></MenuItem>
+                                    <hr />
+                                </>)}
                                 {role === "Admin" && (<>
                                     {/* <Box sx={centered_flex_box}><Typography fontWeight="bold">Admin Actions</Typography></Box> */}
                                     <MenuItem onClick={handleAddUsers}><AccountCircle /><Typography marginX={2}>Add Users</Typography></MenuItem>

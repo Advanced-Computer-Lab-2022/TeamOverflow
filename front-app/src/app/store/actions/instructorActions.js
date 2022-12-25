@@ -108,16 +108,17 @@ export const defineDiscount = (data, navigate) => (dispatch) => {
     });
 };
 
-export const contractResponse = (data) => (dispatch) => {
-  dispatch({ type: CONTRACT });
-  var {edits, token} = data
+export const acceptContract = (data, navigate) => (dispatch) => {
+  dispatch({ type: UPDATE_USER });
+  var {token} = data
 
-  putRequest(edits, undefined, undefined, token, endpoints.instructor.respondContract)
+  putRequest(undefined, undefined, undefined, token, endpoints.instructor.respondContract)
     .then((response) => {
       const { data } = response;
-      notification.success({message: "Contract updated"})
+      notification.success({message: "Contract accepted"})
+      navigate(-1)
       return dispatch({
-        type: CONTRACT_SUCCESS,
+        type: UPDATE_USER_SUCCESS,
         payload: data
       });
     })
@@ -125,7 +126,7 @@ export const contractResponse = (data) => (dispatch) => {
       notification.error({message: err?.response?.data?.message || "Network Error"})
       console.log(err);
       return dispatch({
-        type: CONTRACT_FAIL,
+        type: UPDATE_USER_FAIL,
       });
     });
 };

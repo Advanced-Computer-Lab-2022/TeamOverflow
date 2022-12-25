@@ -1,6 +1,6 @@
 import * as React from 'react';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import { Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, FormHelperText } from '@mui/material';
+import { Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, FormHelperText, InputLabel, FormControl } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { editProfile } from '../../app/store/actions/instructorActions';
@@ -8,7 +8,7 @@ import { changePassword } from '../../app/store/actions/authActions';
 import { useNavigate, useParams } from 'react-router-dom';
 import countryList from 'country-json/src/country-by-name.json'
 import { selectCountry } from '../../app/store/actions/traineeActions';
-import { centered_flex_box, MainInput, MainTextArea, main_button } from '../../app/components/Styles';
+import { centered_flex_box, MainInput, MainSelect, MainTextArea, main_button } from '../../app/components/Styles';
 
 
 const theme = createTheme();
@@ -36,13 +36,8 @@ export const EditProfile = ({ auth, editProfile, selectCountry, changePassword }
             },
             token: auth.token
         }
-
         editProfile(details);
         navigate(path);
-
-
-
-
     };
 
 
@@ -93,27 +88,27 @@ export const EditProfile = ({ auth, editProfile, selectCountry, changePassword }
                                 name="bio"
                                 autoFocus
                             />
-                            <Select
-                                sx={{ marginTop: "15px" }}
-                                defaultValue={country}
-                                name="country"
-                                id='country'
-                                label="User Country"
-                                fullWidth
-                                onChange={handleCountryChange}
-                            >
-                                {countryList.map((country, i) => {
-                                    return (
-                                        <MenuItem key={i} value={country.country}>
-                                            {country.country}
-                                        </MenuItem>
-                                    )
-                                })}
-                            </Select>
-                            <FormHelperText>Select your country</FormHelperText>
-
-
-
+                            <FormControl sx={{minWidth: "100%", mt:3}}>
+                                <InputLabel id="demo-multiple-country-label">Country</InputLabel>
+                                <Select
+                                    defaultValue={country}
+                                    name="country"
+                                    id="country"
+                                    labelId="demo-multiple-country-label"
+                                    label="User Country"
+                                    fullWidth
+                                    onChange={handleCountryChange}
+                                >
+                                    {countryList.map((country, i) => {
+                                        return (
+                                            <MenuItem key={i} value={country.country}>
+                                                {country.country}
+                                            </MenuItem>
+                                        )
+                                    })}
+                                </Select>
+                                <FormHelperText>Select your country</FormHelperText>
+                            </FormControl>
                         </Box>
                     </Box>
                     <Button

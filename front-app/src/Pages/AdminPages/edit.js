@@ -5,6 +5,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { editProfile } from '../../app/store/actions/adminActions';
 import { useNavigate } from 'react-router-dom';
+import { MainInput } from '../../app/components/Styles';
 
 
 const theme = createTheme();
@@ -53,7 +54,7 @@ export const EditProfile = ({ auth, editProfile }) => {
                     </Typography>
                     <Box  sx={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                         <Box   sx={{ mt: 1}}>
-                        <TextField
+                        <MainInput
                                 margin="normal"
                                 fullWidth
                                 name="email"
@@ -62,7 +63,7 @@ export const EditProfile = ({ auth, editProfile }) => {
                                 id="email"
                                 
                             />
-                        <TextField
+                        <MainInput
                                 margin="normal"
                                 fullWidth
                                 id="name"

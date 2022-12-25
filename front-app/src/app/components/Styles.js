@@ -1,11 +1,9 @@
 import * as React from 'react';
 import { alpha, styled } from '@mui/material/styles';
-import InputBase from '@mui/material/InputBase';
-import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import TextField from '@mui/material/TextField';
-import FormControl from '@mui/material/FormControl';
 import TextArea from 'antd/lib/input/TextArea';
+import { Select } from '@mui/material';
 
 export const main_button = {
     color: "var(--primaryColor)",
@@ -74,6 +72,6 @@ export const MainInput = styled(TextField)({
 export const MainTextArea = ({ name, autoComplete, autoFocus, label, id, required }) => {
     return (<>
         <InputLabel sx={{color: 'black'}}>{label}</InputLabel>
-        <TextArea name={name} autoComplete={autoComplete} autoFocus={autoFocus} id={id} aria-label={label} required={required} style={{ borderColor: "var(--secColor)", borderRadius: 4, fontFamily: "sans-serif" }} />
+        <TextArea name={name} autoComplete={autoComplete} autoFocus={autoFocus} id={id} aria-label={label} required={required} style={{ borderColor: "var(--secColor)", borderRadius: 4, fontFamily: "sans-serif", backgroundColor: "var(--mainWhite)" }} />
     </>)
 }
