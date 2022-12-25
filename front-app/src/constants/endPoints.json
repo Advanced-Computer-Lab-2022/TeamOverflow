@@ -20,7 +20,7 @@
       "change":"auth/changePassword"
       },
    "admin":{
-      "editProfile": "admin/edit" 
+      "editProfile": "admin/edit", 
       "viewReports":"admin/viewReports",
       "viewFollowups":"admin/viewFollowups",
       "respondReport":"admin/respondReport",

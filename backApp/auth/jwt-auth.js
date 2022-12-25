@@ -3,7 +3,6 @@ const Admin = require("../models/Admin");
 const CorporateTrainee = require("../models/CorporateTrainee");
 const Instructor = require("../models/Instructor");
 const Trainee = require("../models/Trainee");
-const Admin = require("../models/Admin");
 
 function verifyAdmin (req,res,next) {
     const header = req.headers['x-access-token']?.split(' ')
