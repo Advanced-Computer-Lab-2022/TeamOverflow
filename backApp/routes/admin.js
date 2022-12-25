@@ -22,6 +22,8 @@ const moment = require("moment");
 const Trainee = require('../models/Trainee');
 const Report = require('../models/Report');
 const Followup = require('../models/ReportFollowup');
+const Notes = require('../models/Notes');
+const Answer = require('../models/StudentAnswer');
 
 /* GET admins listing. */
 router.get('/', function (req, res) {
@@ -208,8 +210,18 @@ router.post('/refundTraniee', verifyAdmin, async function (req, res) {
     var refund = await Refund.findById(req.body.refundId).populate(["traineeId", "instructorId", "registrationId"])
     if (refund) {
       await transfer(refund.instructorId.walletId, refund.traineeId.walletId, refund.registrationId.amountPaid)
-      await StudentCourses.findByIdAndDelete(refund.registrationId._id)
+      var reg = await StudentCourses.findById(refund.registrationId._id)
+      var course = await Course.findById(reg.courseId)
+      var subtitles = await Subtitle.find({courseId: reg.courseId})
+      var exams = [course.examId]
+      var videos = [course.videoId]
+      subtitles.map((sub) => {exams.push(sub.exerciseId); videos.push(sub.videoId)})
+      await Notes.deleteMany({videoId: {$in: videos}, traineeId: refund.traineeId._id})
+      await Answer.deleteMany({exerciseId: {$in: exams}, traineeId: refund.traineeId._id})
+      await reg.delete()
       await refund.delete()
+      course.$inc("enrolled", -1)
+      await course.save()
       var results = await Refund.paginate({}, { page: req.body.page, limit: 10, populate: ["registrationId", { path: "instructorId", select: { _id: 1, name: 1, email: 1 } }] })
       res.status(200).json({type: "Refunds", results: results})
     } else {

@@ -89,7 +89,8 @@
       "reportProblem":"trainee/reportProblem",
       "viewReports":"trainee/viewReports",
       "viewFollowups":"trainee/viewFollowups",
-      "addFollowup":"trainee/addFollowup"
+      "addFollowup":"trainee/addFollowup",
+      "requestRefund":"trainee/refund"
    },
    "course":{
       "searchUsers":"course/search/course",

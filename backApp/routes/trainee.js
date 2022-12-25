@@ -289,21 +289,26 @@ router.get('/wallet', verifyTrainee, async function (req, res) {
 //Request a refund
 router.post('/refund', verifyTrainee, async function (req, res) {
   try {
-    var registeredCourse = await StudentCourses.findOne({ _id: req.body.courseId, traineeId: req.reqId }).populate("courseId")
-    if (registeredCourse) {
+    var registeredCourse = await StudentCourses.findOne({ courseId: req.body.courseId, traineeId: req.reqId }).populate("courseId")
+    var refund = await Refund.findOne({registrationId: registeredCourse._id, traineeId: req.reqId})
+    if (registeredCourse && !refund) {
       const progress = calculateProgress(registeredCourse.completion)
       if (progress < 50) {
         await Refund.create({
           registrationId: registeredCourse._id,
           traineeId: req.reqId,
-          instructorId: registeredCourse.instructorId
+          instructorId: registeredCourse.courseId.instructorId
         })
+        registeredCourse.$set("onHold", true)
+        await registeredCourse.save()
         res.status(201).json({ message: "Refund Request has been sent" })
       } else {
         res.status(403).json({ message: "You have completed more than 50% of the course" })
       }
-    } else {
+    } else if(!refund) {
       res.status(403).json({ message: "You are not registered to this course" })
+    } else {
+      res.status(403).json({ message: "Refund for this course already requested" })
     }
   } catch (err) {
     res.status(400).json({ message: err.message })

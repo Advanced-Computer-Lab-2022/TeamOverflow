@@ -138,7 +138,7 @@ export const getRegisteredCourses = ({token, page}) => (dispatch) => {
     });
 };
 
-export const openCourse = (data) => (dispatch) => {
+export const openCourse = (data, navigate) => (dispatch) => {
   dispatch({ type: COURSE });
   const {query, token} = data;
 
@@ -157,6 +157,7 @@ export const openCourse = (data) => (dispatch) => {
     .catch((err) => {
       notification.error({ message: err?.response?.data?.message })
       console.log(err);
+      navigate(-1)
       return dispatch({
         type: COURSE_FAIL,
       });
