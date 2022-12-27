@@ -1,4 +1,4 @@
-import { WALLET, WALLET_FAIL, WALLET_SUCCESS, LOGIN, LOGIN_FAIL, LOGIN_SUCCESS, LOGOUT_SUCCESS, GUEST, UPDATE_USER, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL, CREATE, CREATE_FAIL, CREATE_SUCCESS } from "../actions/types";
+import { WALLET, WALLET_FAIL, WALLET_SUCCESS, LOGIN, LOGIN_FAIL, LOGIN_SUCCESS, LOGOUT_SUCCESS, GUEST, UPDATE_USER, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL, CREATE, CREATE_FAIL, CREATE_SUCCESS, TERMS } from "../actions/types";
 
 const initialState = {
   user: null,
@@ -6,6 +6,7 @@ const initialState = {
   token: null,
   isLoading: false,
   isError: false,
+  terms: null
 };
 
 export default function store(state = initialState, action) {
@@ -27,6 +28,7 @@ export default function store(state = initialState, action) {
         token: action.token,
         isLoading: false,
         isError: false,
+        terms:null
       };
     case GUEST:
       return {
@@ -80,7 +82,8 @@ export default function store(state = initialState, action) {
       return {
         ...state,
         isLoading: false,
-        isError: false
+        isError: false,
+        terms:null
       }
     case UPDATE_USER_FAIL:
     case WALLET_FAIL:
@@ -89,6 +92,11 @@ export default function store(state = initialState, action) {
         ...state,
         isLoading: false,
         isError: true
+      }
+    case TERMS:
+      return {
+        ...state,
+        terms: payload
       }
     default:
       return state;

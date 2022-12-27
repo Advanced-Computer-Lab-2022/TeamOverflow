@@ -4,6 +4,7 @@ import InputLabel from '@mui/material/InputLabel';
 import TextField from '@mui/material/TextField';
 import TextArea from 'antd/lib/input/TextArea';
 import { Select } from '@mui/material';
+import InputBase from '@mui/material/InputBase';
 
 export const main_button = {
     color: "var(--primaryColor)",
@@ -61,7 +62,7 @@ export const MainInput = styled(TextField)({
     },
     '& .MuiOutlinedInput-root': {
         '& fieldset': {
-            borderColor: 'var(--secColor)',
+            border: '1px solid var(--secColor)',
         },
         '&.Mui-focused fieldset': {
             borderColor: 'var(--terColor)',
@@ -69,9 +70,28 @@ export const MainInput = styled(TextField)({
     },
 });
 
+
+
+export const StyledInput = styled(InputBase)(({ theme }) => ({
+    '& .MuiInputBase-input': {
+        border: "1px solid",
+        borderColor: "var(--secColor)",
+        position: 'relative',
+        fontSize: 16,
+        padding: 16,
+        '&:focus': {
+            borderColor: 'var(--terColor)',
+        },
+    },
+}));
+
 export const MainTextArea = ({ name, autoComplete, autoFocus, label, id, required }) => {
     return (<>
-        <InputLabel sx={{color: 'black'}}>{label}</InputLabel>
+        <InputLabel sx={{ color: 'black' }}>{label}</InputLabel>
         <TextArea name={name} autoComplete={autoComplete} autoFocus={autoFocus} id={id} aria-label={label} required={required} style={{ borderColor: "var(--secColor)", borderRadius: 4, fontFamily: "sans-serif", backgroundColor: "var(--mainWhite)" }} />
     </>)
+}
+
+export const MainInputLabel = ({ required, id, title}) => {
+    return <InputLabel required={required} sx={{ bgcolor: "var(--mainWhite)" }} variant='outlined' id={id}>{title}</InputLabel>
 }

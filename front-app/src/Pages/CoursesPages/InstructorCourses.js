@@ -6,7 +6,7 @@ import { clearCourses, filterCoursesInstructor, getSubjects } from '../../app/st
 import { CourseCard, InstructorCourseCard } from '../../app/components';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import SearchIcon from '@mui/icons-material/Search';
-import { centered_flex_box, main_button } from '../../app/components/Styles';
+import { centered_flex_box, MainInput, main_button } from '../../app/components/Styles';
 
 const theme = createTheme();
 
@@ -42,6 +42,14 @@ export const InstructorCourses = ({ auth, courses, getSubjects, filterCoursesIns
 
   const handlePriceChange = (event) => {
     setFormData({ ...formData, minPrice: event.target.value[0], maxPrice: event.target.value[1] })
+  }
+
+  const handleMinPriceChange = (event) => {
+    setFormData({ ...formData, minPrice: event.target.value})
+  }
+
+  const handleMaxPriceChange = (event) => {
+    setFormData({ ...formData, maxPrice: event.target.value })
   }
 
   const handleRatingChange = (event) => {
@@ -122,6 +130,10 @@ export const InstructorCourses = ({ auth, courses, getSubjects, filterCoursesIns
                         onChange={handlePriceChange}
                         valueLabelDisplay="auto"
                       />
+                      <Box display="flex" justifyContent="space-between">
+                        <MainInput label="Min" focused type="number" value={minPrice} onChange={handleMinPriceChange}/>
+                        <MainInput label="Max"  focused type="number" value={maxPrice} onChange={handleMaxPriceChange}/>
+                      </Box>
                     </>)}
                   Subject Filter:
                   <FormControl sx={{ minWidth: "100%", mt: 1 }}>

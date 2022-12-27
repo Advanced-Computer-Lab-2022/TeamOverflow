@@ -9,7 +9,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { LoginUser, guestVisit } from '../../app/store/actions/authActions';
 import { Navigate, NavLink, Route, Routes } from "react-router-dom";
-import { centered_flex_box, MainInput, main_button } from '../../app/components/Styles';
+import { centered_flex_box, MainInput, MainInputLabel, main_button, StyledInput } from '../../app/components/Styles';
 
 const theme = createTheme();
 
@@ -80,7 +80,7 @@ export const Index = ({ LoginUser, user, token, guestVisit, isLoading }) => {
               autoComplete="current-password"
             />
             <FormControl sx={{ minWidth: "100%", mt: 1 }}>
-              <InputLabel id="type-label">User Type</InputLabel>
+              <MainInputLabel required id="type-label" title="User Type"/>
               <Select
                 margin="normal"
                 required
@@ -90,7 +90,7 @@ export const Index = ({ LoginUser, user, token, guestVisit, isLoading }) => {
                 id="type"
                 label="User Type"
                 name="type"
-
+                input={<StyledInput/>}
               >
                 <MenuItem value={"Admin"}>Admin</MenuItem>
                 <MenuItem value={"Instructor"}>Instructor</MenuItem>

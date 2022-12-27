@@ -16,6 +16,7 @@ const bcrypt = require("bcrypt");
 const { getWallet } = require('../controllers/walletController');
 const { reportProblem, viewReports, viewOneReport, addFollowup } = require('../controllers/reportController');
 const { findByIdAndDelete } = require('../models/Instructor');
+const { getCode, forexCode } = require('../controllers/currencyController');
 
 /* GET instructors listing. */
 router.get('/', async function (req, res) {
@@ -170,7 +171,7 @@ router.post('/publish', verifyInstructor, async function (req, res) {
   try {
     var result = await Course.findOneAndUpdate({ _id: req.body.courseId, instructorId: req.reqId, closed: false }, { $set: { published: true } }, { new: true })
     if (result) {
-      res.status(200).json(result)
+      await courseView(req, res)
     } else {
       res.status(403).json({ message: "You are not allowed to publish this course" })
     }
@@ -182,8 +183,12 @@ router.post('/publish', verifyInstructor, async function (req, res) {
 //Unpublish a course
 router.post('/close', verifyInstructor, async function (req, res) {
   try {
-    var result = await Course.findByIdAndUpdate(req.body.courseId, { $set: { published: false, closed: true } }, { new: true })
-    res.status(200).json(result)
+    var result = await Course.findOneAndUpdate({_id: req.body.courseId, instructorId: req.reqId, closed: false, published: true}, { $set: { published: false, closed: true } }, { new: true })
+    if (result) {
+      await courseView(req, res)
+    } else {
+      res.status(403).json({ message: "You are not allowed to close this course" })
+    }
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
@@ -306,7 +311,15 @@ router.post('/addFollowup', verifyInstructor, async function (req, res) {
 });
 
 /* Functions */
-
+async function courseView(req, res) {
+  var course = await Course.findById(req.body.courseId).populate("videoId")
+  var subtitles = await Subtitle.find({ courseId: req.body.courseId })
+  var courseObj = JSON.parse(JSON.stringify(course))
+  courseObj.currency = getCode(req.user?.country)
+  courseObj.price = await forexCode(courseObj.price, courseObj.currency)
+  courseObj.subtitles = JSON.parse(JSON.stringify(subtitles))
+  res.status(200).json(courseObj);
+}
 
 
 module.exports = router;

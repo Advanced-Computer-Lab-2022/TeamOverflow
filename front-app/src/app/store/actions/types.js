@@ -65,3 +65,6 @@ export const CLEAR_REPORTS = "CLEAR_REPORTS";
 export const REQUESTS_SUCCESS = "REQUESTS_SUCCESS";
 export const REQUESTS_FAIL = "REQUESTS_FAIL";
 export const REQUESTS = "REQUESTS";
+
+//Terms
+export const TERMS = "TERMS";

@@ -94,7 +94,7 @@ export const CreateExam = ({ token, createExercise }) => {
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{ m: 1, bgcolor: 'var(--secColor)' }}>
+                    <Avatar sx={{ m: 1, bgcolor: 'var(--secColor)'}}>
                         <QuizIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
