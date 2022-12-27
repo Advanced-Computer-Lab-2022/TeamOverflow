@@ -4,25 +4,25 @@ import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import {Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, InputLabel, FormHelperText} from '@mui/material';
+import { Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, InputLabel, FormHelperText, FormControl } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { addUser } from '../../app/store/actions/adminActions';
-import { MainInput, main_button } from '../../app/components/Styles';
+import { MainInput, MainInputLabel, main_button, StyledInput } from '../../app/components/Styles';
 import { useNavigate } from 'react-router-dom';
 
 const theme = createTheme();
 
-export const AddUsers = ({addUser, auth}) => {
+export const AddUsers = ({ addUser, auth }) => {
 
   const navigate = useNavigate()
   const [isCorporate, setIsCorporate] = React.useState(false)
 
   const onUserTypeChange = (event) => {
-    if(event.target.value === "Corporate") {
-        setIsCorporate(true);
+    if (event.target.value === "Corporate") {
+      setIsCorporate(true);
     } else {
-        setIsCorporate(false);
+      setIsCorporate(false);
     }
   }
 
@@ -79,32 +79,36 @@ export const AddUsers = ({addUser, auth}) => {
               autoComplete="current-password"
             />
             {isCorporate && (
-            <MainInput
-              margin="normal"
-              required
-              fullWidth
-              name="corporation"
-              label="Corporation"
-              type="corporation"
-              id="corporation"
-            />) }
-            <InputLabel id="select-label">User Type</InputLabel>
-            <Select
-              margin="normal"
-              required
-              fullWidth
-              autoFocus
-              labelId='select-label'
-              id="type"
-              label="User Type"
-              name="type"
-              onChange={onUserTypeChange}
-            >
-              <MenuItem value={"Admin"}>Admin</MenuItem>
-              <MenuItem value={"Instructor"}>Instructor</MenuItem>
-              <MenuItem value={"Corporate"}>Corporate Trainee</MenuItem>
-            </Select>
-            <FormHelperText>Choose user type to create</FormHelperText>
+              <MainInput
+                margin="normal"
+                required
+                fullWidth
+                name="corporation"
+                label="Corporation"
+                type="corporation"
+                id="corporation"
+              />)}
+
+            <FormControl sx={{ minWidth: "100%", mt: 1 }}>
+              <MainInputLabel required id="type-label" title="User Type"/>
+              <Select
+                margin="normal"
+                required
+                fullWidth
+                autoFocus
+                labelId='type-label'
+                id="type"
+                label="User Type"
+                name="type"
+                input={<StyledInput />}
+              >
+                <MenuItem value={"Admin"}>Admin</MenuItem>
+                <MenuItem value={"Instructor"}>Instructor</MenuItem>
+                <MenuItem value={"Corporate"}>Corporate Trainee</MenuItem>
+              </Select>
+              <FormHelperText>Choose user type to create</FormHelperText>
+            </FormControl>
+
             <Button
               type="submit"
               fullWidth
@@ -121,9 +125,9 @@ export const AddUsers = ({addUser, auth}) => {
 }
 
 const mapStateToProps = (state) => ({
-    auth: state?.auth
+  auth: state?.auth
 });
 
-const mapDispatchToProps = {addUser};
+const mapDispatchToProps = { addUser };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddUsers);

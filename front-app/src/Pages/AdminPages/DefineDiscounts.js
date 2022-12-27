@@ -7,12 +7,12 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import SearchIcon from '@mui/icons-material/Search';
-import { Rating, FormHelperText, Select, MenuItem, Button, Typography, Paper, IconButton, InputBase, Box, Container, Pagination, CircularProgress, Accordion, AccordionSummary, AccordionDetails, Slider, Grid, Checkbox, Tooltip } from '@mui/material';
+import { Rating, FormHelperText, Select, MenuItem, Button, Typography, Paper, IconButton, InputBase, Box, Container, Pagination, CircularProgress, Accordion, AccordionSummary, AccordionDetails, Slider, Grid, Checkbox, Tooltip, FormControl, InputLabel } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { filterCoursesAll, getSubjects, clearCourses } from '../../app/store/actions/coursesActions';
 import { defineDiscount } from '../../app/store/actions/adminActions';
-import { centered_flex_box, MainInput, main_button } from '../../app/components/Styles';
+import { centered_flex_box, MainInput, MainInputLabel, main_button, StyledInput } from '../../app/components/Styles';
 import moment from 'moment';
 
 
@@ -47,6 +47,14 @@ export const DefineDiscount = ({ token, courses, filterCoursesAll, clearCourses,
 
     const handlePriceChange = (event) => {
         setFormData({ ...formData, minPrice: event.target.value[0], maxPrice: event.target.value[1] })
+    }
+
+    const handleMinPriceChange = (event) => {
+        setFormData({ ...formData, minPrice: event.target.value })
+    }
+
+    const handleMaxPriceChange = (event) => {
+        setFormData({ ...formData, maxPrice: event.target.value })
     }
 
     const handleRatingChange = (event) => {
@@ -88,7 +96,7 @@ export const DefineDiscount = ({ token, courses, filterCoursesAll, clearCourses,
             deadline: data.get('deadline'),
             courseIds: courseIds
         }
-        defineDiscount({info: info, token: token})
+        defineDiscount({ info: info, token: token })
         setCourseIds([])
     }
 
@@ -147,28 +155,38 @@ export const DefineDiscount = ({ token, courses, filterCoursesAll, clearCourses,
                                         onChange={handlePriceChange}
                                         valueLabelDisplay="auto"
                                     />
+                                    <Box display="flex" justifyContent="space-between">
+                                        <MainInput label="Min" focused type="number" value={minPrice} onChange={handleMinPriceChange} />
+                                        <MainInput label="Max" focused type="number" value={maxPrice} onChange={handleMaxPriceChange} />
+                                    </Box>
                                     Subject Filter:
-                                    <Select
-                                        label="Subject"
-                                        id="Subject"
-                                        name="subj"
-                                        onChange={handleSubjectChange}
-                                        value={subject}
-                                        defaultValue=""
-                                        fullWidth
-                                    >
-                                        <MenuItem key={-1} value="">
-                                            Any
-                                        </MenuItem>
-                                        {courses?.subjects?.map((subject, i) => {
-                                            return (
-                                                <MenuItem key={i} value={subject}>
-                                                    {subject}
-                                                </MenuItem>
-                                            )
-                                        })}
-                                    </Select>
-                                    <FormHelperText>Select subject to filter</FormHelperText>
+                                    <FormControl sx={{ minWidth: "100%", mt: 1 }}>
+                                        <MainInputLabel id="subject-label" title="Subject" />
+                                        <Select
+                                            label="Subject"
+                                            id="Subject"
+                                            name="subj"
+                                            labelId='subject-label'
+                                            onChange={handleSubjectChange}
+                                            input={<StyledInput />}
+                                            value={subject}
+                                            defaultValue=""
+                                            fullWidth
+                                        >
+                                            <MenuItem key={-1} value="">
+                                                Any
+                                            </MenuItem>
+                                            {courses?.subjects?.map((subject, i) => {
+                                                return (
+                                                    <MenuItem key={i} value={subject}>
+                                                        {subject}
+                                                    </MenuItem>
+                                                )
+                                            })}
+                                        </Select>
+                                        <FormHelperText>Select subject to filter</FormHelperText>
+                                    </FormControl>
+
                                     <Button sx={{ ...main_button, margin: 1 }} onClick={handleSearchFilter}>Apply Filters</Button>
                                     <Button sx={{ ...main_button, margin: 1 }} onClick={handleClearFilter}>Clear Filters</Button>
                                 </AccordionDetails>
@@ -178,8 +196,8 @@ export const DefineDiscount = ({ token, courses, filterCoursesAll, clearCourses,
                 )}
                 <hr />
                 <Box component="form" onSubmit={handleDefineDiscount} sx={centered_flex_box}>
-                    <MainInput required={true} name="discount" label="Discount %" inputProps={{ min: 0, max: 100 }} type="number" sx={{ mx: 1 }} />
-                    <MainInput required={true} name="deadline" label="Discount Deadline" type="datetime-local" sx={{ mx: 1 }} />
+                    <MainInput required={true} focused name="discount" label="Discount %" inputProps={{ min: 0, max: 100 }} type="number" sx={{ mx: 1 }} />
+                    <MainInput required={true} focused name="deadline" label="Discount Deadline" type="datetime-local" sx={{ mx: 1 }} />
                     <Tooltip title="Define Discount for current selection"><Button type="submit" sx={main_button}>Add Promotion</Button></Tooltip>
                 </Box>
                 <hr />

@@ -117,7 +117,7 @@ export const CreateCourse = ({ user, token, createCourse, subjects, getSubjects 
                             required
                             fullWidth
                             name="price"
-                            label="Course Price"
+                            label="Course Price (USD)"
                             id="price"
                             type="number"
                             inputProps={{min:0}}

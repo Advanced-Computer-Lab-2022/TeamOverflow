@@ -4,7 +4,19 @@
   --secColor: #A00407;
   --terColor: rgba(231,129,132,0.75);
   --terColor2: rgba(231, 129, 132, 0.438);
+  --secWhite: #e2e2e2e1;
   --mainWhite: #faf9f8;
+}
+
+.course-head{
+  background: rgb(160,4,7);
+  background: linear-gradient(180deg, rgba(160,4,7,1) 67%, rgba(231,129,132,1) 96%, rgba(250,249,248,1) 100%);
+  height: auto !important
+}
+
+.course-info{
+  background: var(--secWhite);
+  height: auto !important
 }
 
 .request {
@@ -26,7 +38,40 @@
 .App {
   background-color: var(--mainWhite);
   min-height: 100vh;
-  font-family: "Cabin";
+}
+
+a {
+  color: var(--secColor) !important;
+}
+
+a :hover{
+  color: var(--terColor) !important;
+}
+
+.MuiTypography-root {
+  white-space: pre-wrap !important
+}
+
+.MuiButton-textPrimary {
+  white-space: pre-wrap !important
+}
+
+
+.MuiSlider-root {
+  color: var(--secColor) !important;
+}
+
+.MuiInputLabel-shrink {
+  color: var(--secColor) !important;
+  background: var(--mainWhite) !important;
+}
+
+.MuiOutlinedInput-root {
+  border-color: var(--secColor) !important;
+}
+
+.MuiOutlinedInput-root :focus {
+  border-color: var(--terColor) !important;
 }
 
 .main-page {
@@ -77,3 +122,10 @@
   width: max-content;
 }
 
+.MuiSelect-select{
+  border-color: var(--secColor) !important;
+}
+
+.MuiSelect-select :focus {
+  border-color: var(--terColor) !important;
+}

@@ -8,6 +8,19 @@ const jwt = require("jsonwebtoken");
 const { default: mongoose } = require("mongoose");
 const { verifyAllUsersCorp } = require("../auth/jwt-auth")
 const bcrypt = require("bcrypt")
+const fs = require("fs")
+const path = require("path")
+
+router.get("/TandC", async (req, res) => {
+  try {
+    var filepath = path.join(__dirname, '../','public', 'markdown', 'terms.md');
+    var file = fs.readFileSync(filepath, 'utf8');
+    res.status(200).send(file.toString());
+  } catch (err) {
+    console.log(err)
+    res.status(400).json({ message: err })
+  }
+})
 
 /* Mail Setup*/
 var transporter = nodemailer.createTransport({

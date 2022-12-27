@@ -17,7 +17,8 @@
       },
       "forgot":"auth/forgotPassword",
       "reset":"auth/resetPassword",
-      "change":"auth/changePassword"
+      "change":"auth/changePassword",
+      "terms":"auth/TandC"
       },
    "admin":{
       "editProfile": "admin/edit", 

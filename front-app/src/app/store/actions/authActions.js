@@ -1,4 +1,4 @@
-import { WALLET, WALLET_SUCCESS, WALLET_FAIL, LOGIN, LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT_SUCCESS, GUEST, CREATE, CREATE_FAIL, CREATE_SUCCESS, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL } from "./types";
+import { TERMS, WALLET, WALLET_SUCCESS, WALLET_FAIL, LOGIN, LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT_SUCCESS, GUEST, CREATE, CREATE_FAIL, CREATE_SUCCESS, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL } from "./types";
 import { getRequest, postRequest, putRequest } from "../../../core/network";
 import endpoints from "../../../constants/endPoints.json";
 import { notification } from "antd";
@@ -127,6 +127,22 @@ export const resetPassword = (data) => (dispatch) => {
     .then((response) => {
       const { data } = response;
       notification.success(data)
+    })
+    .catch((err) => {
+      notification.error({ message: err?.response?.data?.message })
+      console.log(err);
+    });
+};
+
+export const getTerms = (data) => (dispatch) => {
+
+  getRequest( undefined, undefined, undefined, endpoints.auth.terms)
+    .then((response) => {
+      const { data } = response;
+      return dispatch({
+        type: TERMS,
+        payload: data
+      })
     })
     .catch((err) => {
       notification.error({ message: err?.response?.data?.message })

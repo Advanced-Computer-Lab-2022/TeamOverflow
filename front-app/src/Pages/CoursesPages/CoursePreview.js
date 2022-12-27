@@ -69,8 +69,8 @@ export const CoursePreview = ({ auth, viewCourse, course, getPaymentLink, reques
                 {role === "Corporate" && <Button onClick={handleRequest} sx={main_button}><RequestPageIcon/> Request access to Course</Button>}
                 {course?.videoId && (<>
                     <hr />
-                    <Box controls={true} sx={centered_flex_box}>
-                        <ReactPlayer url={course?.videoId?.url} />
+                    <Box sx={centered_flex_box}>
+                        <ReactPlayer controls={true} url={course?.videoId?.url} />
                     </Box>
                 </>)
                 }

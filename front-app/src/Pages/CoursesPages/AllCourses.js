@@ -7,7 +7,7 @@ import { CourseCard } from '../../app/components';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import SearchIcon from '@mui/icons-material/Search';
-import { centered_flex_box, main_button } from '../../app/components/Styles';
+import { centered_flex_box, MainInput, MainInputLabel, main_button, StyledInput } from '../../app/components/Styles';
 
 const theme = createTheme();
 
@@ -22,7 +22,7 @@ export const AllCourses = ({ auth, courses, getSubjects, filterCoursesAll, clear
 
   const initialState = {
     minPrice: 0,
-    maxPrice: 5000,
+    maxPrice: 10000,
     minRating: 0,
     maxRating: 5,
     subject: "",
@@ -43,6 +43,14 @@ export const AllCourses = ({ auth, courses, getSubjects, filterCoursesAll, clear
 
   const handlePriceChange = (event) => {
     setFormData({ ...formData, minPrice: event.target.value[0], maxPrice: event.target.value[1] })
+  }
+
+  const handleMinPriceChange = (event) => {
+    setFormData({ ...formData, minPrice: event.target.value})
+  }
+
+  const handleMaxPriceChange = (event) => {
+    setFormData({ ...formData, maxPrice: event.target.value })
   }
 
   const handleRatingChange = (event) => {
@@ -111,6 +119,7 @@ export const AllCourses = ({ auth, courses, getSubjects, filterCoursesAll, clear
                     aria-label="Rating"
                     onChange={handleRatingChange}
                     valueLabelDisplay="auto"
+                    sx={{ color: "var(--secColor)" }}
                   />
                   {role !== "Corporate" && (
                     <>
@@ -122,18 +131,24 @@ export const AllCourses = ({ auth, courses, getSubjects, filterCoursesAll, clear
                         getAriaLabel={() => 'Price range'}
                         onChange={handlePriceChange}
                         valueLabelDisplay="auto"
+                        sx={{ color: "var(--secColor)" }}
                       />
+                      <Box display="flex" justifyContent="space-between">
+                        <MainInput label="Min" focused type="number" value={minPrice} onChange={handleMinPriceChange}/>
+                        <MainInput label="Max"  focused type="number" value={maxPrice} onChange={handleMaxPriceChange}/>
+                      </Box>
                     </>)}
                   Subject Filter:
                   <FormControl sx={{ minWidth: "100%", mt: 1 }}>
-                    <InputLabel id="subject-label">Subject</InputLabel>
+                    <MainInputLabel id="subject-label" title="Subject" />
                     <Select
                       label="Subject"
                       id="Subject"
                       name="subj"
+                      labelId='subject-label'
                       onChange={handleSubjectChange}
+                      input={<StyledInput />}
                       value={subject}
-                      labelId="subject-label"
                       defaultValue=""
                       fullWidth
                     >
