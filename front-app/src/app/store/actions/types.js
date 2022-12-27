@@ -19,6 +19,8 @@ export const SUBJECT_SUCCESS = "SUBJECT_SUCCESS";
 export const COURSE_FAIL = "COURSE_FAIL";
 export const COURSE = "COURSE";
 export const CLEAR_COURSES = "CLEAR_COURSES";
+export const REGISTERED= "REGISTERED";
+export const REGISTERING = "REGISTERING";
 
 //Guest Dispatch
 export const GUEST = "GUEST";

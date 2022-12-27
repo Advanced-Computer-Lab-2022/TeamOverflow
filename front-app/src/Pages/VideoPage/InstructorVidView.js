@@ -9,7 +9,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { getVideo } from '../../app/store/actions/videoActions';
-import ReactPlayer from 'react-player'
+import ReactPlayer from 'react-player/youtube'
 import { centered_flex_box, left_flex_box, main_button } from '../../app/components/Styles';
 
 const theme = createTheme();

@@ -21,6 +21,7 @@
         "pdfkit": "^0.13.0",
         "react-back-to-top": "^1.0.3",
         "react-markdown": "^8.0.4",
-        "react-player": "^2.11.0"
+        "react-player": "^2.11.0",
+        "uninstall": "0.0.0"
     }
 }
