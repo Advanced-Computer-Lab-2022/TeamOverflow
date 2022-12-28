@@ -23,7 +23,7 @@ import Menu from '@mui/material/Menu';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { connect } from "react-redux";
 import { logout } from '../store/actions/authActions';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Tooltip } from '@mui/material';
 import { viewRefunds, viewRequests } from '../store/actions/adminActions';
 import { centered_flex_box } from './Styles';
@@ -32,9 +32,10 @@ function MenuAppBar({ auth, logout, viewRefunds, viewRequests }) {
     const navigate = useNavigate()
     const [anchorEl, setAnchorEl] = React.useState(null);
 
-    var token = auth.token || '';
-    var header = token.split(' ')
-    var role = header[0]
+    const token = auth.token || '';
+    const header = token.split(' ')
+    const role = header[0]
+    const location = useLocation();
 
     const handleMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -143,12 +144,14 @@ function MenuAppBar({ auth, logout, viewRefunds, viewRequests }) {
         logout();
     }
 
+    console.log(location)
 
     return (
         <Box sx={{ flexGrow: 1, marginBottom: 2, bgColor: "var(--primaryColor)", color: "var(--secColor)" }}>
             {auth.user && (
                 <AppBar position="static" color='inherit'>
                     <Toolbar>
+                        {!location.pathname.includes("/course/solve/exercise/") && 
                         <IconButton
                             size="large"
                             edge="start"
@@ -158,7 +161,7 @@ function MenuAppBar({ auth, logout, viewRefunds, viewRequests }) {
                             onClick={() => navigate(-1)}
                         >
                             <ArrowBackIcon />
-                        </IconButton>
+                        </IconButton>}
                         {role !== "Guest" &&
                             < IconButton
                                 size="large"

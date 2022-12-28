@@ -28,19 +28,11 @@ export const PreviewCourse = ({ auth, viewCourse, course, isLoading, publishCour
 
     const courseId = useParams().id
     const navigate = useNavigate()
-    const [modals, setModals] = React.useState({
-        closeModal: false,
-        deleteModal: false,
-        publishModal: false
-    })
-    var { closeModal, deleteModal, publishModal } = modals
+    const role = auth?.token?.split(" ")[0]
 
     React.useEffect(() => {
         viewCourse({ id: courseId, token: auth?.token })
     }, [])
-
-    const role = auth?.token?.split(" ")[0]
-
 
     const handleEnroll = (event) => {
         getPaymentLink({
@@ -54,28 +46,6 @@ export const PreviewCourse = ({ auth, viewCourse, course, isLoading, publishCour
             courseId: courseId,
             token: auth?.token
         })
-    }
-    const handleClose = () => {
-        setModals({
-            closeModal: false,
-            deleteModal: false,
-            publishModal: false
-        })
-    }
-
-    const handlePublish = (event) => {
-        handleClose()
-        publishCourse({ info: { courseId: course?._id }, token: auth?.token })
-    }
-
-    const handleDelete = (event) => {
-        handleClose()
-        deleteCourse({ info: { courseId: course?._id }, token: auth?.token }, navigate)
-    }
-
-    const handleCloseCourse = (event) => {
-        handleClose()
-        closeCourse({ info: { courseId: course?._id }, token: auth?.token })
     }
 
     if (isLoading) {
@@ -118,7 +88,7 @@ export const PreviewCourse = ({ auth, viewCourse, course, isLoading, publishCour
                 <Grid item xs={8} minHeight="100%">
                     <Box sx={{ ...centered_flex_box, minHeight: "100%" }}>
                         <Box sx={{ bgcolor: "var(--secWhite)", p: 1, minHeight: "100%" }}>
-                            {course?.videoId ? <ReactPlayer controls={true} url={course?.videoId?.url} /> : <Button onClick={() => navigate(`/course/video/upload/courseId=${course?._id}`)} sx={{ ...main_button }}><OndemandVideoIcon /> Add Course Preview</Button>}
+                            {course?.videoId ? <ReactPlayer controls={true} url={course?.videoId?.url} /> : <ReactPlayer controls={false} url="https://youtu.be/NpEaa2P7qZI" />}
                         </Box>
                     </Box>
                 </Grid>
