@@ -35,6 +35,14 @@ router.get('/', async function (req, res) {
 router.post("/signup", async (req, res) => {
   const { username, name, email, gender, acceptedTerms, country, password } = req.body
   try {
+    var found = (await Admin.findOne({ username: username })) ||
+      (await CorporateTrainee.findOne({ username: username })) ||
+      (await Trainee.findOne({ username: username })) ||
+      (await Instructor.findOne({ username: username }))
+
+    if (found) {
+      return res.status(400).json({ message: "Username already exists" })
+    }
     var hash = await bcrypt.hash(password, 10)
     var wallet = await Wallet.create({})
     const newUser = new Trainee({
@@ -52,31 +60,6 @@ router.post("/signup", async (req, res) => {
     res.status(201).json({ message: "User Created" });
   } catch (err) {
     res.status(400).json({ message: err.message });
-  }
-})
-
-//Trainee Login
-router.post("/login", async (req, res) => {
-  try {
-    const traineeLogin = req.body
-    await Trainee.findOne({ username: traineeLogin.username }).then(async (trainee) => {
-      if (trainee && await bcrypt.compare(traineeLogin.password, trainee.password)) {
-        const payload = trainee.toJSON()
-        jwt.sign(
-          payload,
-          process.env.JWT_SECRET,
-          //{expiresIn: 86400},
-          (err, token) => {
-            if (err) return res.json({ message: err })
-            return res.status(200).json({ message: "Success", payload: payload, token: "Trainee " + token })
-          }
-        )
-      } else {
-        return res.status(400).json({ message: "Invalid username or password" })
-      }
-    })
-  } catch (err) {
-    return res.status(400).json({ message: err.message })
   }
 })
 
@@ -290,7 +273,7 @@ router.get('/wallet', verifyTrainee, async function (req, res) {
 router.post('/refund', verifyTrainee, async function (req, res) {
   try {
     var registeredCourse = await StudentCourses.findOne({ courseId: req.body.courseId, traineeId: req.reqId }).populate("courseId")
-    var refund = await Refund.findOne({registrationId: registeredCourse._id, traineeId: req.reqId})
+    var refund = await Refund.findOne({ registrationId: registeredCourse._id, traineeId: req.reqId })
     if (registeredCourse && !refund) {
       const progress = calculateProgress(registeredCourse.completion)
       if (progress < 50) {
@@ -305,7 +288,7 @@ router.post('/refund', verifyTrainee, async function (req, res) {
       } else {
         res.status(403).json({ message: "You have completed more than 50% of the course" })
       }
-    } else if(!refund) {
+    } else if (!refund) {
       res.status(403).json({ message: "You are not registered to this course" })
     } else {
       res.status(403).json({ message: "Refund for this course already requested" })

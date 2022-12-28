@@ -1,20 +1,15 @@
 {
    "auth": {
       "admin":{
-         "add":"admin/addAdmin",
-         "login":"admin/login"
+         "add":"admin/addAdmin"
       },
       "instructor":{
-         "add":"admin/addInstructor",
-         "login":"instructor/login"
+         "add":"admin/addInstructor"
       },
       "corporatetrainee":{
-         "add":"admin/addTrainee",
-         "login":"corpTrainee/login"
+         "add":"admin/addTrainee"
       },
-      "trainee": {
-         "login":"trainee/login"
-      },
+      "login":"auth/login",
       "forgot":"auth/forgotPassword",
       "reset":"auth/resetPassword",
       "change":"auth/changePassword",
@@ -30,7 +25,6 @@
       "viewRefunds":"admin/viewRefunds",
       "respondRefund":"admin/refundTraniee",
       "defineDiscount":"admin/defineDiscount"
-
    },
    "instructor":{
       "setCountry":"instructor/selectCountry",

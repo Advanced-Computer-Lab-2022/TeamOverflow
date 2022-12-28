@@ -72,20 +72,13 @@ export const logout = () => async (dispatch, getState) => {
 export const LoginUser = (data) => (dispatch) => {
   dispatch({ type: LOGIN });
   var end;
-  switch (data.type) {
-    case "Instructor": end = endpoints.auth.instructor.login; break;
-    case "Admin": end = endpoints.auth.admin.login; break;
-    case "Corporate": end = endpoints.auth.corporatetrainee.login; break;
-    case "Trainee": end = endpoints.auth.trainee.login; break;
-    default: end = null;
-  }
 
   const info = {
     username: data.username,
     password: data.password
   }
 
-  postRequest(info, undefined, undefined, undefined, end)
+  postRequest(info, undefined, undefined, undefined, endpoints.auth.login)
     .then((response) => {
       if (response.data.message === "Success") {
         notification.success({ message: "Welcome Back" })

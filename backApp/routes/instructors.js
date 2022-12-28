@@ -23,27 +23,6 @@ router.get('/', async function (req, res) {
   res.send(await Instructor.find());
 });
 
-//Instructor Login
-router.post("/login", async (req, res) => {
-  const instructorLogin = req.body
-  await Instructor.findOne({ username: instructorLogin.username }).populate("walletId").then(async (instructor) => {
-    if (instructor && await bcrypt.compare(instructorLogin.password, instructor.password)) {
-      const payload = instructor.toJSON()
-      jwt.sign(
-        payload,
-        process.env.JWT_SECRET,
-        //{expiresIn: 86400},
-        (err, token) => {
-          if (err) return res.json({ message: err })
-          return res.status(200).json({ message: "Success", payload: payload, token: "Instructor " + token })
-        }
-      )
-    } else {
-      return res.json({ message: "Invalid username or password" })
-    }
-  })
-})
-
 //View contract
 router.get('/getContract', verifyInstructor, async function (req, res) {
   try {
@@ -53,7 +32,6 @@ router.get('/getContract', verifyInstructor, async function (req, res) {
     res.status(400).json({ message: err.message })
   }
 })
-
 
 //Accept contract
 router.put('/contractResponse', verifyInstructor, async function (req, res) {

@@ -4,7 +4,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { viewReports, clearReports } from '../../app/store/actions/reportActions';
 import { CourseCard, ReportCard, RequestsCard } from '../../app/components';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import InboxIcon from '@mui/icons-material/Inbox';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import SearchIcon from '@mui/icons-material/Search';
 import { centered_flex_box, main_button } from '../../app/components/Styles';
@@ -46,6 +46,12 @@ export const ReportedProblems = ({ auth, requests, viewRequests, viewRefunds }) 
                                 </Grid>
                             )
                         })}
+                        {requests?.requests?.docs?.length === 0 && (
+                                <Grid item sx={{ ...centered_flex_box, flexDirection: "column", mt: 2 }}>
+                                    <InboxIcon fontSize="large" />
+                                    <Typography fontSize={40}>No results</Typography>
+                                </Grid>
+                            )}
                     </Grid>
                     <Box sx={{ ...centered_flex_box, m: 1 }}>
                         <Pagination count={requests?.requests?.pages || 1} page={page} onChange={handlePageChange} />

@@ -4,14 +4,14 @@ import { connect } from "react-redux";
 import { logout } from '../store/actions/authActions';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@mui/material';
-import { card_style, main_button } from './Styles';
+import { card_style, main_button, right_flex_box } from './Styles';
 import moment from "moment"
 
 function ReportCard({ token, request, isLoading }) {
 
     const navigate = useNavigate();
     const role = token.split(" ")[0];
-    
+
     return (
         <Card sx={card_style}>
             {isLoading && (
@@ -33,9 +33,12 @@ function ReportCard({ token, request, isLoading }) {
                     </Grid>
                 </Grid>
                 <br />
-                <Button sx={{ ...main_button, mt:2}}>
-                    Accept
-                </Button>
+                <Box sx={right_flex_box}>
+                    <Button sx={{ ...main_button, mt: 2 }}>
+                        Accept
+                    </Button>
+                </Box>
+
             </>)}
         </Card>
     );
@@ -46,6 +49,6 @@ const mapStateToProps = (state) => ({
     isLoading: state?.reports?.isLoading
 });
 
-const mapDispatchToProps = { };
+const mapDispatchToProps = {};
 
 export default connect(mapStateToProps, mapDispatchToProps)(ReportCard);

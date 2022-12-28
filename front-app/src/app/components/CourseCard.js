@@ -33,11 +33,16 @@ function CourseCard({ token, course, isLoading }) {
                         </Typography>
                     </Grid>
                     <Grid item direction="row" alignItems="center" display="flex" justifyContent="flex-end" xs={2}>
-                        {role!=="Corporate" && course?.deadline && moment().isBefore(course?.deadline) && <Chip sx={{ mx:1, color: "green", borderColor: "green" }} label={`${course?.discount}%`} variant="outlined" />}
+                        {role !== "Corporate" && course?.deadline && course?.startDate && moment().isBefore(course?.deadline) && moment().isAfter(course?.startDate) && <Chip sx={{ mx: 1, color: "green", borderColor: "green", fontWeight: "bold" }} label={`${course?.discount}% SALE`} variant="outlined" />}
                         <Chip sx={{ color: "var(--secColor)", borderColor: "var(--secColor)" }} label={`${course.totalHours}h`} variant="outlined" />
                     </Grid>
                 </Grid>
-                <Typography variant='p'>
+                <Typography variant='p' sx={{
+                    display: '-webkit-box',
+                    overflow: 'hidden',
+                    WebkitBoxOrient: 'vertical',
+                    WebkitLineClamp: 3,
+                }}>
                     {course.summary}
                 </Typography>
                 <br />
@@ -49,22 +54,22 @@ function CourseCard({ token, course, isLoading }) {
                 <br />
                 {role !== "Corporate" ? (
                     <Grid container >
-                        <Grid item xs={9}>
-                            {
-                                (course?.deadline && moment().isBefore(course?.deadline)) ? (
-                                    <>
-                                        <Typography sx={{ textDecoration: "line-through", color: "red", fontWeight:"bold" }}>{course?.currency} {course?.price}</Typography>
-                                        <Typography sx={{ color: "green", fontWeight:"bold" }}>{course?.currency} {(course?.price * ((100 - course?.discount) / 100)).toFixed(2)}</Typography>
-                                    </>
-                                ) : (
-                                    <Typography sx={{ fontWeight:"bold" }}>{course?.currency} {course?.price}</Typography>
-                                )
-                            }
-                        </Grid>
-                        <Grid item xs={3} direction="row" alignItems="center" display="flex" justifyContent="flex-end">
+                        <Grid item xs={3} direction="row" alignItems="center" display="flex" justifyContent="flex-start">
                             <Button onClick={reroute} sx={{ ...main_button }}>
                                 View Course
                             </Button>
+                        </Grid>
+                        <Grid item xs={9} display="flex" justifyContent="flex-end">
+                            {
+                                (course?.deadline && course?.startDate && moment().isBefore(course?.deadline) && moment().isAfter(course?.startDate)) ? (
+                                    <Box>
+                                        <Typography sx={{ textDecoration: "line-through", color: "red", fontWeight: "bold" }}>{course?.currency} {course?.price}</Typography>
+                                        <Typography sx={{ color: "green", fontWeight: "bold" }}>{course?.currency} {(course?.price * ((100 - course?.discount) / 100)).toFixed(2)}</Typography>
+                                    </Box>
+                                ) : (
+                                    <Typography sx={{ fontWeight: "bold" }}>{course?.currency} {course?.price}</Typography>
+                                )
+                            }
                         </Grid>
                     </Grid>
                 ) : (

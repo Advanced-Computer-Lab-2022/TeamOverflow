@@ -8,7 +8,8 @@ var traineeSchema = new mongoose.Schema({
     email: {type: String, required: true, unique: true},
     gender: {type: String},
     acceptedTerms: {type: Boolean, required: true},
-    walletId: {type: mongoose.Types.ObjectId, ref: "Wallet", required: true}
+    walletId: {type: mongoose.Types.ObjectId, ref: "Wallet", required: true},
+    bearer: {type: String, default: "Trainee"}
 }, {timestamps: true})
 
 

@@ -7,6 +7,7 @@ var courseSchema = new mongoose.Schema({
     summary: {type: String, required: true},
     price: {type: Number, required: true},
     discount: {type: Number},
+    startDate: {type: Date},
     deadline: {type: Date},
     instructorId: {type: mongoose.Types.ObjectId, ref:"Instructor" ,required: true},
     rating: {type: Number, default: 5},

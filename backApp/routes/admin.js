@@ -3,16 +3,10 @@ var router = express.Router();
 const Admin = require('../models/Admin')
 const Instructor = require('../models/Instructor')
 const CorporateTrainee = require('../models/CorporateTrainee')
-const jwt = require("jsonwebtoken");
 const { verifyAdmin } = require("../auth/jwt-auth");
-const { verifyInstructor } = require("../auth/jwt-auth");
-const { verifyAllUsers } = require("../auth/jwt-auth");
 const StudentCourses = require('../models/StudentCourses');
 const Course = require('../models/Course');
-const mongoose = require("mongoose");
-const Contract = require('../models/Contract');
 const Subtitle = require('../models/Subtitle');
-const { requestCourse } = require('../controllers/studentController');
 const Requests = require('../models/Requests');
 const Refund = require('../models/Refund');
 const bcrypt = require("bcrypt");
@@ -31,37 +25,16 @@ router.get('/', function (req, res) {
 
 });
 
-//Admin Login
-router.post("/login", async (req, res) => {
-  try {
-    const adminLogin = req.body
-    await Admin.findOne({ username: adminLogin.username }).then(async (admin) => {
-      if (admin && await bcrypt.compare(adminLogin.password, admin.password)) {
-        const payload = admin.toJSON()
-        jwt.sign(
-          payload,
-          process.env.JWT_SECRET,
-          //{expiresIn: 86400},
-          (err, token) => {
-            if (err) return res.json({ message: err })
-            return res.status(200).json({ message: "Success", payload: payload, token: "Admin " + token })
-          }
-        )
-      } else {
-        return res.status(400).json({ message: "Invalid username or password" })
-      }
-    })
-  } catch (err) {
-    return res.status(400).json({ message: err.message })
-  }
-})
-
 //add admin
 router.post('/addAdmin', verifyAdmin, async function (req, res) {
   try {
-    var found = await Admin.findOne({ username: req.body.username })
+    var found = (await Admin.findOne({ username: req.body.username })) ||
+    (await CorporateTrainee.findOne({ username: req.body.username })) ||
+    (await Trainee.findOne({ username: req.body.username })) ||
+    (await Instructor.findOne({ username: req.body.username }))
+    
     if (found) {
-      return res.status(400).json({ message: "Admin username already exists" })
+      return res.status(400).json({ message: "Username already exists" })
     }
     var hash = await bcrypt.hash(req.body.password, 10)
     const add = new Admin({
@@ -78,9 +51,13 @@ router.post('/addAdmin', verifyAdmin, async function (req, res) {
 //add instructor
 router.post('/addInstructor', verifyAdmin, async function (req, res) {
   try {
-    var found = await Instructor.findOne({ username: req.body.username })
+    var found = (await Admin.findOne({ username: req.body.username })) ||
+    (await CorporateTrainee.findOne({ username: req.body.username })) ||
+    (await Trainee.findOne({ username: req.body.username })) ||
+    (await Instructor.findOne({ username: req.body.username }))
+
     if (found) {
-      return res.status(400).json({ message: "Instructor username already exists" })
+      return res.status(400).json({ message: "Username already exists" })
     }
     var wallet = await Wallet.create({})
     var hash = await bcrypt.hash(req.body.password, 10)
@@ -97,28 +74,16 @@ router.post('/addInstructor', verifyAdmin, async function (req, res) {
   }
 });
 
-router.post('/createContract', verifyAdmin, async function (req, res) {
-  try {
-    const add = Contract({
-      title: req.body.title,
-      instructorId: req.body.instructorId,
-      terms: req.body.terms,
-      percentageTaken: req.body.percentageTaken,
-      status: "Pending",
-    })
-    const newContract = await add.save()
-    res.status(201).json(newContract)
-  } catch (err) {
-    res.status(400).json({ message: err.message })
-  }
-});
-
 //add corporate trainee
 router.post('/addTrainee', verifyAdmin, async function (req, res) {
   try {
-    var found = await CorporateTrainee.findOne({ username: req.body.username })
+    var found = (await Admin.findOne({ username: req.body.username })) ||
+    (await CorporateTrainee.findOne({ username: req.body.username })) ||
+    (await Trainee.findOne({ username: req.body.username })) ||
+    (await Instructor.findOne({ username: req.body.username }))
+    
     if (found) {
-      return res.status(400).json({ message: "Corporate Trainee username already exists" })
+      return res.status(400).json({ message: "Username already exists" })
     }
     var hash = await bcrypt.hash(req.body.password, 10)
     const add = new CorporateTrainee({

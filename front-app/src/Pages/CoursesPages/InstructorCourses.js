@@ -6,6 +6,7 @@ import { clearCourses, filterCoursesInstructor, getSubjects } from '../../app/st
 import { CourseCard, InstructorCourseCard } from '../../app/components';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import SearchIcon from '@mui/icons-material/Search';
+import InboxIcon from '@mui/icons-material/Inbox';
 import { centered_flex_box, MainInput, main_button } from '../../app/components/Styles';
 
 const theme = createTheme();
@@ -17,6 +18,7 @@ export const InstructorCourses = ({ auth, courses, getSubjects, filterCoursesIns
   React.useEffect(() => {
     clearCourses()
     getSubjects()
+    filterCoursesInstructor({ token: auth.token, ...formData });
   }, [])
 
   const initialState = {
@@ -45,7 +47,7 @@ export const InstructorCourses = ({ auth, courses, getSubjects, filterCoursesIns
   }
 
   const handleMinPriceChange = (event) => {
-    setFormData({ ...formData, minPrice: event.target.value})
+    setFormData({ ...formData, minPrice: event.target.value })
   }
 
   const handleMaxPriceChange = (event) => {
@@ -131,8 +133,8 @@ export const InstructorCourses = ({ auth, courses, getSubjects, filterCoursesIns
                         valueLabelDisplay="auto"
                       />
                       <Box display="flex" justifyContent="space-between">
-                        <MainInput label="Min" focused type="number" value={minPrice} onChange={handleMinPriceChange}/>
-                        <MainInput label="Max"  focused type="number" value={maxPrice} onChange={handleMaxPriceChange}/>
+                        <MainInput label="Min" focused type="number" value={minPrice} onChange={handleMinPriceChange} />
+                        <MainInput label="Max" focused type="number" value={maxPrice} onChange={handleMaxPriceChange} />
                       </Box>
                     </>)}
                   Subject Filter:
@@ -171,14 +173,20 @@ export const InstructorCourses = ({ auth, courses, getSubjects, filterCoursesIns
         <hr />
         <Box>
           {!courses?.isLoading ? (
-            <Grid container spacing={1}>
+            <Grid container spacing={3} sx={centered_flex_box}>
               {courses?.results?.docs?.map((course) => {
                 return (
-                  <Grid item xs={12}>
+                  <Grid item xs={5}>
                     <InstructorCourseCard course={course} />
                   </Grid>
                 )
               })}
+              {courses?.results?.docs?.length === 0 && (
+                <Grid item sx={{ ...centered_flex_box, flexDirection: "column", mt: 2 }}>
+                  <InboxIcon fontSize="large" />
+                  <Typography fontSize={40}>No results</Typography>
+                </Grid>
+              )}
             </Grid>
           ) : (
             <Box sx={centered_flex_box}>

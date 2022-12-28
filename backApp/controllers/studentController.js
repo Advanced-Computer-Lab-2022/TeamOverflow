@@ -112,7 +112,7 @@ async function watchVideo(req, res, regCourse) {
 
 async function getRegistered(req, res) {
   try {
-    var results = await StudentCourses.paginate({ traineeId: req.reqId, onHold: false }, { page: req.query.page, limit: 10, populate: { path: "courseId" } })
+    var results = await StudentCourses.paginate({ traineeId: req.reqId, onHold: false }, { page: req.query.page, limit: 12, populate: { path: "courseId" } })
     var allResults = []
     for (let i = 0; i < results.docs.length; i++) {
       var reqCourse = results.docs[i].toJSON()

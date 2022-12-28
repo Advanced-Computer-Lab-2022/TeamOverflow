@@ -36,7 +36,12 @@ function InstructorCourseCard({ token, course, isLoading }) {
                         <Chip sx={{ color: "var(--secColor)", borderColor: "var(--secColor)" }} label={`${course.totalHours}h`} variant="outlined" />
                     </Grid>
                 </Grid>
-                <Typography variant='p'>
+                <Typography variant='p' sx={{
+                    display: '-webkit-box',
+                    overflow: 'hidden',
+                    WebkitBoxOrient: 'vertical',
+                    WebkitLineClamp: 3,
+                }}>
                     {course.summary}
                 </Typography>
                 <br />

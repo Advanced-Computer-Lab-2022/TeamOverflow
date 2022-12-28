@@ -19,7 +19,7 @@ async function viewReports(req, res) {
     try {
         const status = req.query.status || { $regex: ".*" }
         const type = req.query.type || { $regex: ".*" }
-        var reports = await Report.paginate({ userId: req.reqId, type: type, status: status }, { page: req.query.page, limit: 10 })
+        var reports = await Report.paginate({ userId: req.reqId, type: type, status: status }, { page: req.query.page, limit: 12 })
         res.status(200).json(reports)
     } catch (err) {
         res.status(400).json({ message: err.message })

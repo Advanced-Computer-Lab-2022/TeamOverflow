@@ -6,7 +6,8 @@ var corptrainSchema = new mongoose.Schema({
     corporation: {type: String, required: true},
     country: {type: String},
     name: {type: String},
-    email: {type: String}
+    email: {type: String},
+    bearer: {type: String, default: "Corporate"}
 }, {timestamps: true})
 
 var CorporateTrainee = mongoose.model("CorporateTrainee",corptrainSchema);

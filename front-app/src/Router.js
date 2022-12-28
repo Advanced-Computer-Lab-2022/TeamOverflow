@@ -24,6 +24,7 @@ export const Router = () => {
         <Route path="/Admin/edit" exact element={<EditAdminProfile />} />
         <Route path="/Admin/editPassword" exact element={<EditAdminPassword />} />
         <Route path="/Admin/requests" exact element={<Requests />} />
+        <Route path="/Admin/promotions" exact element={<DefineDiscounts />} />
 
       </Route>
       <Route exact element={<ProtectedRoute allowed={["Instructor"]} />}>

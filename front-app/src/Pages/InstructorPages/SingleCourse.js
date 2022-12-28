@@ -123,13 +123,16 @@ export const InstructorSingleCourse = ({ auth, viewCourse, course, isLoading, pu
 
                 </Box>
             </Box>
-            <Grid container>
-            <hr />
-            {
-                course?.subtitles?.map((subtitle, i) => {
-                    return <SubtitleCard subtitle={subtitle} key={i} />
-                })
-            }
+            <Grid container sx={centered_flex_box}>
+                {
+                    course?.subtitles?.map((subtitle, i) => {
+                        return (
+                            <Grid item xs={12} sx={centered_flex_box}>
+                                <SubtitleCard subtitle={subtitle} key={i} />
+                            </Grid>
+                        )
+                    })
+                }
             </Grid>
         </Container >
     );

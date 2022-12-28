@@ -32,7 +32,12 @@ function ReportCard({ token, report, isLoading }) {
                         <Chip sx={{ color: "var(--secColor)", borderColor: "var(--secColor)" }} label={report.status} variant="outlined" />
                     </Grid>
                 </Grid>
-                <Typography variant='p'>
+                <Typography variant='p' sx={{
+                    display: '-webkit-box',
+                    overflow: 'hidden',
+                    WebkitBoxOrient: 'vertical',
+                    WebkitLineClamp: 3,
+                }}>
                     {report.details}
                 </Typography>
                 <br />
