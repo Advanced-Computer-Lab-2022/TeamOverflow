@@ -20,6 +20,7 @@ export const Discount = ({ auth, defineDiscount }) => {
         var details = {
             creation: {
                 discount: data.get('discount'),
+                startDate: data.get('startDate'),
                 deadline: data.get('deadline'),
                 courseId: id
             },
@@ -63,10 +64,21 @@ export const Discount = ({ auth, defineDiscount }) => {
                             margin="normal"
                             required
                             fullWidth
+                            name="startDate"
+                            label="Discount Start Date"
+                            type="datetime-local"
+                            id="startDate"
+                            focused
+                        />
+                        <MainInput
+                            margin="normal"
+                            required
+                            fullWidth
                             name="deadline"
                             label="Discount deadline"
                             type="datetime-local"
                             id="deadline"
+                            focused
                         />
                         <Button
                             type="submit"

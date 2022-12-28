@@ -16,13 +16,14 @@ const theme = createTheme();
 
 export const Completed = ({ token, user, registerCourse, isLoading }) => {
   const navigate = useNavigate();
-  const { session_id, courseId } = useParams()
+  const { session_id, courseId, fromWallet } = useParams()
 
   React.useEffect(() => {
     registerCourse({
       courseData: {
         courseId: courseId,
-        session_id: session_id
+        session_id: session_id,
+        fromWallet: parseInt(fromWallet)
       },
       token: token
     });

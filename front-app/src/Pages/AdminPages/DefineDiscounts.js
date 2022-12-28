@@ -93,6 +93,7 @@ export const DefineDiscount = ({ token, courses, filterCoursesAll, clearCourses,
         const data = new FormData(event.currentTarget);
         var info = {
             discount: data.get('discount'),
+            startDate: data.get('startDate'),
             deadline: data.get('deadline'),
             courseIds: courseIds
         }
@@ -197,6 +198,7 @@ export const DefineDiscount = ({ token, courses, filterCoursesAll, clearCourses,
                 <hr />
                 <Box component="form" onSubmit={handleDefineDiscount} sx={centered_flex_box}>
                     <MainInput required={true} focused name="discount" label="Discount %" inputProps={{ min: 0, max: 100 }} type="number" sx={{ mx: 1 }} />
+                    <MainInput required={true} focused name="startDate" label="Discount Start Date" type="datetime-local" sx={{ mx: 1 }} />
                     <MainInput required={true} focused name="deadline" label="Discount Deadline" type="datetime-local" sx={{ mx: 1 }} />
                     <Tooltip title="Define Discount for current selection"><Button type="submit" sx={main_button}>Add Promotion</Button></Tooltip>
                 </Box>

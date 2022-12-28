@@ -17,6 +17,7 @@ const { getWallet } = require('../controllers/walletController');
 const { reportProblem, viewReports, viewOneReport, addFollowup } = require('../controllers/reportController');
 const { findByIdAndDelete } = require('../models/Instructor');
 const { getCode, forexCode } = require('../controllers/currencyController');
+const moment = require("moment");
 
 /* GET instructors listing. */
 router.get('/', async function (req, res) {
@@ -100,8 +101,12 @@ router.get('/viewCourseRatings', verifyInstructor, async function (req, res) {
 //define discount and for how long
 router.post('/defineDiscount', verifyInstructor, async function (req, res) {
   try {
-    var result = await Course.findByIdAndUpdate(req.body.courseId, { $set: { discount: req.body.discount, deadline: req.body.deadline } }, { new: true })
-    res.status(200).json(result)
+    if (moment(req.body.startDate).isBefore(req.body.deadline)) {
+      var result = await Course.findByIdAndUpdate(req.body.courseId, { $set: { discount: req.body.discount, startDate: req.body.startDate, deadline: req.body.deadline } }, { new: true })
+      res.status(200).json(result)
+    } else {
+      res.status(403).json({ message: "Deadline cannot be before start date" })
+    }
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
@@ -161,7 +166,7 @@ router.post('/publish', verifyInstructor, async function (req, res) {
 //Unpublish a course
 router.post('/close', verifyInstructor, async function (req, res) {
   try {
-    var result = await Course.findOneAndUpdate({_id: req.body.courseId, instructorId: req.reqId, closed: false, published: true}, { $set: { published: false, closed: true } }, { new: true })
+    var result = await Course.findOneAndUpdate({ _id: req.body.courseId, instructorId: req.reqId, closed: false, published: true }, { $set: { published: false, closed: true } }, { new: true })
     if (result) {
       await courseView(req, res)
     } else {

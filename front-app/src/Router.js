@@ -48,7 +48,7 @@ export const Router = () => {
         <Route path="/Trainee/profile" exact element={<TraineeProfile />} />
         <Route path="/Trainee/edit" exact element={<EditTraineeProfile />} />
         <Route path="/Trainee/editPassword" exact element={<EditTraineePassword />} />
-        <Route path="/paymentCompleted/:session_id/:courseId" exact element={<PaymentDone />} />
+        <Route path="/paymentCompleted/:session_id/:courseId/:fromWallet" exact element={<PaymentDone />} />
       </Route>
       <Route exact element={<ProtectedRoute allowed={["Corporate"]} />}>
         <Route path="/Corporate" exact element={<TraineeHome />} />

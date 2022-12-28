@@ -16,29 +16,38 @@ import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { viewCourse } from '../../app/store/actions/coursesActions';
 import moment from "moment";
 import { centered_flex_box, left_flex_box, main_button, right_flex_box, sec_button } from '../../app/components/Styles';
-import { ActionModal, SubtitleCard } from '../../app/components';
+import { ActionModal, SubtitleCard, WalletModal } from '../../app/components';
 import { closeCourse, deleteCourse, publishCourse } from '../../app/store/actions/instructorActions';
 import ReactPlayer from 'react-player/youtube';
 import { requestAccess } from '../../app/store/actions/corporateActions';
 import { getPaymentLink } from '../../app/store/actions/traineeActions';
+import { getWallet } from '../../app/store/actions/authActions';
 
 const theme = createTheme();
 
-export const PreviewCourse = ({ auth, viewCourse, course, isLoading, publishCourse, deleteCourse, closeCourse }) => {
+export const PreviewCourse = ({ auth, viewCourse, course, isLoading, getWallet, getPaymentLink }) => {
 
     const courseId = useParams().id
     const navigate = useNavigate()
     const role = auth?.token?.split(" ")[0]
+    const [walletOpen, setWalletOpen] = React.useState(false)
 
     React.useEffect(() => {
         viewCourse({ id: courseId, token: auth?.token })
     }, [])
 
     const handleEnroll = (event) => {
+        setWalletOpen(false)
         getPaymentLink({
             courseId: courseId,
+            fromWallet: event.target.value,
             token: auth?.token
         })
+    }
+
+    const handleOpenWallet = (event) => {
+        getWallet(auth?.token)
+        setWalletOpen(true)
     }
 
     const handleRequest = (event) => {
@@ -72,7 +81,10 @@ export const PreviewCourse = ({ auth, viewCourse, course, isLoading, publishCour
                                     <Chip sx={{ color: "var(--secColor)", fontSize: 27, mb: 1, bgcolor: "var(--mainWhite)", p: 2 }} label={`${course?.currency} ${course?.price}`} />
                                 </>)
                             }
-                            {role === "Trainee" && !course?.isEnrolled && <Button onClick={handleEnroll} sx={sec_button}><ShoppingCartCheckoutIcon /> Enroll in Course</Button>}
+                            {role === "Trainee" && !course?.isEnrolled && (<>
+                                <Button onClick={handleOpenWallet} sx={sec_button}><ShoppingCartCheckoutIcon /> Enroll in Course</Button>
+                                <WalletModal wallet={auth?.wallet} open={walletOpen} handleClose={() => setWalletOpen(false)} action={handleEnroll} />
+                            </>)}
                             {role === "Corporate" && !course?.isEnrolled && <Button onClick={handleRequest} sx={sec_button}><RequestPageIcon /> Request access</Button>}
                             {course?.isEnrolled && <Button onClick={() => navigate(`/courses/student/single/${courseId}`)} sx={sec_button}><ArrowForwardIosIcon /> Go to Course</Button>}
                         </Box>
@@ -132,7 +144,7 @@ const mapStateToProps = (state) => ({
     isLoading: state?.courses?.isLoading
 });
 
-const mapDispatchToProps = { viewCourse, publishCourse, deleteCourse, closeCourse };
+const mapDispatchToProps = { viewCourse, getWallet, getPaymentLink };
 
 export default connect(mapStateToProps, mapDispatchToProps)(PreviewCourse);
 

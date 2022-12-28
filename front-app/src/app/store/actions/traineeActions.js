@@ -49,12 +49,16 @@ export const editProfile = (data) => (dispatch) => {
 };
 
 export const getPaymentLink = (data) => (dispatch) => {
-  var { courseId, token } = data
+  var { courseId, fromWallet, token } = data
 
-  getRequest({ courseId: courseId }, undefined, token, endpoints.trainee.getPaymentLink)
+  getRequest({ courseId: courseId, fromWallet: fromWallet }, undefined, token, endpoints.trainee.getPaymentLink)
     .then((response) => {
       const { data } = response;
-      window.open(data.paymentUrl)
+      if(data.paymentUrl) {
+        window.open(data.paymentUrl)
+      } else {
+        notification.success({message: data.message})
+      }
     })
     .catch((err) => {
       notification.error({ message: err?.response?.data?.message })

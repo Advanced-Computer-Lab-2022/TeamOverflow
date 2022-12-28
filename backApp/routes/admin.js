@@ -103,11 +103,15 @@ router.post('/addTrainee', verifyAdmin, async function (req, res) {
 // a promotion for specific courses, several courses or all courses
 router.post('/defineDiscount', verifyAdmin, async function (req, res) {
   try {
-    const courses = req.body.courseIds
-    for (let i = 0; i < courses.length; i++) {
-      await Course.findByIdAndUpdate(courses[i], { $set: { discount: req.body.discount, deadline: req.body.deadline } })
+    if (moment(req.body.startDate).isBefore(req.body.deadline)) {
+      const courses = req.body.courseIds
+      for (let i = 0; i < courses.length; i++) {
+        await Course.findByIdAndUpdate(courses[i], { $set: { discount: req.body.discount, deadline: req.body.deadline } })
+      }
+      res.status(200).json({ message: `Discount added to ${courses.length} course(s)` })
+    } else {
+      res.status(403).json({ message: "Deadline cannot be before start date" })
     }
-    res.status(200).json({ message: `Discount added to ${courses.length} course(s)` })
   } catch (err) {
     res.status(400).json({ message: err.message })
   }

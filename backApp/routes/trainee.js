@@ -21,8 +21,9 @@ const Wallet = require('../models/Wallet');
 const { addAmountOwed, getWallet } = require('../controllers/walletController');
 const { getNotes } = require('../controllers/pdfController');
 const Refund = require('../models/Refund');
-const { forexBack } = require('../controllers/currencyController');
+const { forexBack, forexCode, getCode } = require('../controllers/currencyController');
 const { reportProblem, viewReports, viewOneReport, addFollowup } = require('../controllers/reportController');
+const moment = require("moment")
 
 /* GET trainees listing. */
 router.get('/', async function (req, res) {
@@ -92,13 +93,48 @@ module.exports = router;
 
 router.get('/checkOut', verifyTrainee, async function (req, res) {
   try {
-    const course = await Course.findById(req.query.courseId)
-    const user = await Trainee.findById(req.reqId)
+    const course = await Course.findById(req.query.courseId).populate("instructorId")
     const alreadyRegistered = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
     if (alreadyRegistered) {
       return res.status(400).json({ message: "You are already registered to this course" })
     }
-    await getPaymentLink(req, res, course)
+    const code = getCode(req.user.country)
+    const discountRate = (course.deadline && moment().isAfter(course.startDate) && moment().isBefore(course.deadline)) ? ((100 - course.discount) / 100) : 1
+    var coursePrice = course.price * discountRate
+    if (req.query.fromWallet === "true") {
+      await req.user.populate("walletId")
+      const walletAmount = req.user.walletId.balance
+      if (walletAmount >= coursePrice) {
+        await Wallet.findByIdAndUpdate(req.user.walletId._id, { $inc: { balance: (-1 * coursePrice) } })
+        const subtitles = await Subtitle.find({ courseId: req.body.courseId }, { _id: 1, exerciseId: 1, videoId: 1 })
+        const itemIds = [course.examId?.toString(), course.videoId?.toString(), subtitles.map((sub) => [sub.exerciseId?.toString(), sub.videoId?.toString()])].flat().flat()
+        var completion = {}
+        for (let i = 0; i < itemIds.length; i++) {
+          if (itemIds[i]) {
+            completion[itemIds[i]] = false
+          }
+        }
+        var amountPaid = await forexBack(paymentSession.amount_subtotal / 100, paymentSession.currency.toUpperCase())
+        const traineeCourse = new StudentCourses({
+          traineeId: req.reqId,
+          courseId: req.body.courseId,
+          completion: completion,
+          amountPaid: amountPaid
+        });
+        await addAmountOwed(course.instructorId.walletId, paymentSession.amount_subtotal / 100, paymentSession.currency.toUpperCase())
+        await traineeCourse.save();
+        course.$inc("enrolled", 1)
+        await course.save()
+        res.status(201).json({ message: "Enrolled to course" })
+      } else {
+        coursePrice -= walletAmount;
+        coursePrice = await forexCode(coursePrice, code)
+        await getPaymentLink(req, res, course, coursePrice, walletAmount, code)
+      }
+    } else {
+      coursePrice = await forexCode(coursePrice, code)
+      await getPaymentLink(req, res, course, coursePrice, 0, code)
+    }
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
@@ -128,10 +164,13 @@ router.post('/registerCourse', verifyTrainee, async function (req, res) {
         traineeId: req.reqId,
         courseId: req.body.courseId,
         completion: completion,
-        amountPaid: amountPaid
+        amountPaid: amountPaid + req.body.fromWallet
       });
-      await addAmountOwed(course.instructorId.walletId, paymentSession.amount_subtotal / 100, paymentSession.currency.toUpperCase())
-      const newTraineeCourse = await traineeCourse.save();
+      if (req.body.fromWallet > 0) {
+        await Wallet.findByIdAndUpdate(req.user.walletId, { $inc: { balance: (-1 * req.body.fromWallet) } })
+      }
+      await addAmountOwed(course.instructorId.walletId, (amountPaid+req.body.fromWallet).toFixed(2))
+      var newTraineeCourse = await traineeCourse.save();
       course.$inc("enrolled", 1)
       await course.save()
       res.status(201).json(newTraineeCourse)
