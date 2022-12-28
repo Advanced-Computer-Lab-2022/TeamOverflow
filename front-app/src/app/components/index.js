@@ -5,5 +5,5 @@ import InstructorCourseCard from "./InstructorCourseCard";
 import ReportCard from "./ReportCard";
 import ActionModal from "./ActionModal";
 import SubtitleCard from "./SubtitleCard";
-
-export {TopBar, CourseCard, RegisteredCourseCard, InstructorCourseCard, ReportCard, ActionModal, SubtitleCard}
+import RequestsCard from "./RequestsCard";
+export {TopBar, CourseCard, RegisteredCourseCard, InstructorCourseCard, ReportCard, ActionModal, SubtitleCard, RequestsCard}

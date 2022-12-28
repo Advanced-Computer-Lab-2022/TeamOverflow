@@ -151,7 +151,7 @@ router.post('/defineDiscount', verifyAdmin, async function (req, res) {
 router.get('/viewRequests', verifyAdmin, async function (req, res) {
   try {
     var results = await Requests.paginate({}, { page: req.query.page, limit: 10, populate: ["courseId", { path: "traineeId", select: { _id: 1, name: 1, email: 1, corporation: 1 } }] })
-    res.status(200).json({type: "Requests", results: results})
+    res.status(200).json({type: "Course", results: results})
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
@@ -185,7 +185,7 @@ router.post('/grantAccess', verifyAdmin, async function (req, res) {
       await course.save()
       await request.delete()
       var results = await Requests.paginate({}, { page: req.query.page, limit: 10, populate: ["courseId", { path: "traineeId", select: { _id: 1, name: 1, email: 1, corporation: 1 } }] })
-      res.status(200).json({type: "Requests", results: results})
+      res.status(200).json({type: "Course", results: results})
     } else {
       res.status(400).json({ message: "Trainee already registered to this course" })
     }
@@ -198,7 +198,7 @@ router.post('/grantAccess', verifyAdmin, async function (req, res) {
 router.get('/viewRefunds', verifyAdmin, async function (req, res) {
   try {
     var results = await Refund.paginate({}, { page: req.query.page, limit: 10, populate: ["registrationId", { path: "instructorId", select: { _id: 1, name: 1, email: 1 } }] })
-    res.status(200).json({type: "Refunds", results: results})
+    res.status(200).json({type: "Refund", results: results})
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
@@ -223,7 +223,7 @@ router.post('/refundTraniee', verifyAdmin, async function (req, res) {
       course.$inc("enrolled", -1)
       await course.save()
       var results = await Refund.paginate({}, { page: req.body.page, limit: 10, populate: ["registrationId", { path: "instructorId", select: { _id: 1, name: 1, email: 1 } }] })
-      res.status(200).json({type: "Refunds", results: results})
+      res.status(200).json({type: "Refund", results: results})
     } else {
       res.status(403).json({ message: "Refund request does not exist" })
     }

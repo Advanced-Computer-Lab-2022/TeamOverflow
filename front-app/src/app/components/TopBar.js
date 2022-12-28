@@ -24,9 +24,10 @@ import { connect } from "react-redux";
 import { logout } from '../store/actions/authActions';
 import { useNavigate } from 'react-router-dom';
 import { Tooltip } from '@mui/material';
+import { viewRefunds, viewRequests } from '../store/actions/adminActions';
 import { centered_flex_box } from './Styles';
 
-function MenuAppBar({ auth, logout }) {
+function MenuAppBar({ auth, logout, viewRefunds, viewRequests  }) {
     const navigate = useNavigate()
     const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -105,13 +106,15 @@ function MenuAppBar({ auth, logout }) {
 
     const handleCourseRequests = () => {
         setAnchorEl(null);
+        viewRequests({info: {page: 1}, token})
         let path = "/Admin/requests";
         navigate(path);
     };
 
     const handleRefundRequests = () => {
         setAnchorEl(null);
-        let path = "/Admin/refund";
+        viewRefunds({info: {page: 1}, token})
+        let path = "/Admin/requests";
         navigate(path);
     };
 
@@ -219,6 +222,6 @@ const mapStateToProps = (state) => ({
     auth: state?.auth
 });
 
-const mapDispatchToProps = { logout };
+const mapDispatchToProps = { logout, viewRefunds, viewRequests };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MenuAppBar);

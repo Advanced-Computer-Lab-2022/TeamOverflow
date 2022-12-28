@@ -71,7 +71,6 @@ export const viewRefunds = (data) => (dispatch) => {
   getRequest(info, undefined, token, endpoints.admin.viewRefunds)
     .then((response) => {
       const { data } = response;
-      notification.success({ message: data.message })
       return dispatch({
         type: REQUESTS_SUCCESS,
         payload: data
@@ -114,10 +113,9 @@ export const viewRequests = (data) => (dispatch) => {
   dispatch({ type: REQUESTS });
   var { info, token } = data
 
-  postRequest(info, undefined, undefined, token, endpoints.admin.viewRequests)
+  getRequest(info, undefined, token, endpoints.admin.viewRequests)
     .then((response) => {
       const { data } = response;
-      notification.success({ message: data.message })
       return dispatch({
         type: REQUESTS_SUCCESS,
         payload: data
