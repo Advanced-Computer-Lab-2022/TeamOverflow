@@ -19,6 +19,19 @@ export const main_button = {
     }
 }
 
+export const sec_button = {
+    color: "var(--secColor)",
+    bgcolor: "var(--primaryColor)",
+    ":hover": {
+        color: "var(--secColor)",
+        bgcolor: "var(--terColor)"
+    },
+    ":disabled": {
+        color: "var(--mainWhite)",
+        bgcolor: "gray"
+    }
+}
+
 export const card_style = {
     minWidth: "40vw",
     padding: 2,

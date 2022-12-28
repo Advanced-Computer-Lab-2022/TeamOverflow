@@ -80,10 +80,10 @@ export const InstructorSingleCourse = ({ auth, viewCourse, course, isLoading, pu
                 <Typography textAlign="justify" variant="p" fontSize={18} sx={{ color: "var(--mainWhite)", mt: 2, mb: 10, maxWidth: "90%" }}>{course?.summary}</Typography>
             </Box>
             <Grid container direction="row" mb={2}>
-                <Grid item xs={8}>
-                    <Box sx={{ ...centered_flex_box }}>
-                        <Box sx={{ bgcolor: "var(--secWhite)", p: 1 }}>
-                            {course?.videoId ? <ReactPlayer controls={true} url={course?.videoId?.url} /> : <Button onClick={() => navigate(`/course/video/upload/courseId=${course?._id}`)} sx={{ ...main_button, ml: 1 }}><OndemandVideoIcon /> Add Course Preview</Button>}
+                <Grid item xs={8} minHeight="100%">
+                    <Box sx={{ ...centered_flex_box, minHeight:"100%" }}>
+                        <Box sx={{ bgcolor: "var(--secWhite)", p: 1, minHeight:"100%" }}>
+                            {course?.videoId ? <ReactPlayer controls={true} url={course?.videoId?.url} /> : <Button onClick={() => navigate(`/course/video/upload/courseId=${course?._id}`)} sx={{ ...main_button }}><OndemandVideoIcon /> Add Course Preview</Button>}
                         </Box>
                     </Box>
                 </Grid>
@@ -118,7 +118,7 @@ export const InstructorSingleCourse = ({ auth, viewCourse, course, isLoading, pu
                         <ActionModal action={handleDelete} open={deleteModal} handleClose={handleClose} message="Deleting the course is irreversible" />
                         {course?.examId ? <Button onClick={() => navigate(`/course/exercise/view/${course?.examId}`)} sx={{ ...main_button, ml: 1 }}><QuizIcon /> View Final Exam</Button> : <Button onClick={() => navigate(`/course/exercise/create/courseId=${course?._id}`)} sx={{ ...main_button, ml: 1 }}><QuizIcon /> Add Final Exam</Button>}
                         {!course?.videoId && <Button onClick={() => navigate(`/course/video/upload/courseId=${course?._id}`)} sx={{ ...main_button, ml: 1 }}><OndemandVideoIcon /> Add Course Preview</Button>}
-                        <Button onClick={() => navigate()} sx={{ ...main_button, ml: 1 }}><PercentIcon /> Add Discount</Button>
+                        <Button onClick={() => navigate(`/course/discount/${courseId}`)} sx={{ ...main_button, ml: 1 }}><PercentIcon /> Add Discount</Button>
                     </Box>
 
                 </Box>
