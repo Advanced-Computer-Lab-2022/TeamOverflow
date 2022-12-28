@@ -13,4 +13,4 @@ var traineeSchema = new mongoose.Schema({
 
 
 var Trainee = mongoose.model("Trainee",traineeSchema);
-module.exports = Trainee
+module.exports = Trainee 
