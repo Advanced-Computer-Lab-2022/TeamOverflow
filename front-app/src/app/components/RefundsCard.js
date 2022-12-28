@@ -34,7 +34,7 @@ function RefundsCard({ token, refund, isLoading, acceptRefund, rejectRefund }) {
                     </Grid>
                 </Grid>
                 <Typography>
-                    {refund.traineeId.name || refund.traineeId.username} is requesting refund for "{refund.courseId.title}"
+                    {refund.traineeId.name || refund.traineeId.username} is requesting refund for "{refund.registrationId.courseId.title}" worth USD {refund.registrationId.amountPaid}
                 </Typography>
                 <br />
                 <Box sx={{ ...left_flex_box, mt: 1 }}>

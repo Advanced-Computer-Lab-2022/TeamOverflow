@@ -1,4 +1,4 @@
-import { TERMS, WALLET, WALLET_SUCCESS, WALLET_FAIL, LOGIN, LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT_SUCCESS, GUEST, CREATE, CREATE_FAIL, CREATE_SUCCESS, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL } from "./types";
+import { TERMS, WALLET, WALLET_SUCCESS, WALLET_FAIL, INVOICE, INVOICE_SUCCESS, INVOICE_FAIL, LOGIN, LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT_SUCCESS, GUEST, CREATE, CREATE_FAIL, CREATE_SUCCESS, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL } from "./types";
 import { getRequest, postRequest, putRequest } from "../../../core/network";
 import endpoints from "../../../constants/endPoints.json";
 import { notification } from "antd";
@@ -193,6 +193,29 @@ export const getWallet = (token) => (dispatch) => {
       console.log(err);
       return dispatch({
         type: WALLET_FAIL,
+      });
+
+    });
+};
+
+export const getInvoices = (data) => (dispatch) => {
+
+  dispatch({ type: INVOICE })
+
+  getRequest(data.query, undefined, data.token, endpoints.instructor.getInvoices)
+    .then((response) => {
+      const { data } = response;
+      return dispatch({
+        type: INVOICE_SUCCESS,
+        payload: data
+      });
+
+    })
+    .catch((err) => {
+      notification.error({ message: err?.response?.data?.message })
+      console.log(err);
+      return dispatch({
+        type: INVOICE_FAIL,
       });
 
     });

@@ -35,6 +35,11 @@ export const WALLET_SUCCESS = "WALLET_SUCCESS";
 export const WALLET_FAIL = "WALLET_FAIL";
 export const WALLET = "WALLET";
 
+//Invoice
+export const INVOICE_SUCCESS = "INVOICE_SUCCESS";
+export const INVOICE_FAIL = "INVOICE_FAIL";
+export const INVOICE = "INVOICE";
+
 //Videos
 export const VIDEO_SUCCESS = "VIDEO_SUCCESS";
 export const VIDEO_FAIL = "VIDEO_FAIL";

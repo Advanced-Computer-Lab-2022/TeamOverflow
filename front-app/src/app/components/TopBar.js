@@ -21,6 +21,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ReceiptIcon from '@mui/icons-material/Receipt';
 import { connect } from "react-redux";
 import { logout } from '../store/actions/authActions';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -138,6 +139,12 @@ function MenuAppBar({ auth, logout, viewRefunds, viewRequests }) {
         navigate(path);
     };
 
+    const handleInstructorInvoice = () => {
+        setAnchorEl(null);
+        let path = "/Instructor/invoices";
+        navigate(path);
+    };
+
 
     const routeLogin = () => {
         setAnchorEl(null);
@@ -193,6 +200,7 @@ function MenuAppBar({ auth, logout, viewRefunds, viewRequests }) {
                                     <MenuItem onClick={handleCoursesRating}><LocalActivityIcon /><Typography marginX={2}>My Courses Ratings</Typography></MenuItem>
                                     <MenuItem onClick={handleInstructorRating}><StarRateIcon /><Typography marginX={2}>My Ratings</Typography></MenuItem>
                                     <MenuItem onClick={handleInstructorContract}><GavelIcon /><Typography marginX={2}>Contract</Typography></MenuItem>
+                                    <MenuItem onClick={handleInstructorInvoice}><ReceiptIcon /><Typography marginX={2}>My Invoices</Typography></MenuItem>
                                     <hr />
                                 </>)}
                                 {role === "Admin" && (<>

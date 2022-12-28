@@ -23,7 +23,8 @@ const { getNotes } = require('../controllers/pdfController');
 const Refund = require('../models/Refund');
 const { forexBack, forexCode, getCode } = require('../controllers/currencyController');
 const { reportProblem, viewReports, viewOneReport, addFollowup } = require('../controllers/reportController');
-const moment = require("moment")
+const moment = require("moment");
+const Invoice = require('../models/Invoice');
 
 /* GET trainees listing. */
 router.get('/', async function (req, res) {
@@ -160,16 +161,18 @@ router.post('/registerCourse', verifyTrainee, async function (req, res) {
     const paymentSession = await verifyPayment(req, res)
     if (paymentSession.payment_status === "paid") {
       var amountPaid = await forexBack(paymentSession.amount_subtotal / 100, paymentSession.currency.toUpperCase())
+      var amountWallet = parseInt(req.body.fromWallet)
+      const rawAmount = amountPaid + amountWallet
       const traineeCourse = new StudentCourses({
         traineeId: req.reqId,
         courseId: req.body.courseId,
         completion: completion,
-        amountPaid: amountPaid + req.body.fromWallet
+        amountPaid: rawAmount
       });
-      if (req.body.fromWallet > 0) {
-        await Wallet.findByIdAndUpdate(req.user.walletId, { $inc: { balance: (-1 * req.body.fromWallet) } })
+      if (amountWallet > 0) {
+        await Wallet.findByIdAndUpdate(req.user.walletId, { $inc: { balance: (-1 * amountWallet) } })
       }
-      await addAmountOwed(course.instructorId.walletId, (amountPaid+req.body.fromWallet).toFixed(2))
+      await addAmountOwed(req.reqId, course, rawAmount)
       var newTraineeCourse = await traineeCourse.save();
       course.$inc("enrolled", 1)
       await course.save()

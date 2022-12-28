@@ -9,5 +9,6 @@ import EditProfile from "./EditProfile";
 import Contract from "./Contract";
 import EditInstructorPassword from "./EditPassword";
 import ViewExam from "./ViewExam";
+import Invoices from "./Invoices";
 
-export {ViewExam, Home, CreateCourse, SingleCourse, CreateExam, UploadVideo, Discount, InstructorProfile, EditProfile, Contract,EditInstructorPassword};
+export {Invoices, ViewExam, Home, CreateCourse, SingleCourse, CreateExam, UploadVideo, Discount, InstructorProfile, EditProfile, Contract,EditInstructorPassword};

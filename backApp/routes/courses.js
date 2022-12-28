@@ -112,10 +112,6 @@ router.get('/mostPopular', verifyAllUsersCorp, async function (req, res) {
 // Creating a new Course
 router.post('/create', verifyInstructor, async function (req, res) {
   var subtitles = req.body.subtitles
-  var totalTime = 0
-  for (var i = 0; i < subtitles.length; i++) {
-    totalTime += parseInt(subtitles[i].time)
-  }
   const course = new Course({
     title: req.body.title,
     subject: req.body.subject,
@@ -123,7 +119,6 @@ router.post('/create', verifyInstructor, async function (req, res) {
     price: req.body.price,
     discount: req.body.discount,
     instructorId: req.reqId,
-    totalHours: totalTime
   })
   try {
     const newCourse = await course.save()

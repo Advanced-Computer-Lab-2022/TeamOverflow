@@ -3,7 +3,7 @@ import { Typography, Paper, IconButton, InputBase, Box, Container, Pagination, C
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { viewReports, clearReports } from '../../app/store/actions/reportActions';
-import { CourseCard, ReportCard, RequestsCard } from '../../app/components';
+import { CourseCard, RefundsCard, ReportCard, RequestsCard } from '../../app/components';
 import InboxIcon from '@mui/icons-material/Inbox';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import SearchIcon from '@mui/icons-material/Search';
@@ -55,7 +55,7 @@ export const ReportedProblems = ({ auth, requests, viewRequests, viewRefunds, is
                         {requests?.requests?.docs?.map((request) => {
                             return (
                                 <Grid item xs={5}>
-                                    {requests?.type === "Course" ? <RequestsCard request={request} /> : <RequestsCard request={request} />}
+                                    {requests?.type === "Course" ? <RequestsCard request={request} /> : <RefundsCard refund={request} />}
                                 </Grid>
                             )
                         })}

@@ -12,7 +12,7 @@ var courseSchema = new mongoose.Schema({
     instructorId: {type: mongoose.Types.ObjectId, ref:"Instructor" ,required: true},
     rating: {type: Number, default: 5},
     numberOfRatings: {type: Number, default: 0},
-    totalHours: {type: Number, required: true},
+    totalHours: {type: Number, default: 0},
     certificate: {type: String},
     videoId: {type: mongoose.Types.ObjectId, ref:"Video"},
     examId: {type: mongoose.Types.ObjectId, ref:"Exercise" },

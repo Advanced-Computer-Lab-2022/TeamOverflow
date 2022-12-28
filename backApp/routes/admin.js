@@ -130,6 +130,7 @@ router.get('/viewRequests', verifyAdmin, async function (req, res) {
 
 //Add course access to corporation
 router.post('/addAccess', verifyAdmin, async function (req, res) {
+  req.setTimeout(0)
   try {
     var users = await CorporateTrainee.find({ corporation: req.body.corporation })
     if (users) {
@@ -144,19 +145,21 @@ router.post('/addAccess', verifyAdmin, async function (req, res) {
       }
       var courseSubtotal = course.discount && moment().isAfter(course.startDate) && moment().isBefore(course.deadline) ? course.price * ((100 - course.discount) / 100) : course.price
       users.map(async (user) => {
-        const traineeCourse = new StudentCourses({
-          traineeId: user._id,
-          courseId: req.body.courseId,
-          completion: completion
-        });
-        await addAmountOwed(course.instructorId.walletId, courseSubtotal, "USD")
-        await traineeCourse.save();
-        course.$inc("enrolled", 1)
-        await course.save()
+        if (!(await StudentCourses.findOne({ traineeId: user._id, courseId: course._id }))) {
+          const traineeCourse = new StudentCourses({
+            traineeId: user._id,
+            courseId: req.body.courseId,
+            completion: completion
+          });
+          await addAmountOwed(user._id, course, courseSubtotal)
+          await traineeCourse.save();
+          course.$inc("enrolled", 1)
+          await course.save()
+        }
       })
       res.status(200).json({ message: `Access to "${course.title}" granted to ${req.body.corporation}` })
     } else {
-      res.status(400).json({ message: "Trainee already registered to this course" })
+      res.status(400).json({ message: "No users in this corporation" })
     }
   } catch (err) {
     res.status(400).json({ message: err.message })
@@ -183,7 +186,7 @@ router.post('/grantAccess', verifyAdmin, async function (req, res) {
         courseId: request.courseId,
         completion: completion
       });
-      await addAmountOwed(course.instructorId.walletId, courseSubtotal, "USD")
+      await addAmountOwed(request.traineeId._id, course, courseSubtotal)
       const newTraineeCourse = await traineeCourse.save();
       course.$inc("enrolled", 1)
       await course.save()
@@ -230,7 +233,10 @@ router.post('/rejectAccess', verifyAdmin, async function (req, res) {
 //view refund requests from trainees
 router.get('/viewRefunds', verifyAdmin, async function (req, res) {
   try {
-    var results = await Refund.paginate({}, { page: req.query.page, limit: 10, populate: ["registrationId", { path: "instructorId", select: { _id: 1, name: 1, email: 1 } }] })
+    var results = await Refund.paginate({}, { page: req.query.page, limit: 10, populate: ["registrationId", { path: "instructorId", select: { _id: 1, name: 1, email: 1 } }, { path: "traineeId", select: { _id: 1, name: 1, email: 1, username: 1 } }] })
+    for (let i = 0; i < results.docs.length; i++) {
+      results.docs[i].registrationId = await results.docs[i].registrationId.populate("courseId")
+    }
     res.status(200).json({ type: "Refund", results: results })
   } catch (err) {
     res.status(400).json({ message: err.message })
@@ -242,8 +248,8 @@ router.post('/refundTraniee', verifyAdmin, async function (req, res) {
   try {
     var refund = await Refund.findById(req.body.refundId).populate(["traineeId", "instructorId", "registrationId"])
     if (refund) {
-      await transfer(refund.instructorId.walletId, refund.traineeId.walletId, refund.registrationId.amountPaid)
       var reg = await StudentCourses.findById(refund.registrationId._id)
+      await transfer(refund.instructorId, refund.traineeId, reg.courseId, refund.registrationId.amountPaid)
       var course = await Course.findById(reg.courseId)
       var subtitles = await Subtitle.find({ courseId: reg.courseId })
       var exams = [course.examId]
@@ -260,8 +266,11 @@ router.post('/refundTraniee', verifyAdmin, async function (req, res) {
       <p>Your request to refund the course "${course.title}" has been accepted</p><br/>
       <p>USD ${reg.amountPaid} has been added to your wallet</p>
     `
-      await sendGenericEmail(request.traineeId.email, "Refund Accepted", content)
-      var results = await Refund.paginate({}, { page: req.body.page, limit: 10, populate: ["registrationId", { path: "instructorId", select: { _id: 1, name: 1, email: 1 } }] })
+      await sendGenericEmail(refund.traineeId.email, "Refund Accepted", content)
+      var results = await Refund.paginate({}, { page: req.body.page, limit: 10, populate: ["registrationId", { path: "instructorId", select: { _id: 1, name: 1, email: 1 } }, { path: "traineeId", select: { _id: 1, name: 1, email: 1, username: 1 } }] })
+      for (let i = 0; i < results.docs.length; i++) {
+        results.docs[i].registrationId = await results.docs[i].registrationId.populate("courseId")
+      }
       res.status(200).json({ type: "Refund", results: results })
     } else {
       res.status(403).json({ message: "Refund request not found" })
@@ -282,8 +291,11 @@ router.post('/rejectRefund', verifyAdmin, async function (req, res) {
       <p>Your request to refund the course "${course.title}" has been accepted</p><br/>
       <p>USD ${reg.amountPaid} has been added to your wallet</p>
     `
-      await sendGenericEmail(request.traineeId.email, "Refund Rejected", content)
-      var results = await Refund.paginate({}, { page: req.body.page, limit: 10, populate: ["registrationId", { path: "instructorId", select: { _id: 1, name: 1, email: 1 } }] })
+      await sendGenericEmail(refund.traineeId.email, "Refund Rejected", content)
+      var results = await Refund.paginate({}, { page: req.body.page, limit: 10, populate: ["registrationId", { path: "instructorId", select: { _id: 1, name: 1, email: 1 } }, { path: "traineeId", select: { _id: 1, name: 1, email: 1, username: 1 } }] })
+      for (let i = 0; i < results.docs.length; i++) {
+        results.docs[i].registrationId = await results.docs[i].registrationId.populate("courseId")
+      }
       res.status(200).json({ type: "Refund", results: results })
     } else {
       res.status(404).json({ message: "Refund request not found" })

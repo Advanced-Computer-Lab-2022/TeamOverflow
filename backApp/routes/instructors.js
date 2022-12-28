@@ -18,6 +18,8 @@ const { reportProblem, viewReports, viewOneReport, addFollowup } = require('../c
 const { findByIdAndDelete } = require('../models/Instructor');
 const { getCode, forexCode } = require('../controllers/currencyController');
 const moment = require("moment");
+const Invoice = require('../models/Invoice');
+const { getVidDuration, getIdFromUrl } = require('../controllers/videoController');
 
 /* GET instructors listing. */
 router.get('/', async function (req, res) {
@@ -64,7 +66,6 @@ router.get('/viewOwnRatings', verifyInstructor, async function (req, res) {
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
-
 });
 
 
@@ -118,8 +119,13 @@ router.post('/coursePreview', verifyInstructor, async function (req, res) {
     var course = await Course.findOne({ _id: req.body.courseId, instructorId: req.reqId })
     if (course) {
       var newVid = await Video.create({ title: req.body.title, description: req.body.description, url: req.body.url })
-      var result = await Course.findByIdAndUpdate(req.body.courseId, { $set: { videoId: newVid._id } }, { new: true })
-      res.status(200).json(result)
+      const videoId = getIdFromUrl(req.body.url)
+      getVidDuration(videoId, async (duration) => {
+        course.$inc("totalHours", duration)
+        await course.save()
+        var result = await Course.findByIdAndUpdate(req.body.courseId, { $set: { videoId: newVid._id } }, { new: true })
+        res.status(200).json(result)
+      });
     } else if (course?.published) {
       res.status(400).json({ message: "Course is already published" })
     } else {
@@ -137,14 +143,22 @@ router.post('/subtitleVideo', verifyInstructor, async function (req, res) {
     var course = await Course.findOne({ _id: subtitle.courseId, instructorId: req.reqId })
     if (course) {
       var newVid = await Video.create({ title: req.body.title, description: req.body.description, url: req.body.url })
-      var result = await Subtitle.findByIdAndUpdate(req.body.subtitleId, { $set: { videoId: newVid._id } }, { new: true })
-      res.status(200).json(result)
+      const videoId = getIdFromUrl(req.body.url)
+      getVidDuration(videoId, async (duration) => {
+        course.$inc("totalHours", duration)
+        await course.save()
+        subtitle.$inc("time", duration)
+        await subtitle.save()
+        var result = await Subtitle.findByIdAndUpdate(req.body.subtitleId, { $set: { videoId: newVid._id } }, { new: true })
+        res.status(200).json(result)
+      });
     } else if (course?.published) {
       res.status(400).json({ message: "Course is already published" })
     } else {
       res.status(403).json({ message: "You are not the instructor for this course" })
     }
   } catch (err) {
+    console.log(err)
     res.status(400).json({ message: err.message })
   }
 })
@@ -208,8 +222,8 @@ router.delete('/course', verifyInstructor, async function (req, res) {
 // create subtitle exercise
 router.post('/createSubtitleExercise', verifyInstructor, async function (req, res) {
   try {
-    var subtitle = await Subtitle.findById(req.body.subtitleId).populate("courseId")
-    var course = subtitle.courseId
+    var subtitle = await Subtitle.findById(req.body.subtitleId)
+    var course = await Course.findById(subtitle.courseId)
     if (mongoose.Types.ObjectId(course?.instructorId).toString() === req.reqId && !course?.published) {
       const exercise = new Exercise({
         questions: req.body.questions, //Comes in as an array of strings
@@ -218,6 +232,10 @@ router.post('/createSubtitleExercise', verifyInstructor, async function (req, re
         correctIndecies: req.body.correctIndecies, //Comes in as an array of integers
       })
       const newExercise = await exercise.save()
+      const time = req.body.questions.length * (5 / 60)
+      course.$inc("totalHours", time.toFixed(1))
+      await course.save
+      subtitle.$inc("time", time.toFixed(1));
       subtitle.$set("exerciseId", newExercise._id);
       await subtitle.save()
       res.status(201).json(newExercise)
@@ -244,6 +262,8 @@ router.post('/createCourseExercise', verifyInstructor, async function (req, res)
         correctIndecies: req.body.correctIndecies, //Comes in as an array of integers
       })
       const newExercise = await exercise.save()
+      const time = req.body.questions.length * (5 / 60)
+      course.$inc("totalHours", time.toFixed(1))
       course.$set("examId", newExercise._id);
       await course.save()
       res.status(201).json(newExercise)
@@ -272,6 +292,25 @@ router.get('/exercise', verifyInstructor, async function (req, res) {
 router.get('/wallet', verifyInstructor, async function (req, res) {
   await getWallet(req, res);
 })
+
+//view instructor invoices
+router.get('/getInvoices', verifyInstructor, async function (req, res) {
+  try {
+    var results = await Invoice.paginate({ instructorId: req.reqId }, { page: req.query.page, limit: 15, sort: { createdAt: -1, _id: 1 }, populate: { path: "courseId", select: { title: 1 } } })
+    const currency = getCode(req.user.country)
+    var allResults = []
+    for (let i = 0; i < results.docs.length; i++) {
+      var invoiceObj = results.docs[i].toJSON()
+      invoiceObj.balance = await forexCode(invoiceObj.balance, currency)
+      invoiceObj.currency = currency
+      allResults.push(invoiceObj)
+    }
+    results.docs = allResults
+    res.status(200).json(results);
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+});
 
 //report a problem
 router.post('/reportProblem', verifyInstructor, async function (req, res) {

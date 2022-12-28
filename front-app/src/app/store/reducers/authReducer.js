@@ -1,8 +1,9 @@
-import { WALLET, WALLET_FAIL, WALLET_SUCCESS, LOGIN, LOGIN_FAIL, LOGIN_SUCCESS, LOGOUT_SUCCESS, GUEST, UPDATE_USER, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL, CREATE, CREATE_FAIL, CREATE_SUCCESS, TERMS } from "../actions/types";
+import { INVOICE, INVOICE_FAIL, INVOICE_SUCCESS, WALLET, WALLET_FAIL, WALLET_SUCCESS, LOGIN, LOGIN_FAIL, LOGIN_SUCCESS, LOGOUT_SUCCESS, GUEST, UPDATE_USER, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL, CREATE, CREATE_FAIL, CREATE_SUCCESS, TERMS } from "../actions/types";
 
 const initialState = {
   user: null,
   wallet: null,
+  invoices: null,
   token: null,
   isLoading: false,
   isError: false,
@@ -28,7 +29,7 @@ export default function store(state = initialState, action) {
         token: action.token,
         isLoading: false,
         isError: false,
-        terms:null
+        terms: null
       };
     case GUEST:
       return {
@@ -64,11 +65,19 @@ export default function store(state = initialState, action) {
         isLoading: false,
         isError: false
       }
+    case INVOICE:
     case WALLET:
     case CREATE:
       return {
         ...state,
         isLoading: true,
+        isError: false
+      }
+    case INVOICE_SUCCESS:
+      return {
+        ...state,
+        invoices: payload,
+        isLoading: false,
         isError: false
       }
     case WALLET_SUCCESS:
@@ -83,8 +92,9 @@ export default function store(state = initialState, action) {
         ...state,
         isLoading: false,
         isError: false,
-        terms:null
+        terms: null
       }
+    case INVOICE_FAIL:
     case UPDATE_USER_FAIL:
     case WALLET_FAIL:
     case CREATE_FAIL:

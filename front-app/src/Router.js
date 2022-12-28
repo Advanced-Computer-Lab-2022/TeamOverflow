@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Routes, Route } from "react-router-dom";
-import { ReportedProblems, TraineeProfile, Register, Terms, Index, AddUsers, AdminHome, AllCourses, TraineeCourses, TraineeHome, InstructorCourses, InstructorHome, CreateCourse, Rate, SingleCourseInstructor, SingleCourse, InstructorVidView, CreateExam, UploadVideo, Discount, RatingList, InstructorProfile, InstructorEditProfile, InstructorContract, StudentVidView, Exam, Result, Forgot, Reset, PaymentDone, EditTraineeProfile, EditInstructorPassword, CoursePreview, ReportProblem, Followup, ReportView, DefineDiscounts, ViewExam } from "./Pages";
+import { ReportedProblems, TraineeProfile, Register, Terms, Index, AddUsers, AdminHome, AllCourses, TraineeCourses, TraineeHome, InstructorCourses, InstructorHome, CreateCourse, Rate, SingleCourseInstructor, SingleCourse, InstructorVidView, CreateExam, UploadVideo, Discount, RatingList, InstructorProfile, InstructorEditProfile, InstructorContract, StudentVidView, Exam, Result, Forgot, Reset, PaymentDone, EditTraineeProfile, EditInstructorPassword, CoursePreview, ReportProblem, Followup, ReportView, DefineDiscounts, ViewExam, Invoices } from "./Pages";
 import { TopBar } from "./app/components";
 import { useLocation } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
@@ -36,6 +36,7 @@ export const Router = () => {
         <Route path="/Instructor/editPassword" exact element={<EditInstructorPassword />} />
         <Route path="/Instructor/ratings" exact element={<RatingList />} />
         <Route path="/Instructor/contract" exact element={<InstructorContract />} />
+        <Route path="/Instructor/invoices" exact element={<Invoices />} />
         <Route path="/courses/create" exact element={<CreateCourse />} />
         <Route path="/courses/ratings" exact element={<RatingList />} />
         <Route path="/course/exercise/create/:id" exact element={<CreateExam />} />
