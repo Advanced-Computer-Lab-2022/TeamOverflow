@@ -10,7 +10,8 @@ const { default: mongoose } = require("mongoose");
 const { verifyAllUsersCorp } = require("../auth/jwt-auth")
 const bcrypt = require("bcrypt")
 const fs = require("fs")
-const path = require("path")
+const path = require("path");
+const { transporter } = require('../controllers/mailingController');
 
 router.get("/TandC", async (req, res) => {
   try {
@@ -22,15 +23,6 @@ router.get("/TandC", async (req, res) => {
     res.status(400).json({ message: err })
   }
 })
-
-/* Mail Setup*/
-var transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL,
-    pass: process.env.EMAIL_PASS,
-  },
-});
 
 router.get("/forgotPassword", async (req, res) => {
   try {

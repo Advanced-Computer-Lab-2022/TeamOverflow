@@ -12,10 +12,11 @@ import { viewRefunds, viewRequests } from '../../app/store/actions/adminActions'
 import { useNavigate } from 'react-router-dom';
 const theme = createTheme();
 
-export const ReportedProblems = ({ auth, requests, viewRequests, viewRefunds }) => {
+export const ReportedProblems = ({ auth, requests, viewRequests, viewRefunds, isLoading }) => {
 
     const role = auth.token.split(" ")[0];
     const navigate = useNavigate();
+
     const [formData, setFormData] = React.useState({
         page: parseInt(requests?.requests?.page) || 1
     })
@@ -24,11 +25,23 @@ export const ReportedProblems = ({ auth, requests, viewRequests, viewRefunds }) 
 
     const handlePageChange = (event, value) => {
         setFormData({ ...formData, page: value })
-        viewReports({ token: auth.token, ...formData, page: value });
+        if(requests.type === "Course"){
+            viewRequests({info:{page: value}, token:auth?.token})
+        } else {
+            viewRefunds({info:{page: value}, token:auth?.token})
+        }
     }
 
-    if (!requests.type) {
-        navigate(-1);
+    if (requests?.type === undefined) {
+        navigate('/Admin');
+    }
+
+    if (isLoading) {
+        return (
+            <Box sx={{ ...centered_flex_box, minHeight: "100vh" }}>
+                <CircularProgress sx={{ color: "var(--secColor)" }} />
+            </Box>
+        )
     }
 
     return (
@@ -38,11 +51,11 @@ export const ReportedProblems = ({ auth, requests, viewRequests, viewRefunds }) 
                     <Typography variant="h3">{requests?.type} Requests</Typography>
                 </Box>
                 <Box>
-                    <Grid container spacing={1}>
+                    <Grid container spacing={3} sx={centered_flex_box}>
                         {requests?.requests?.docs?.map((request) => {
                             return (
-                                <Grid item xs={12}>
-                                    <RequestsCard request={request} />
+                                <Grid item xs={5}>
+                                    {requests?.type === "Course" ? <RequestsCard request={request} /> : <RequestsCard request={request} />}
                                 </Grid>
                             )
                         })}
@@ -64,7 +77,8 @@ export const ReportedProblems = ({ auth, requests, viewRequests, viewRefunds }) 
 
 const mapStateToProps = (state) => ({
     auth: state?.auth,
-    requests: state?.requests
+    requests: state?.requests,
+    isLoading: state?.requests?.isLoading
 });
 
 const mapDispatchToProps = { viewRequests, viewRefunds };

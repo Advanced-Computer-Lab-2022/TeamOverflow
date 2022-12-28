@@ -22,8 +22,10 @@
       "respondReport":"admin/respondReport",
       "viewRequests":"admin/viewRequests",
       "grantAccess":"admin/grantAccess",
+      "rejectAccess":"admin/rejectAccess",
       "viewRefunds":"admin/viewRefunds",
-      "respondRefund":"admin/refundTraniee",
+      "acceptRefund":"admin/refundTraniee",
+      "rejectRefund":"admin/rejectRefund",
       "defineDiscount":"admin/defineDiscount"
    },
    "instructor":{

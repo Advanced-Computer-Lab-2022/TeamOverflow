@@ -18,6 +18,7 @@ const Report = require('../models/Report');
 const Followup = require('../models/ReportFollowup');
 const Notes = require('../models/Notes');
 const Answer = require('../models/StudentAnswer');
+const { sendGenericEmail } = require('../controllers/mailingController');
 
 /* GET admins listing. */
 router.get('/', function (req, res) {
@@ -29,10 +30,10 @@ router.get('/', function (req, res) {
 router.post('/addAdmin', verifyAdmin, async function (req, res) {
   try {
     var found = (await Admin.findOne({ username: req.body.username })) ||
-    (await CorporateTrainee.findOne({ username: req.body.username })) ||
-    (await Trainee.findOne({ username: req.body.username })) ||
-    (await Instructor.findOne({ username: req.body.username }))
-    
+      (await CorporateTrainee.findOne({ username: req.body.username })) ||
+      (await Trainee.findOne({ username: req.body.username })) ||
+      (await Instructor.findOne({ username: req.body.username }))
+
     if (found) {
       return res.status(400).json({ message: "Username already exists" })
     }
@@ -52,9 +53,9 @@ router.post('/addAdmin', verifyAdmin, async function (req, res) {
 router.post('/addInstructor', verifyAdmin, async function (req, res) {
   try {
     var found = (await Admin.findOne({ username: req.body.username })) ||
-    (await CorporateTrainee.findOne({ username: req.body.username })) ||
-    (await Trainee.findOne({ username: req.body.username })) ||
-    (await Instructor.findOne({ username: req.body.username }))
+      (await CorporateTrainee.findOne({ username: req.body.username })) ||
+      (await Trainee.findOne({ username: req.body.username })) ||
+      (await Instructor.findOne({ username: req.body.username }))
 
     if (found) {
       return res.status(400).json({ message: "Username already exists" })
@@ -78,10 +79,10 @@ router.post('/addInstructor', verifyAdmin, async function (req, res) {
 router.post('/addTrainee', verifyAdmin, async function (req, res) {
   try {
     var found = (await Admin.findOne({ username: req.body.username })) ||
-    (await CorporateTrainee.findOne({ username: req.body.username })) ||
-    (await Trainee.findOne({ username: req.body.username })) ||
-    (await Instructor.findOne({ username: req.body.username }))
-    
+      (await CorporateTrainee.findOne({ username: req.body.username })) ||
+      (await Trainee.findOne({ username: req.body.username })) ||
+      (await Instructor.findOne({ username: req.body.username }))
+
     if (found) {
       return res.status(400).json({ message: "Username already exists" })
     }
@@ -106,7 +107,7 @@ router.post('/defineDiscount', verifyAdmin, async function (req, res) {
     for (let i = 0; i < courses.length; i++) {
       await Course.findByIdAndUpdate(courses[i], { $set: { discount: req.body.discount, deadline: req.body.deadline } })
     }
-    res.status(200).json({message: `Discount added to ${courses.length} course(s)`})
+    res.status(200).json({ message: `Discount added to ${courses.length} course(s)` })
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
@@ -115,18 +116,53 @@ router.post('/defineDiscount', verifyAdmin, async function (req, res) {
 //view course requests from corporate trainees
 router.get('/viewRequests', verifyAdmin, async function (req, res) {
   try {
-    var results = await Requests.paginate({}, { page: req.query.page, limit: 10, populate: ["courseId", { path: "traineeId", select: { _id: 1, name: 1, email: 1, corporation: 1 } }] })
-    res.status(200).json({type: "Course", results: results})
+    var results = await Requests.paginate({}, { page: req.query.page, limit: 10, populate: ["courseId", { path: "traineeId", select: { _id: 1, name: 1, email: 1, corporation: 1, username: 1 } }] })
+    res.status(200).json({ type: "Course", results: results })
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
 
 });
 
+//Add course access to corporation
+router.post('/addAccess', verifyAdmin, async function (req, res) {
+  try {
+    var users = await CorporateTrainee.find({ corporation: req.body.corporation })
+    if (users) {
+      const course = await Course.findById(req.body.courseId).populate("instructorId")
+      const subtitles = await Subtitle.find({ courseId: req.body.courseId }, { _id: 1, exerciseId: 1, videoId: 1 })
+      const itemIds = [course.examId?.toString(), course.videoId?.toString(), subtitles.map((sub) => [sub.exerciseId?.toString(), sub.videoId?.toString()])].flat().flat()
+      var completion = {}
+      for (let i = 0; i < itemIds.length; i++) {
+        if (itemIds[i]) {
+          completion[itemIds[i]] = false
+        }
+      }
+      var courseSubtotal = course.discount && moment().isAfter(course.startDate) && moment().isBefore(course.deadline) ? course.price * ((100 - course.discount) / 100) : course.price
+      users.map(async (user) => {
+        const traineeCourse = new StudentCourses({
+          traineeId: user._id,
+          courseId: req.body.courseId,
+          completion: completion
+        });
+        await addAmountOwed(course.instructorId.walletId, courseSubtotal, "USD")
+        await traineeCourse.save();
+        course.$inc("enrolled", 1)
+        await course.save()
+      })
+      res.status(200).json({ message: `Access to "${course.title}" granted to ${req.body.corporation}` })
+    } else {
+      res.status(400).json({ message: "Trainee already registered to this course" })
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+});
+
 //grant access for corporate-trainee to a course
 router.post('/grantAccess', verifyAdmin, async function (req, res) {
   try {
-    var request = await Requests.findById(req.body.requestId)
+    var request = await Requests.findById(req.body.requestId).populate([{ path: "traineeId", select: { _id: 1, name: 1, email: 1, corporation: 1, username: 1 } }])
     if (!(await StudentCourses.findOne({ traineeId: request.traineeId, courseId: request.courseId }))) {
       const course = await Course.findById(request.courseId).populate("instructorId")
       const subtitles = await Subtitle.find({ courseId: request.courseId }, { _id: 1, exerciseId: 1, videoId: 1 })
@@ -137,7 +173,7 @@ router.post('/grantAccess', verifyAdmin, async function (req, res) {
           completion[itemIds[i]] = false
         }
       }
-      var courseSubtotal = course.discount && moment().isBefore(course.deadline) ? course.price * ((100 - course.discount) / 100) : course.price
+      var courseSubtotal = course.discount && moment().isAfter(course.startDate) && moment().isBefore(course.deadline) ? course.price * ((100 - course.discount) / 100) : course.price
       const traineeCourse = new StudentCourses({
         traineeId: request.traineeId,
         courseId: request.courseId,
@@ -145,14 +181,42 @@ router.post('/grantAccess', verifyAdmin, async function (req, res) {
       });
       await addAmountOwed(course.instructorId.walletId, courseSubtotal, "USD")
       const newTraineeCourse = await traineeCourse.save();
-      await request.delete();
       course.$inc("enrolled", 1)
       await course.save()
       await request.delete()
-      var results = await Requests.paginate({}, { page: req.query.page, limit: 10, populate: ["courseId", { path: "traineeId", select: { _id: 1, name: 1, email: 1, corporation: 1 } }] })
-      res.status(200).json({type: "Course", results: results})
+      const content = `
+        <h1>Hello ${request.traineeId.name} !</h1>
+        <p>Your request to access the course "${course.title}" has been accepted</p><br/>
+        <p>Start learning now!</p>
+      `
+      await sendGenericEmail(request.traineeId.email, "Request Accepted", content)
+      var results = await Requests.paginate({}, { page: req.query.page, limit: 10, populate: ["courseId", { path: "traineeId", select: { _id: 1, name: 1, email: 1, corporation: 1, username: 1 } }] })
+      res.status(200).json({ type: "Course", results: results })
     } else {
       res.status(400).json({ message: "Trainee already registered to this course" })
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+});
+
+//Reject access for corporate-trainee to a course
+router.post('/rejectAccess', verifyAdmin, async function (req, res) {
+  try {
+    var request = await Requests.findById(req.body.requestId).populate([{ path: "traineeId", select: { _id: 1, name: 1, email: 1, corporation: 1, username: 1 } }])
+    if (request) {
+      const course = await Course.findById(request.courseId)
+      await request.delete()
+      const content = `
+        <h1>Hello ${request.traineeId.name} !</h1>
+        <p>Sadly, your request to access the course "${course.title}" has been rejected</p><br/>
+        <p>Feel free to apply again</p>
+      `
+      await sendGenericEmail(request.traineeId.email, "Request Rejected", content)
+      var results = await Requests.paginate({}, { page: req.query.page, limit: 10, populate: ["courseId", { path: "traineeId", select: { _id: 1, name: 1, email: 1, corporation: 1, username: 1 } }] })
+      res.status(200).json({ type: "Course", results: results })
+    } else {
+      res.status(404).json({ message: "Request Not Found" })
     }
   } catch (err) {
     res.status(400).json({ message: err.message })
@@ -163,7 +227,7 @@ router.post('/grantAccess', verifyAdmin, async function (req, res) {
 router.get('/viewRefunds', verifyAdmin, async function (req, res) {
   try {
     var results = await Refund.paginate({}, { page: req.query.page, limit: 10, populate: ["registrationId", { path: "instructorId", select: { _id: 1, name: 1, email: 1 } }] })
-    res.status(200).json({type: "Refund", results: results})
+    res.status(200).json({ type: "Refund", results: results })
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
@@ -177,20 +241,48 @@ router.post('/refundTraniee', verifyAdmin, async function (req, res) {
       await transfer(refund.instructorId.walletId, refund.traineeId.walletId, refund.registrationId.amountPaid)
       var reg = await StudentCourses.findById(refund.registrationId._id)
       var course = await Course.findById(reg.courseId)
-      var subtitles = await Subtitle.find({courseId: reg.courseId})
+      var subtitles = await Subtitle.find({ courseId: reg.courseId })
       var exams = [course.examId]
       var videos = [course.videoId]
-      subtitles.map((sub) => {exams.push(sub.exerciseId); videos.push(sub.videoId)})
-      await Notes.deleteMany({videoId: {$in: videos}, traineeId: refund.traineeId._id})
-      await Answer.deleteMany({exerciseId: {$in: exams}, traineeId: refund.traineeId._id})
+      subtitles.map((sub) => { exams.push(sub.exerciseId); videos.push(sub.videoId) })
+      await Notes.deleteMany({ videoId: { $in: videos }, traineeId: refund.traineeId._id })
+      await Answer.deleteMany({ exerciseId: { $in: exams }, traineeId: refund.traineeId._id })
       await reg.delete()
       await refund.delete()
       course.$inc("enrolled", -1)
       await course.save()
+      const content = `
+      <h1>Hello ${refund.traineeId.name} !</h1>
+      <p>Your request to refund the course "${course.title}" has been accepted</p><br/>
+      <p>USD ${reg.amountPaid} has been added to your wallet</p>
+    `
+      await sendGenericEmail(request.traineeId.email, "Refund Accepted", content)
       var results = await Refund.paginate({}, { page: req.body.page, limit: 10, populate: ["registrationId", { path: "instructorId", select: { _id: 1, name: 1, email: 1 } }] })
-      res.status(200).json({type: "Refund", results: results})
+      res.status(200).json({ type: "Refund", results: results })
     } else {
-      res.status(403).json({ message: "Refund request does not exist" })
+      res.status(403).json({ message: "Refund request not found" })
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+})
+
+//reject refund
+router.post('/rejectRefund', verifyAdmin, async function (req, res) {
+  try {
+    var refund = await Refund.findById(req.body.refundId).populate(["traineeId", "instructorId", "registrationId"])
+    if (refund) {
+      await refund.delete()
+      const content = `
+      <h1>Hello ${refund.traineeId.name} !</h1>
+      <p>Your request to refund the course "${course.title}" has been accepted</p><br/>
+      <p>USD ${reg.amountPaid} has been added to your wallet</p>
+    `
+      await sendGenericEmail(request.traineeId.email, "Refund Rejected", content)
+      var results = await Refund.paginate({}, { page: req.body.page, limit: 10, populate: ["registrationId", { path: "instructorId", select: { _id: 1, name: 1, email: 1 } }] })
+      res.status(200).json({ type: "Refund", results: results })
+    } else {
+      res.status(404).json({ message: "Refund request not found" })
     }
   } catch (err) {
     res.status(400).json({ message: err.message })

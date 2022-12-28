@@ -85,16 +85,36 @@ export const viewRefunds = (data) => (dispatch) => {
     });
 };
 
-      
-
-export const respondRefund = (data) => (dispatch) => {
+export const acceptRefund = (data) => (dispatch) => {
   dispatch({ type: REQUESTS });
   var { info, token } = data
 
-  postRequest(info, undefined, undefined, token, endpoints.admin.respondRefund)
+  postRequest(info, undefined, undefined, token, endpoints.admin.acceptRefund)
     .then((response) => {
       const { data } = response;
-      notification.success({ message: data.message })
+      notification.success({ message: "Refund Accepted" })
+      return dispatch({
+        type: REQUESTS_SUCCESS,
+        payload: data
+      });
+    })
+    .catch((err) => {
+      notification.error({ message: err?.response?.data?.message })
+      console.log(err);
+      return dispatch({
+        type: REQUESTS_FAIL,
+      });
+    });
+};
+
+export const rejectRefund = (data) => (dispatch) => {
+  dispatch({ type: REQUESTS });
+  var { info, token } = data
+
+  postRequest(info, undefined, undefined, token, endpoints.admin.rejectRefund)
+    .then((response) => {
+      const { data } = response;
+      notification.success({ message: "Refund Rejected" })
       return dispatch({
         type: REQUESTS_SUCCESS,
         payload: data
@@ -130,14 +150,36 @@ export const viewRequests = (data) => (dispatch) => {
     });
 };
 
-export const respondRequest = (data) => (dispatch) => {
+export const acceptRequest = (data) => (dispatch) => {
   dispatch({ type: REQUESTS });
   var { info, token } = data
 
   postRequest(info, undefined, undefined, token, endpoints.admin.grantAccess)
     .then((response) => {
       const { data } = response;
-      notification.success({ message: data.message })
+      notification.success({ message: "Request Accepted" })
+      return dispatch({
+        type: REQUESTS_SUCCESS,
+        payload: data
+      });
+    })
+    .catch((err) => {
+      notification.error({ message: err?.response?.data?.message })
+      console.log(err);
+      return dispatch({
+        type: REQUESTS_FAIL,
+      });
+    });
+};
+
+export const rejectRequest = (data) => (dispatch) => {
+  dispatch({ type: REQUESTS });
+  var { info, token } = data
+
+  postRequest(info, undefined, undefined, token, endpoints.admin.rejectAccess)
+    .then((response) => {
+      const { data } = response;
+      notification.success({ message: "Request Rejected" })
       return dispatch({
         type: REQUESTS_SUCCESS,
         payload: data
