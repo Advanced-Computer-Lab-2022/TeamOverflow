@@ -227,7 +227,7 @@ router.post('/createSubtitleExercise', verifyInstructor, async function (req, re
   try {
     var subtitle = await Subtitle.findById(req.body.subtitleId).populate("courseId")
     var course = subtitle.courseId
-    if (mongoose.Types.ObjectId(course?.instructorId).toString() === req.reqId) {
+    if (mongoose.Types.ObjectId(course?.instructorId).toString() === req.reqId && !course?.published) {
       const exercise = new Exercise({
         questions: req.body.questions, //Comes in as an array of strings
         choices: req.body.choices, //Comes in as an array of arrays of strings
