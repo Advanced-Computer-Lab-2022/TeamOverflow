@@ -4,7 +4,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { clearCourses, filterCoursesAll, getSubjects } from '../../app/store/actions/coursesActions';
 import { CourseCard } from '../../app/components';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import InboxIcon from '@mui/icons-material/Inbox';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import SearchIcon from '@mui/icons-material/Search';
 import { centered_flex_box, MainInput, MainInputLabel, main_button, StyledInput } from '../../app/components/Styles';
@@ -17,7 +17,7 @@ export const AllCourses = ({ auth, courses, getSubjects, filterCoursesAll, clear
 
   React.useEffect(() => {
     clearCourses()
-    getSubjects()
+    filterCoursesAll({ token: auth.token, ...formData });
   }, [])
 
   const initialState = {
@@ -46,7 +46,7 @@ export const AllCourses = ({ auth, courses, getSubjects, filterCoursesAll, clear
   }
 
   const handleMinPriceChange = (event) => {
-    setFormData({ ...formData, minPrice: event.target.value})
+    setFormData({ ...formData, minPrice: event.target.value })
   }
 
   const handleMaxPriceChange = (event) => {
@@ -134,8 +134,8 @@ export const AllCourses = ({ auth, courses, getSubjects, filterCoursesAll, clear
                         sx={{ color: "var(--secColor)" }}
                       />
                       <Box display="flex" justifyContent="space-between">
-                        <MainInput label="Min" focused type="number" value={minPrice} onChange={handleMinPriceChange}/>
-                        <MainInput label="Max"  focused type="number" value={maxPrice} onChange={handleMaxPriceChange}/>
+                        <MainInput label="Min" focused type="number" value={minPrice} onChange={handleMinPriceChange} />
+                        <MainInput label="Max" focused type="number" value={maxPrice} onChange={handleMaxPriceChange} />
                       </Box>
                     </>)}
                   Subject Filter:
@@ -175,14 +175,20 @@ export const AllCourses = ({ auth, courses, getSubjects, filterCoursesAll, clear
         <hr />
         <Box>
           {!courses?.isLoading ? (
-            <Grid container spacing={1}>
+            <Grid container spacing={3} sx={centered_flex_box}>
               {courses?.results?.docs?.map((course) => {
                 return (
-                  <Grid item xs={12}>
+                  <Grid item xs={5}>
                     <CourseCard course={course} />
                   </Grid>
                 )
               })}
+              {courses?.results?.docs?.length === 0 && (
+                <Grid item sx={{ ...centered_flex_box, flexDirection: "column", mt: 2 }}>
+                  <InboxIcon fontSize="large" />
+                  <Typography fontSize={40}>No results</Typography>
+                </Grid>
+              )}
             </Grid>
           ) : (
             <Box sx={centered_flex_box}>

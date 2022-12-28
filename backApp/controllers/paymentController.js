@@ -15,14 +15,10 @@ async function verifyPayment(req, res) {
     }
 }
 
-async function getPaymentLink(req, res, course) {
+async function getPaymentLink(req, res, course, coursePrice, walletAmount, code) {
     try {
-        const code = getCode(req.user.country)
-        const discountRate = (course.deadline && moment().isBefore(course.deadline)) ? ((100 - course.discount) / 100) : 1
-        const coursePrice = await forexCode(course.price * discountRate, code)
-
         const session = await stripe.checkout.sessions.create({
-            success_url: `http://localhost:3000/paymentCompleted/{CHECKOUT_SESSION_ID}/${course._id}`,
+            success_url: `http://localhost:3000/paymentCompleted/{CHECKOUT_SESSION_ID}/${course._id}/${walletAmount}`,
             cancel_url: `http://localhost:3000/paymentCompleted/failed/${course._id}`,
             payment_method_types: ['card'],
             line_items: [
@@ -41,9 +37,9 @@ async function getPaymentLink(req, res, course) {
             mode: 'payment',
         });
 
-        res.status(200).json({ paymentUrl: session.url })
+        return res.status(200).json({ paymentUrl: session.url })
     } catch (err) {
-        res.status(400).json({ message: err.message })
+        return res.status(400).json({ message: err.message })
     }
 }
 

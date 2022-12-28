@@ -1,13 +1,13 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Routes, Route } from "react-router-dom";
-import { ReportedProblems, TraineeProfile, Register, Terms, Index, AddUsers, AdminHome, AllCourses, TraineeCourses, TraineeHome, InstructorCourses, InstructorHome, CreateCourse, Rate, SingleCourseInstructor, SingleCourse, InstructorVidView, CreateExam, UploadVideo, Discount, RatingList, InstructorProfile, InstructorEditProfile, InstructorContract, StudentVidView, Exam, Result, Forgot, Reset, PaymentDone, EditTraineeProfile, EditInstructorPassword, CoursePreview, ReportProblem, Followup, ReportView, DefineDiscounts, ViewExam } from "./Pages";
+import { ReportedProblems, TraineeProfile, Register, Terms, Index, AddUsers, AdminHome, AllCourses, TraineeCourses, TraineeHome, InstructorCourses, InstructorHome, CreateCourse, Rate, SingleCourseInstructor, SingleCourse, InstructorVidView, CreateExam, UploadVideo, Discount, RatingList, InstructorProfile, InstructorEditProfile, InstructorContract, StudentVidView, Exam, Result, Forgot, Reset, PaymentDone, EditTraineeProfile, EditInstructorPassword, CoursePreview, ReportProblem, Followup, ReportView, DefineDiscounts, ViewExam, Invoices } from "./Pages";
 import { TopBar } from "./app/components";
 import { useLocation } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import Profile from "./Pages/InstructorPages/Profile";
 import { EditTraineePassword } from "./Pages/TraineePages";
-import { AdminProfile, EditAdminPassword, EditAdminProfile } from "./Pages/AdminPages";
+import { AdminProfile, EditAdminPassword, EditAdminProfile, Requests } from "./Pages/AdminPages";
 
 export const Router = () => {
   return (
@@ -23,6 +23,7 @@ export const Router = () => {
         <Route path="/Admin/profile" exact element={<AdminProfile />} />
         <Route path="/Admin/edit" exact element={<EditAdminProfile />} />
         <Route path="/Admin/editPassword" exact element={<EditAdminPassword />} />
+        <Route path="/Admin/requests" exact element={<Requests />} />
         <Route path="/Admin/promotions" exact element={<DefineDiscounts />} />
 
       </Route>
@@ -35,6 +36,7 @@ export const Router = () => {
         <Route path="/Instructor/editPassword" exact element={<EditInstructorPassword />} />
         <Route path="/Instructor/ratings" exact element={<RatingList />} />
         <Route path="/Instructor/contract" exact element={<InstructorContract />} />
+        <Route path="/Instructor/invoices" exact element={<Invoices />} />
         <Route path="/courses/create" exact element={<CreateCourse />} />
         <Route path="/courses/ratings" exact element={<RatingList />} />
         <Route path="/course/exercise/create/:id" exact element={<CreateExam />} />
@@ -47,7 +49,7 @@ export const Router = () => {
         <Route path="/Trainee/profile" exact element={<TraineeProfile />} />
         <Route path="/Trainee/edit" exact element={<EditTraineeProfile />} />
         <Route path="/Trainee/editPassword" exact element={<EditTraineePassword />} />
-        <Route path="/paymentCompleted/:session_id/:courseId" exact element={<PaymentDone />} />
+        <Route path="/paymentCompleted/:session_id/:courseId/:fromWallet" exact element={<PaymentDone />} />
       </Route>
       <Route exact element={<ProtectedRoute allowed={["Corporate"]} />}>
         <Route path="/Corporate" exact element={<TraineeHome />} />

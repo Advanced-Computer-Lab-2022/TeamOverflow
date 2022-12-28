@@ -14,6 +14,7 @@ router.use(express.json())
 const { verifyAllUsers, verifyInstructor, verifyAllUsersCorp } = require("../auth/jwt-auth");
 const { default: mongoose } = require("mongoose");
 const { forex, getCode, forexCode, forexBack } = require("../controllers/currencyController");
+const StudentCourses = require("../models/StudentCourses");
 
 // General Purpose endpoints
 router.get('/', async function (req, res) {
@@ -111,10 +112,6 @@ router.get('/mostPopular', verifyAllUsersCorp, async function (req, res) {
 // Creating a new Course
 router.post('/create', verifyInstructor, async function (req, res) {
   var subtitles = req.body.subtitles
-  var totalTime = 0
-  for (var i = 0; i < subtitles.length; i++) {
-    totalTime += parseInt(subtitles[i].time)
-  }
   const course = new Course({
     title: req.body.title,
     subject: req.body.subject,
@@ -122,7 +119,6 @@ router.post('/create', verifyInstructor, async function (req, res) {
     price: req.body.price,
     discount: req.body.discount,
     instructorId: req.reqId,
-    totalHours: totalTime
   })
   try {
     const newCourse = await course.save()
@@ -145,7 +141,7 @@ async function instructorSearchAndFilterCourse(data, user) {
   var min = minPrice ? await forexBack(minPrice, currency) : 0
   var max = maxPrice ? await forexBack(maxPrice, currency) : 10000
   const mongoQuery = { instructorId: user._id, subject: sub, price: { $gte: min, $lt: max }, ...search }
-  var results = await Course.paginate(mongoQuery, { page: page, limit: 10 })
+  var results = await Course.paginate(mongoQuery, { page: page, limit: 12 })
   var allResults = []
   for (let i = 0; i < results.docs.length; i++) {
     var courseObj = JSON.parse(JSON.stringify(results.docs[i]))
@@ -172,7 +168,7 @@ async function searchAndFilterCourse(data, reqId) {
   var max = maxPrice ? await forexBack(maxPrice, currency) : 10000
   console.log(min, max)
   const mongoQuery = { published: true, price: { $gte: min, $lt: max }, subject: sub, rating: { $gte: minRate, $lte: maxRate }, ...search }
-  var results = await Course.paginate(mongoQuery, { page: page, limit: 10 })
+  var results = await Course.paginate(mongoQuery, { page: page, limit: 12 })
   var allResults = []
   for (let i = 0; i < results.docs.length; i++) {
     var courseObj = JSON.parse(JSON.stringify(results.docs[i]))
@@ -190,6 +186,10 @@ async function coursePreview(id, reqId) {
   var course = await Course.findById(id).populate("videoId")
   var subtitles = await Subtitle.find({ courseId: id })
   var courseObj = JSON.parse(JSON.stringify(course))
+  if(user?.bearer !== "Instructor"){
+    var regCourse = await StudentCourses.findOne({courseId: id, traineeId: reqId})
+    courseObj.isEnrolled = regCourse !== null
+  }
   courseObj.currency = getCode(user?.country)
   courseObj.price = await forexCode(courseObj.price, courseObj.currency)
   courseObj.subtitles = JSON.parse(JSON.stringify(subtitles))

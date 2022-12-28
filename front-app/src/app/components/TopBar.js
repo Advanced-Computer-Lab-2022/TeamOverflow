@@ -20,19 +20,23 @@ import DiscountIcon from '@mui/icons-material/Discount';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ReceiptIcon from '@mui/icons-material/Receipt';
 import { connect } from "react-redux";
 import { logout } from '../store/actions/authActions';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Tooltip } from '@mui/material';
+import { viewRefunds, viewRequests } from '../store/actions/adminActions';
 import { centered_flex_box } from './Styles';
 
-function MenuAppBar({ auth, logout }) {
+function MenuAppBar({ auth, logout, viewRefunds, viewRequests }) {
     const navigate = useNavigate()
     const [anchorEl, setAnchorEl] = React.useState(null);
 
-    var token = auth.token || '';
-    var header = token.split(' ')
-    var role = header[0]
+    const token = auth.token || '';
+    const header = token.split(' ')
+    const role = header[0]
+    const location = useLocation();
 
     const handleMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -105,13 +109,15 @@ function MenuAppBar({ auth, logout }) {
 
     const handleCourseRequests = () => {
         setAnchorEl(null);
+        viewRequests({ info: { page: 1 }, token })
         let path = "/Admin/requests";
         navigate(path);
     };
 
     const handleRefundRequests = () => {
         setAnchorEl(null);
-        let path = "/Admin/refund";
+        viewRefunds({ info: { page: 1 }, token })
+        let path = "/Admin/requests";
         navigate(path);
     };
 
@@ -125,36 +131,55 @@ function MenuAppBar({ auth, logout }) {
         setAnchorEl(null);
         let path = "/courses/create";
         navigate(path);
-    };    
-    
+    };
+
     const handleInstructorContract = () => {
         setAnchorEl(null);
         let path = "/Instructor/contract";
         navigate(path);
     };
 
-    
+    const handleInstructorInvoice = () => {
+        setAnchorEl(null);
+        let path = "/Instructor/invoices";
+        navigate(path);
+    };
+
+
     const routeLogin = () => {
         setAnchorEl(null);
         logout();
     }
 
+    console.log(location)
 
     return (
         <Box sx={{ flexGrow: 1, marginBottom: 2, bgColor: "var(--primaryColor)", color: "var(--secColor)" }}>
             {auth.user && (
                 <AppBar position="static" color='inherit'>
                     <Toolbar>
+                        {!location.pathname.includes("/course/solve/exercise/") && 
                         <IconButton
                             size="large"
                             edge="start"
                             color="inherit"
                             aria-label="menu"
                             sx={{ mr: 2 }}
-                            onClick={handleMenu}
+                            onClick={() => navigate(-1)}
                         >
-                            <MenuIcon />
-                        </IconButton>
+                            <ArrowBackIcon />
+                        </IconButton>}
+                        {role !== "Guest" &&
+                            < IconButton
+                                size="large"
+                                edge="start"
+                                color="inherit"
+                                aria-label="menu"
+                                sx={{ mr: 2 }}
+                                onClick={handleMenu}
+                            >
+                                <MenuIcon />
+                            </IconButton>}
                         {role !== "Guest" && (
                             <Menu
                                 id="menu-appbar"
@@ -175,6 +200,7 @@ function MenuAppBar({ auth, logout }) {
                                     <MenuItem onClick={handleCoursesRating}><LocalActivityIcon /><Typography marginX={2}>My Courses Ratings</Typography></MenuItem>
                                     <MenuItem onClick={handleInstructorRating}><StarRateIcon /><Typography marginX={2}>My Ratings</Typography></MenuItem>
                                     <MenuItem onClick={handleInstructorContract}><GavelIcon /><Typography marginX={2}>Contract</Typography></MenuItem>
+                                    <MenuItem onClick={handleInstructorInvoice}><ReceiptIcon /><Typography marginX={2}>My Invoices</Typography></MenuItem>
                                     <hr />
                                 </>)}
                                 {role === "Admin" && (<>
@@ -210,7 +236,8 @@ function MenuAppBar({ auth, logout }) {
                         }
                     </Toolbar >
                 </AppBar >
-            )}
+            )
+            }
         </Box >
     );
 }
@@ -219,6 +246,6 @@ const mapStateToProps = (state) => ({
     auth: state?.auth
 });
 
-const mapDispatchToProps = { logout };
+const mapDispatchToProps = { logout, viewRefunds, viewRequests };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MenuAppBar);

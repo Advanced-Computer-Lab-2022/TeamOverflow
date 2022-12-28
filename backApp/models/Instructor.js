@@ -10,6 +10,7 @@ var instructorSchema = new mongoose.Schema({
     rating: {type: Number},
     walletId: {type: mongoose.Types.ObjectId, ref : "Wallet",required : true},
     numberOfRatings: {type: Number, default: 0},
+    bearer: {type: String, default: "Instructor"},
     acceptedContract: {type: Boolean, default: false}
 }, {timestamps: true})
 

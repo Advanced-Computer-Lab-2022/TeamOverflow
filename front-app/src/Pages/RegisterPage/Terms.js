@@ -1,12 +1,16 @@
-import { Avatar, Box, Container, createTheme, CssBaseline, ThemeProvider, Typography } from '@mui/material'
+import { Avatar, Box, Button, Container, createTheme, CssBaseline, ThemeProvider, Typography } from '@mui/material'
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import React from 'react'
 import { connect } from "react-redux";
 import { getTerms } from '../../app/store/actions/authActions';
 import ReactMarkdown from 'react-markdown';
+import { main_button } from '../../app/components/Styles';
+import { useNavigate } from 'react-router-dom';
 
-const Terms = ({getTerms, terms}) => {
+const Terms = ({ getTerms, terms }) => {
 
+  const navigate = useNavigate();
+  
   React.useEffect(() => {
     getTerms();
   }, [])
@@ -31,9 +35,16 @@ const Terms = ({getTerms, terms}) => {
       </Box>
       <Box sx={{ mt: 1 }}>
         <Typography variant="body1" align="left">
-          <ReactMarkdown children={terms}/>
+          <ReactMarkdown children={terms} />
         </Typography>
       </Box>
+      <Button
+        variant="contained"
+        sx={{ mt: 3, mb: 2, ...main_button }}
+        onClick={() => navigate(-1)}
+      >
+        Back
+      </Button>
     </Container>
   )
 }

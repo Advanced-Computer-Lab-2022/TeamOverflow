@@ -4,16 +4,18 @@ const nodemailer = require("nodemailer")
 const CorporateTrainee = require("../models/CorporateTrainee");
 const Trainee = require("../models/Trainee");
 const Instructor = require("../models/Instructor");
+const Admin = require("../models/Admin");
 const jwt = require("jsonwebtoken");
 const { default: mongoose } = require("mongoose");
 const { verifyAllUsersCorp } = require("../auth/jwt-auth")
 const bcrypt = require("bcrypt")
 const fs = require("fs")
-const path = require("path")
+const path = require("path");
+const { transporter } = require('../controllers/mailingController');
 
 router.get("/TandC", async (req, res) => {
   try {
-    var filepath = path.join(__dirname, '../','public', 'markdown', 'terms.md');
+    var filepath = path.join(__dirname, '../', 'public', 'markdown', 'terms.md');
     var file = fs.readFileSync(filepath, 'utf8');
     res.status(200).send(file.toString());
   } catch (err) {
@@ -21,15 +23,6 @@ router.get("/TandC", async (req, res) => {
     res.status(400).json({ message: err })
   }
 })
-
-/* Mail Setup*/
-var transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL,
-    pass: process.env.EMAIL_PASS,
-  },
-});
 
 router.get("/forgotPassword", async (req, res) => {
   try {
@@ -68,6 +61,32 @@ router.put("/changePassword", verifyAllUsersCorp, async (req, res) => {
     return res.status(400).json({ messsage: "Previous password is incorrect" });
   } catch (err) {
     res.status(400).json({ messsage: err });
+  }
+})
+
+router.post("/login", async (req, res) => {
+  try {
+    const loginData = req.body
+    const user = (await Admin.findOne({ username: loginData.username })) ||
+      (await CorporateTrainee.findOne({ username: loginData.username })) ||
+      (await Trainee.findOne({ username: loginData.username })) ||
+      (await Instructor.findOne({ username: loginData.username }))
+    if (user && await bcrypt.compare(loginData.password, user.password)) {
+      const payload = user.toJSON()
+      jwt.sign(
+        payload,
+        process.env.JWT_SECRET,
+        //{expiresIn: 86400},
+        (err, token) => {
+          if (err) return res.json({ message: err })
+          return res.status(200).json({ message: "Success", payload: payload, token: `${user.bearer} ${token}` })
+        }
+      )
+    } else {
+      return res.status(400).json({ message: "Invalid username or password" })
+    }
+  } catch (err) {
+    return res.status(400).json({ message: err.message })
   }
 })
 

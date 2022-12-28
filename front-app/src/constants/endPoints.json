@@ -1,20 +1,15 @@
 {
    "auth": {
       "admin":{
-         "add":"admin/addAdmin",
-         "login":"admin/login"
+         "add":"admin/addAdmin"
       },
       "instructor":{
-         "add":"admin/addInstructor",
-         "login":"instructor/login"
+         "add":"admin/addInstructor"
       },
       "corporatetrainee":{
-         "add":"admin/addTrainee",
-         "login":"corpTrainee/login"
+         "add":"admin/addTrainee"
       },
-      "trainee": {
-         "login":"trainee/login"
-      },
+      "login":"auth/login",
       "forgot":"auth/forgotPassword",
       "reset":"auth/resetPassword",
       "change":"auth/changePassword",
@@ -27,10 +22,11 @@
       "respondReport":"admin/respondReport",
       "viewRequests":"admin/viewRequests",
       "grantAccess":"admin/grantAccess",
+      "rejectAccess":"admin/rejectAccess",
       "viewRefunds":"admin/viewRefunds",
-      "respondRefund":"admin/refundTraniee",
+      "acceptRefund":"admin/refundTraniee",
+      "rejectRefund":"admin/rejectRefund",
       "defineDiscount":"admin/defineDiscount"
-
    },
    "instructor":{
       "setCountry":"instructor/selectCountry",
@@ -54,7 +50,8 @@
       "addFollowup":"instructor/addFollowup",
       "publishCourse":"instructor/publish",
       "closeCourse":"instructor/close",
-      "deleteCourse":"instructor/course"
+      "deleteCourse":"instructor/course",
+      "getInvoices":"instructor/getInvoices"
    },
    "corporatetrainee":{
       "setCountry":"corpTrainee/selectCountry",

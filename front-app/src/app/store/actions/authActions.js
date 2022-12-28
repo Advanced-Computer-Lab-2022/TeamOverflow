@@ -1,4 +1,4 @@
-import { TERMS, WALLET, WALLET_SUCCESS, WALLET_FAIL, LOGIN, LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT_SUCCESS, GUEST, CREATE, CREATE_FAIL, CREATE_SUCCESS, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL } from "./types";
+import { TERMS, WALLET, WALLET_SUCCESS, WALLET_FAIL, INVOICE, INVOICE_SUCCESS, INVOICE_FAIL, LOGIN, LOGIN_SUCCESS, LOGIN_FAIL, LOGOUT_SUCCESS, GUEST, CREATE, CREATE_FAIL, CREATE_SUCCESS, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL } from "./types";
 import { getRequest, postRequest, putRequest } from "../../../core/network";
 import endpoints from "../../../constants/endPoints.json";
 import { notification } from "antd";
@@ -72,20 +72,13 @@ export const logout = () => async (dispatch, getState) => {
 export const LoginUser = (data) => (dispatch) => {
   dispatch({ type: LOGIN });
   var end;
-  switch (data.type) {
-    case "Instructor": end = endpoints.auth.instructor.login; break;
-    case "Admin": end = endpoints.auth.admin.login; break;
-    case "Corporate": end = endpoints.auth.corporatetrainee.login; break;
-    case "Trainee": end = endpoints.auth.trainee.login; break;
-    default: end = null;
-  }
 
   const info = {
     username: data.username,
     password: data.password
   }
 
-  postRequest(info, undefined, undefined, undefined, end)
+  postRequest(info, undefined, undefined, undefined, endpoints.auth.login)
     .then((response) => {
       if (response.data.message === "Success") {
         notification.success({ message: "Welcome Back" })
@@ -200,6 +193,29 @@ export const getWallet = (token) => (dispatch) => {
       console.log(err);
       return dispatch({
         type: WALLET_FAIL,
+      });
+
+    });
+};
+
+export const getInvoices = (data) => (dispatch) => {
+
+  dispatch({ type: INVOICE })
+
+  getRequest(data.query, undefined, data.token, endpoints.instructor.getInvoices)
+    .then((response) => {
+      const { data } = response;
+      return dispatch({
+        type: INVOICE_SUCCESS,
+        payload: data
+      });
+
+    })
+    .catch((err) => {
+      notification.error({ message: err?.response?.data?.message })
+      console.log(err);
+      return dispatch({
+        type: INVOICE_FAIL,
       });
 
     });

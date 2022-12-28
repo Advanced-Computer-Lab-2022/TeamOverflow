@@ -9,7 +9,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { useNavigate, useParams } from 'react-router-dom';
 import { getGrade } from '../../app/store/actions/examActions';
-import { centered_flex_box, left_flex_box, main_button } from '../../app/components/Styles';
+import { centered_flex_box, left_flex_box, main_button, right_flex_box } from '../../app/components/Styles';
 const theme = createTheme();
 
 export const SolvedExam = ({ token, getGrade, graded, yourSol, totalMark, isLoading }) => {
@@ -71,7 +71,7 @@ export const SolvedExam = ({ token, getGrade, graded, yourSol, totalMark, isLoad
                                 </Box>
                             )
                         })}
-                        <Box sx={{ minWidth: "100%", ...left_flex_box }}>
+                        <Box sx={{ minWidth: "100%", ...right_flex_box }}>
                             <Button
                                 variant="contained"
                                 onClick={() => navigate(-1)}

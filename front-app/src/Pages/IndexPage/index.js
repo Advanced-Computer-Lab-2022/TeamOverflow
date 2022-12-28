@@ -79,27 +79,6 @@ export const Index = ({ LoginUser, user, token, guestVisit, isLoading }) => {
               id="password"
               autoComplete="current-password"
             />
-            <FormControl sx={{ minWidth: "100%", mt: 1 }}>
-              <MainInputLabel required id="type-label" title="User Type"/>
-              <Select
-                margin="normal"
-                required
-                fullWidth
-                autoFocus
-                labelId='type-label'
-                id="type"
-                label="User Type"
-                name="type"
-                input={<StyledInput/>}
-              >
-                <MenuItem value={"Admin"}>Admin</MenuItem>
-                <MenuItem value={"Instructor"}>Instructor</MenuItem>
-                <MenuItem value={"Corporate"}>Corporate Trainee</MenuItem>
-                <MenuItem value={"Trainee"}>Individual Trainee</MenuItem>
-              </Select>
-              <FormHelperText>User type to log in as</FormHelperText>
-            </FormControl>
-
             <Button
               type="submit"
               fullWidth

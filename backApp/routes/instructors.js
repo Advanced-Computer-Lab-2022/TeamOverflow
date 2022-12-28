@@ -17,32 +17,14 @@ const { getWallet } = require('../controllers/walletController');
 const { reportProblem, viewReports, viewOneReport, addFollowup } = require('../controllers/reportController');
 const { findByIdAndDelete } = require('../models/Instructor');
 const { getCode, forexCode } = require('../controllers/currencyController');
+const moment = require("moment");
+const Invoice = require('../models/Invoice');
+const { getVidDuration, getIdFromUrl } = require('../controllers/videoController');
 
 /* GET instructors listing. */
 router.get('/', async function (req, res) {
   res.send(await Instructor.find());
 });
-
-//Instructor Login
-router.post("/login", async (req, res) => {
-  const instructorLogin = req.body
-  await Instructor.findOne({ username: instructorLogin.username }).populate("walletId").then(async (instructor) => {
-    if (instructor && await bcrypt.compare(instructorLogin.password, instructor.password)) {
-      const payload = instructor.toJSON()
-      jwt.sign(
-        payload,
-        process.env.JWT_SECRET,
-        //{expiresIn: 86400},
-        (err, token) => {
-          if (err) return res.json({ message: err })
-          return res.status(200).json({ message: "Success", payload: payload, token: "Instructor " + token })
-        }
-      )
-    } else {
-      return res.json({ message: "Invalid username or password" })
-    }
-  })
-})
 
 //View contract
 router.get('/getContract', verifyInstructor, async function (req, res) {
@@ -53,7 +35,6 @@ router.get('/getContract', verifyInstructor, async function (req, res) {
     res.status(400).json({ message: err.message })
   }
 })
-
 
 //Accept contract
 router.put('/contractResponse', verifyInstructor, async function (req, res) {
@@ -85,7 +66,6 @@ router.get('/viewOwnRatings', verifyInstructor, async function (req, res) {
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
-
 });
 
 
@@ -122,8 +102,12 @@ router.get('/viewCourseRatings', verifyInstructor, async function (req, res) {
 //define discount and for how long
 router.post('/defineDiscount', verifyInstructor, async function (req, res) {
   try {
-    var result = await Course.findByIdAndUpdate(req.body.courseId, { $set: { discount: req.body.discount, deadline: req.body.deadline } }, { new: true })
-    res.status(200).json(result)
+    if (moment(req.body.startDate).isBefore(req.body.deadline)) {
+      var result = await Course.findByIdAndUpdate(req.body.courseId, { $set: { discount: req.body.discount, startDate: req.body.startDate, deadline: req.body.deadline } }, { new: true })
+      res.status(200).json(result)
+    } else {
+      res.status(403).json({ message: "Deadline cannot be before start date" })
+    }
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
@@ -135,8 +119,13 @@ router.post('/coursePreview', verifyInstructor, async function (req, res) {
     var course = await Course.findOne({ _id: req.body.courseId, instructorId: req.reqId })
     if (course) {
       var newVid = await Video.create({ title: req.body.title, description: req.body.description, url: req.body.url })
-      var result = await Course.findByIdAndUpdate(req.body.courseId, { $set: { videoId: newVid._id } }, { new: true })
-      res.status(200).json(result)
+      const videoId = getIdFromUrl(req.body.url)
+      getVidDuration(videoId, async (duration) => {
+        course.$inc("totalHours", duration)
+        await course.save()
+        var result = await Course.findByIdAndUpdate(req.body.courseId, { $set: { videoId: newVid._id } }, { new: true })
+        res.status(200).json(result)
+      });
     } else if (course?.published) {
       res.status(400).json({ message: "Course is already published" })
     } else {
@@ -154,14 +143,22 @@ router.post('/subtitleVideo', verifyInstructor, async function (req, res) {
     var course = await Course.findOne({ _id: subtitle.courseId, instructorId: req.reqId })
     if (course) {
       var newVid = await Video.create({ title: req.body.title, description: req.body.description, url: req.body.url })
-      var result = await Subtitle.findByIdAndUpdate(req.body.subtitleId, { $set: { videoId: newVid._id } }, { new: true })
-      res.status(200).json(result)
+      const videoId = getIdFromUrl(req.body.url)
+      getVidDuration(videoId, async (duration) => {
+        course.$inc("totalHours", duration)
+        await course.save()
+        subtitle.$inc("time", duration)
+        await subtitle.save()
+        var result = await Subtitle.findByIdAndUpdate(req.body.subtitleId, { $set: { videoId: newVid._id } }, { new: true })
+        res.status(200).json(result)
+      });
     } else if (course?.published) {
       res.status(400).json({ message: "Course is already published" })
     } else {
       res.status(403).json({ message: "You are not the instructor for this course" })
     }
   } catch (err) {
+    console.log(err)
     res.status(400).json({ message: err.message })
   }
 })
@@ -183,7 +180,7 @@ router.post('/publish', verifyInstructor, async function (req, res) {
 //Unpublish a course
 router.post('/close', verifyInstructor, async function (req, res) {
   try {
-    var result = await Course.findOneAndUpdate({_id: req.body.courseId, instructorId: req.reqId, closed: false, published: true}, { $set: { published: false, closed: true } }, { new: true })
+    var result = await Course.findOneAndUpdate({ _id: req.body.courseId, instructorId: req.reqId, closed: false, published: true }, { $set: { published: false, closed: true } }, { new: true })
     if (result) {
       await courseView(req, res)
     } else {
@@ -225,8 +222,8 @@ router.delete('/course', verifyInstructor, async function (req, res) {
 // create subtitle exercise
 router.post('/createSubtitleExercise', verifyInstructor, async function (req, res) {
   try {
-    var subtitle = await Subtitle.findById(req.body.subtitleId).populate("courseId")
-    var course = subtitle.courseId
+    var subtitle = await Subtitle.findById(req.body.subtitleId)
+    var course = await Course.findById(subtitle.courseId)
     if (mongoose.Types.ObjectId(course?.instructorId).toString() === req.reqId && !course?.published) {
       const exercise = new Exercise({
         questions: req.body.questions, //Comes in as an array of strings
@@ -235,6 +232,10 @@ router.post('/createSubtitleExercise', verifyInstructor, async function (req, re
         correctIndecies: req.body.correctIndecies, //Comes in as an array of integers
       })
       const newExercise = await exercise.save()
+      const time = req.body.questions.length * (5 / 60)
+      course.$inc("totalHours", time.toFixed(1))
+      await course.save
+      subtitle.$inc("time", time.toFixed(1));
       subtitle.$set("exerciseId", newExercise._id);
       await subtitle.save()
       res.status(201).json(newExercise)
@@ -261,6 +262,8 @@ router.post('/createCourseExercise', verifyInstructor, async function (req, res)
         correctIndecies: req.body.correctIndecies, //Comes in as an array of integers
       })
       const newExercise = await exercise.save()
+      const time = req.body.questions.length * (5 / 60)
+      course.$inc("totalHours", time.toFixed(1))
       course.$set("examId", newExercise._id);
       await course.save()
       res.status(201).json(newExercise)
@@ -289,6 +292,25 @@ router.get('/exercise', verifyInstructor, async function (req, res) {
 router.get('/wallet', verifyInstructor, async function (req, res) {
   await getWallet(req, res);
 })
+
+//view instructor invoices
+router.get('/getInvoices', verifyInstructor, async function (req, res) {
+  try {
+    var results = await Invoice.paginate({ instructorId: req.reqId }, { page: req.query.page, limit: 15, sort: { createdAt: -1, _id: 1 }, populate: { path: "courseId", select: { title: 1 } } })
+    const currency = getCode(req.user.country)
+    var allResults = []
+    for (let i = 0; i < results.docs.length; i++) {
+      var invoiceObj = results.docs[i].toJSON()
+      invoiceObj.balance = await forexCode(invoiceObj.balance, currency)
+      invoiceObj.currency = currency
+      allResults.push(invoiceObj)
+    }
+    results.docs = allResults
+    res.status(200).json(results);
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+});
 
 //report a problem
 router.post('/reportProblem', verifyInstructor, async function (req, res) {

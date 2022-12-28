@@ -4,7 +4,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { getRegisteredCourses } from '../../app/store/actions/coursesActions';
 import { RegisteredCourseCard } from '../../app/components';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import InboxIcon from '@mui/icons-material/Inbox';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import SearchIcon from '@mui/icons-material/Search';
 import { centered_flex_box, main_button } from '../../app/components/Styles';
@@ -35,14 +35,20 @@ export const TraineeRegisteredCourses = ({ auth, courses, getRegisteredCourses }
                 <hr />
                 <Box>
                     {!courses?.isLoading ? (
-                        <Grid container spacing={1}>
+                        <Grid container spacing={3} sx={centered_flex_box}>
                             {courses?.results?.docs?.map((courseData) => {
                                 return (
-                                    <Grid item xs={12}>
+                                    <Grid item xs={5}>
                                         <RegisteredCourseCard courseData={courseData} />
                                     </Grid>
                                 )
                             })}
+                            {courses?.results?.docs?.length === 0 && (
+                                <Grid item sx={{ ...centered_flex_box, flexDirection: "column", mt: 2 }}>
+                                    <InboxIcon fontSize="large" />
+                                    <Typography fontSize={40}>No results</Typography>
+                                </Grid>
+                            )}
                         </Grid>
                     ) : (
                         <Box sx={centered_flex_box}>

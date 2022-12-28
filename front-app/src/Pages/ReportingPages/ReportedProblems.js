@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { viewReports, clearReports } from '../../app/store/actions/reportActions';
 import { CourseCard, ReportCard } from '../../app/components';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import FilterListIcon from '@mui/icons-material/FilterList';
+import InboxIcon from '@mui/icons-material/Inbox';
 import SearchIcon from '@mui/icons-material/Search';
 import { centered_flex_box, main_button } from '../../app/components/Styles';
 
@@ -32,7 +32,7 @@ export const ReportedProblems = ({ auth, reports, viewReports, clearReports }) =
             status: null,
             page: 1
         })
-        viewReports({ token: auth.token, type: null, status: null, page: 1});
+        viewReports({ token: auth.token, type: null, status: null, page: 1 });
     }
 
     const { type, status, page } = formData
@@ -46,7 +46,7 @@ export const ReportedProblems = ({ auth, reports, viewReports, clearReports }) =
     }
 
     const handlePageChange = (event, value) => {
-        setFormData({...formData, page: value})
+        setFormData({ ...formData, page: value })
         viewReports({ token: auth.token, ...formData, page: value });
     }
 
@@ -128,14 +128,20 @@ export const ReportedProblems = ({ auth, reports, viewReports, clearReports }) =
                 <hr />
                 <Box>
                     {!reports?.isLoading ? (
-                        <Grid container spacing={1}>
+                        <Grid container spacing={2} sx={centered_flex_box}>
                             {reports?.results?.docs?.map((report) => {
                                 return (
-                                    <Grid item xs={12}>
+                                    <Grid item xs={5}>
                                         <ReportCard report={report} />
                                     </Grid>
                                 )
                             })}
+                            {reports?.results?.docs?.length === 0 && (
+                                <Grid item sx={{ ...centered_flex_box, flexDirection: "column", mt: 2 }}>
+                                    <InboxIcon fontSize="large" />
+                                    <Typography fontSize={40}>No results</Typography>
+                                </Grid>
+                            )}
                         </Grid>
                     ) : (
                         <Box sx={centered_flex_box}>

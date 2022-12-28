@@ -112,7 +112,7 @@ async function watchVideo(req, res, regCourse) {
 
 async function getRegistered(req, res) {
   try {
-    var results = await StudentCourses.paginate({ traineeId: req.reqId, onHold: false }, { page: req.query.page, limit: 10, populate: { path: "courseId" } })
+    var results = await StudentCourses.paginate({ traineeId: req.reqId, onHold: false }, { page: req.query.page, limit: 12, populate: { path: "courseId" } })
     var allResults = []
     for (let i = 0; i < results.docs.length; i++) {
       var reqCourse = results.docs[i].toJSON()
@@ -164,4 +164,22 @@ async function addNote(req, res) {
   }
 }
 
-module.exports = { calculateProgress, getGrade, openExercise, submitSolution, openCourse, watchVideo, getRegistered, getProgress, requestCourse, addNote };
+async function getCourseReviews(req, res) {
+  try {
+    const results = CourseRating.paginate({courseId: req.query.courseId}, {page: req.query.page, limit:12})
+    res.status(200).json(results)
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+}
+
+async function getInstructorReviews(req, res) {
+  try {
+    const results = InstructorRating.paginate({instructorId: req.query.instructorId}, {page: req.query.page, limit:12})
+    res.status(200).json(results)
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+}
+
+module.exports = { getCourseReviews, getInstructorReviews, calculateProgress, getGrade, openExercise, submitSolution, openCourse, watchVideo, getRegistered, getProgress, requestCourse, addNote };

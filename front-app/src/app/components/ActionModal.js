@@ -4,7 +4,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import { Card } from '@mui/material';
-import { centered_flex_box, main_button } from './Styles';
+import { centered_flex_box, confirm_button, main_button } from './Styles';
 
 export default function ActionModal({ message, open, handleClose, action }) {
     return (
@@ -22,7 +22,7 @@ export default function ActionModal({ message, open, handleClose, action }) {
                             <Typography>{message}</Typography>
                         </Box>
                         <Box sx={{ ...centered_flex_box }}>
-                            <Button onClick={action} sx={{...main_button, bgcolor:"green", mx:2}}>Confirm</Button>
+                            <Button onClick={action} sx={{...confirm_button, mx:2}}>Confirm</Button>
                             <Button onClick={handleClose} sx={main_button}>Cancel</Button>
                         </Box>
                 </Card>

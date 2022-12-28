@@ -3,16 +3,10 @@ var router = express.Router();
 const Admin = require('../models/Admin')
 const Instructor = require('../models/Instructor')
 const CorporateTrainee = require('../models/CorporateTrainee')
-const jwt = require("jsonwebtoken");
 const { verifyAdmin } = require("../auth/jwt-auth");
-const { verifyInstructor } = require("../auth/jwt-auth");
-const { verifyAllUsers } = require("../auth/jwt-auth");
 const StudentCourses = require('../models/StudentCourses');
 const Course = require('../models/Course');
-const mongoose = require("mongoose");
-const Contract = require('../models/Contract');
 const Subtitle = require('../models/Subtitle');
-const { requestCourse } = require('../controllers/studentController');
 const Requests = require('../models/Requests');
 const Refund = require('../models/Refund');
 const bcrypt = require("bcrypt");
@@ -24,6 +18,7 @@ const Report = require('../models/Report');
 const Followup = require('../models/ReportFollowup');
 const Notes = require('../models/Notes');
 const Answer = require('../models/StudentAnswer');
+const { sendGenericEmail } = require('../controllers/mailingController');
 
 /* GET admins listing. */
 router.get('/', function (req, res) {
@@ -31,37 +26,16 @@ router.get('/', function (req, res) {
 
 });
 
-//Admin Login
-router.post("/login", async (req, res) => {
-  try {
-    const adminLogin = req.body
-    await Admin.findOne({ username: adminLogin.username }).then(async (admin) => {
-      if (admin && await bcrypt.compare(adminLogin.password, admin.password)) {
-        const payload = admin.toJSON()
-        jwt.sign(
-          payload,
-          process.env.JWT_SECRET,
-          //{expiresIn: 86400},
-          (err, token) => {
-            if (err) return res.json({ message: err })
-            return res.status(200).json({ message: "Success", payload: payload, token: "Admin " + token })
-          }
-        )
-      } else {
-        return res.status(400).json({ message: "Invalid username or password" })
-      }
-    })
-  } catch (err) {
-    return res.status(400).json({ message: err.message })
-  }
-})
-
 //add admin
 router.post('/addAdmin', verifyAdmin, async function (req, res) {
   try {
-    var found = await Admin.findOne({ username: req.body.username })
+    var found = (await Admin.findOne({ username: req.body.username })) ||
+      (await CorporateTrainee.findOne({ username: req.body.username })) ||
+      (await Trainee.findOne({ username: req.body.username })) ||
+      (await Instructor.findOne({ username: req.body.username }))
+
     if (found) {
-      return res.status(400).json({ message: "Admin username already exists" })
+      return res.status(400).json({ message: "Username already exists" })
     }
     var hash = await bcrypt.hash(req.body.password, 10)
     const add = new Admin({
@@ -78,9 +52,13 @@ router.post('/addAdmin', verifyAdmin, async function (req, res) {
 //add instructor
 router.post('/addInstructor', verifyAdmin, async function (req, res) {
   try {
-    var found = await Instructor.findOne({ username: req.body.username })
+    var found = (await Admin.findOne({ username: req.body.username })) ||
+      (await CorporateTrainee.findOne({ username: req.body.username })) ||
+      (await Trainee.findOne({ username: req.body.username })) ||
+      (await Instructor.findOne({ username: req.body.username }))
+
     if (found) {
-      return res.status(400).json({ message: "Instructor username already exists" })
+      return res.status(400).json({ message: "Username already exists" })
     }
     var wallet = await Wallet.create({})
     var hash = await bcrypt.hash(req.body.password, 10)
@@ -97,28 +75,16 @@ router.post('/addInstructor', verifyAdmin, async function (req, res) {
   }
 });
 
-router.post('/createContract', verifyAdmin, async function (req, res) {
-  try {
-    const add = Contract({
-      title: req.body.title,
-      instructorId: req.body.instructorId,
-      terms: req.body.terms,
-      percentageTaken: req.body.percentageTaken,
-      status: "Pending",
-    })
-    const newContract = await add.save()
-    res.status(201).json(newContract)
-  } catch (err) {
-    res.status(400).json({ message: err.message })
-  }
-});
-
 //add corporate trainee
 router.post('/addTrainee', verifyAdmin, async function (req, res) {
   try {
-    var found = await CorporateTrainee.findOne({ username: req.body.username })
+    var found = (await Admin.findOne({ username: req.body.username })) ||
+      (await CorporateTrainee.findOne({ username: req.body.username })) ||
+      (await Trainee.findOne({ username: req.body.username })) ||
+      (await Instructor.findOne({ username: req.body.username }))
+
     if (found) {
-      return res.status(400).json({ message: "Corporate Trainee username already exists" })
+      return res.status(400).json({ message: "Username already exists" })
     }
     var hash = await bcrypt.hash(req.body.password, 10)
     const add = new CorporateTrainee({
@@ -137,11 +103,15 @@ router.post('/addTrainee', verifyAdmin, async function (req, res) {
 // a promotion for specific courses, several courses or all courses
 router.post('/defineDiscount', verifyAdmin, async function (req, res) {
   try {
-    const courses = req.body.courseIds
-    for (let i = 0; i < courses.length; i++) {
-      await Course.findByIdAndUpdate(courses[i], { $set: { discount: req.body.discount, deadline: req.body.deadline } })
+    if (moment(req.body.startDate).isBefore(req.body.deadline)) {
+      const courses = req.body.courseIds
+      for (let i = 0; i < courses.length; i++) {
+        await Course.findByIdAndUpdate(courses[i], { $set: { discount: req.body.discount, deadline: req.body.deadline } })
+      }
+      res.status(200).json({ message: `Discount added to ${courses.length} course(s)` })
+    } else {
+      res.status(403).json({ message: "Deadline cannot be before start date" })
     }
-    res.status(200).json({message: `Discount added to ${courses.length} course(s)`})
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
@@ -150,18 +120,56 @@ router.post('/defineDiscount', verifyAdmin, async function (req, res) {
 //view course requests from corporate trainees
 router.get('/viewRequests', verifyAdmin, async function (req, res) {
   try {
-    var results = await Requests.paginate({}, { page: req.query.page, limit: 10, populate: ["courseId", { path: "traineeId", select: { _id: 1, name: 1, email: 1, corporation: 1 } }] })
-    res.status(200).json({type: "Requests", results: results})
+    var results = await Requests.paginate({}, { page: req.query.page, limit: 10, populate: ["courseId", { path: "traineeId", select: { _id: 1, name: 1, email: 1, corporation: 1, username: 1 } }] })
+    res.status(200).json({ type: "Course", results: results })
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
 
 });
 
+//Add course access to corporation
+router.post('/addAccess', verifyAdmin, async function (req, res) {
+  req.setTimeout(0)
+  try {
+    var users = await CorporateTrainee.find({ corporation: req.body.corporation })
+    if (users) {
+      const course = await Course.findById(req.body.courseId).populate("instructorId")
+      const subtitles = await Subtitle.find({ courseId: req.body.courseId }, { _id: 1, exerciseId: 1, videoId: 1 })
+      const itemIds = [course.examId?.toString(), course.videoId?.toString(), subtitles.map((sub) => [sub.exerciseId?.toString(), sub.videoId?.toString()])].flat().flat()
+      var completion = {}
+      for (let i = 0; i < itemIds.length; i++) {
+        if (itemIds[i]) {
+          completion[itemIds[i]] = false
+        }
+      }
+      var courseSubtotal = course.discount && moment().isAfter(course.startDate) && moment().isBefore(course.deadline) ? course.price * ((100 - course.discount) / 100) : course.price
+      users.map(async (user) => {
+        if (!(await StudentCourses.findOne({ traineeId: user._id, courseId: course._id }))) {
+          const traineeCourse = new StudentCourses({
+            traineeId: user._id,
+            courseId: req.body.courseId,
+            completion: completion
+          });
+          await addAmountOwed(user._id, course, courseSubtotal)
+          await traineeCourse.save();
+          course.$inc("enrolled", 1)
+          await course.save()
+        }
+      })
+      res.status(200).json({ message: `Access to "${course.title}" granted to ${req.body.corporation}` })
+    } else {
+      res.status(400).json({ message: "No users in this corporation" })
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+});
+
 //grant access for corporate-trainee to a course
 router.post('/grantAccess', verifyAdmin, async function (req, res) {
   try {
-    var request = await Requests.findById(req.body.requestId)
+    var request = await Requests.findById(req.body.requestId).populate([{ path: "traineeId", select: { _id: 1, name: 1, email: 1, corporation: 1, username: 1 } }])
     if (!(await StudentCourses.findOne({ traineeId: request.traineeId, courseId: request.courseId }))) {
       const course = await Course.findById(request.courseId).populate("instructorId")
       const subtitles = await Subtitle.find({ courseId: request.courseId }, { _id: 1, exerciseId: 1, videoId: 1 })
@@ -172,22 +180,50 @@ router.post('/grantAccess', verifyAdmin, async function (req, res) {
           completion[itemIds[i]] = false
         }
       }
-      var courseSubtotal = course.discount && moment().isBefore(course.deadline) ? course.price * ((100 - course.discount) / 100) : course.price
+      var courseSubtotal = course.discount && moment().isAfter(course.startDate) && moment().isBefore(course.deadline) ? course.price * ((100 - course.discount) / 100) : course.price
       const traineeCourse = new StudentCourses({
         traineeId: request.traineeId,
         courseId: request.courseId,
         completion: completion
       });
-      await addAmountOwed(course.instructorId.walletId, courseSubtotal, "USD")
+      await addAmountOwed(request.traineeId._id, course, courseSubtotal)
       const newTraineeCourse = await traineeCourse.save();
-      await request.delete();
       course.$inc("enrolled", 1)
       await course.save()
       await request.delete()
-      var results = await Requests.paginate({}, { page: req.query.page, limit: 10, populate: ["courseId", { path: "traineeId", select: { _id: 1, name: 1, email: 1, corporation: 1 } }] })
-      res.status(200).json({type: "Requests", results: results})
+      const content = `
+        <h1>Hello ${request.traineeId.name} !</h1>
+        <p>Your request to access the course "${course.title}" has been accepted</p><br/>
+        <p>Start learning now!</p>
+      `
+      await sendGenericEmail(request.traineeId.email, "Request Accepted", content)
+      var results = await Requests.paginate({}, { page: req.query.page, limit: 10, populate: ["courseId", { path: "traineeId", select: { _id: 1, name: 1, email: 1, corporation: 1, username: 1 } }] })
+      res.status(200).json({ type: "Course", results: results })
     } else {
       res.status(400).json({ message: "Trainee already registered to this course" })
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+});
+
+//Reject access for corporate-trainee to a course
+router.post('/rejectAccess', verifyAdmin, async function (req, res) {
+  try {
+    var request = await Requests.findById(req.body.requestId).populate([{ path: "traineeId", select: { _id: 1, name: 1, email: 1, corporation: 1, username: 1 } }])
+    if (request) {
+      const course = await Course.findById(request.courseId)
+      await request.delete()
+      const content = `
+        <h1>Hello ${request.traineeId.name} !</h1>
+        <p>Sadly, your request to access the course "${course.title}" has been rejected</p><br/>
+        <p>Feel free to apply again</p>
+      `
+      await sendGenericEmail(request.traineeId.email, "Request Rejected", content)
+      var results = await Requests.paginate({}, { page: req.query.page, limit: 10, populate: ["courseId", { path: "traineeId", select: { _id: 1, name: 1, email: 1, corporation: 1, username: 1 } }] })
+      res.status(200).json({ type: "Course", results: results })
+    } else {
+      res.status(404).json({ message: "Request Not Found" })
     }
   } catch (err) {
     res.status(400).json({ message: err.message })
@@ -197,8 +233,11 @@ router.post('/grantAccess', verifyAdmin, async function (req, res) {
 //view refund requests from trainees
 router.get('/viewRefunds', verifyAdmin, async function (req, res) {
   try {
-    var results = await Refund.paginate({}, { page: req.query.page, limit: 10, populate: ["registrationId", { path: "instructorId", select: { _id: 1, name: 1, email: 1 } }] })
-    res.status(200).json({type: "Refunds", results: results})
+    var results = await Refund.paginate({}, { page: req.query.page, limit: 10, populate: ["registrationId", { path: "instructorId", select: { _id: 1, name: 1, email: 1 } }, { path: "traineeId", select: { _id: 1, name: 1, email: 1, username: 1 } }] })
+    for (let i = 0; i < results.docs.length; i++) {
+      results.docs[i].registrationId = await results.docs[i].registrationId.populate("courseId")
+    }
+    res.status(200).json({ type: "Refund", results: results })
   } catch (err) {
     res.status(400).json({ message: err.message })
   }
@@ -209,23 +248,57 @@ router.post('/refundTraniee', verifyAdmin, async function (req, res) {
   try {
     var refund = await Refund.findById(req.body.refundId).populate(["traineeId", "instructorId", "registrationId"])
     if (refund) {
-      await transfer(refund.instructorId.walletId, refund.traineeId.walletId, refund.registrationId.amountPaid)
       var reg = await StudentCourses.findById(refund.registrationId._id)
+      await transfer(refund.instructorId, refund.traineeId, reg.courseId, refund.registrationId.amountPaid)
       var course = await Course.findById(reg.courseId)
-      var subtitles = await Subtitle.find({courseId: reg.courseId})
+      var subtitles = await Subtitle.find({ courseId: reg.courseId })
       var exams = [course.examId]
       var videos = [course.videoId]
-      subtitles.map((sub) => {exams.push(sub.exerciseId); videos.push(sub.videoId)})
-      await Notes.deleteMany({videoId: {$in: videos}, traineeId: refund.traineeId._id})
-      await Answer.deleteMany({exerciseId: {$in: exams}, traineeId: refund.traineeId._id})
+      subtitles.map((sub) => { exams.push(sub.exerciseId); videos.push(sub.videoId) })
+      await Notes.deleteMany({ videoId: { $in: videos }, traineeId: refund.traineeId._id })
+      await Answer.deleteMany({ exerciseId: { $in: exams }, traineeId: refund.traineeId._id })
       await reg.delete()
       await refund.delete()
       course.$inc("enrolled", -1)
       await course.save()
-      var results = await Refund.paginate({}, { page: req.body.page, limit: 10, populate: ["registrationId", { path: "instructorId", select: { _id: 1, name: 1, email: 1 } }] })
-      res.status(200).json({type: "Refunds", results: results})
+      const content = `
+      <h1>Hello ${refund.traineeId.name} !</h1>
+      <p>Your request to refund the course "${course.title}" has been accepted</p><br/>
+      <p>USD ${reg.amountPaid} has been added to your wallet</p>
+    `
+      await sendGenericEmail(refund.traineeId.email, "Refund Accepted", content)
+      var results = await Refund.paginate({}, { page: req.body.page, limit: 10, populate: ["registrationId", { path: "instructorId", select: { _id: 1, name: 1, email: 1 } }, { path: "traineeId", select: { _id: 1, name: 1, email: 1, username: 1 } }] })
+      for (let i = 0; i < results.docs.length; i++) {
+        results.docs[i].registrationId = await results.docs[i].registrationId.populate("courseId")
+      }
+      res.status(200).json({ type: "Refund", results: results })
     } else {
-      res.status(403).json({ message: "Refund request does not exist" })
+      res.status(403).json({ message: "Refund request not found" })
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+})
+
+//reject refund
+router.post('/rejectRefund', verifyAdmin, async function (req, res) {
+  try {
+    var refund = await Refund.findById(req.body.refundId).populate(["traineeId", "instructorId", "registrationId"])
+    if (refund) {
+      await refund.delete()
+      const content = `
+      <h1>Hello ${refund.traineeId.name} !</h1>
+      <p>Your request to refund the course "${course.title}" has been accepted</p><br/>
+      <p>USD ${reg.amountPaid} has been added to your wallet</p>
+    `
+      await sendGenericEmail(refund.traineeId.email, "Refund Rejected", content)
+      var results = await Refund.paginate({}, { page: req.body.page, limit: 10, populate: ["registrationId", { path: "instructorId", select: { _id: 1, name: 1, email: 1 } }, { path: "traineeId", select: { _id: 1, name: 1, email: 1, username: 1 } }] })
+      for (let i = 0; i < results.docs.length; i++) {
+        results.docs[i].registrationId = await results.docs[i].registrationId.populate("courseId")
+      }
+      res.status(200).json({ type: "Refund", results: results })
+    } else {
+      res.status(404).json({ message: "Refund request not found" })
     }
   } catch (err) {
     res.status(400).json({ message: err.message })

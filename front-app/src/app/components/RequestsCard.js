@@ -4,14 +4,15 @@ import { connect } from "react-redux";
 import { logout } from '../store/actions/authActions';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@mui/material';
-import { card_style, main_button } from './Styles';
+import { card_style, confirm_button, left_flex_box, main_button, right_flex_box } from './Styles';
 import moment from "moment"
+import { acceptRequest, rejectRequest } from '../store/actions/adminActions';
 
-function ReportCard({ token, report, isLoading }) {
+function RequestsCard({ token, request, isLoading, acceptRequest, rejectRequest }) {
 
     const navigate = useNavigate();
     const role = token.split(" ")[0];
-    
+
     return (
         <Card sx={card_style}>
             {isLoading && (
@@ -25,30 +26,26 @@ function ReportCard({ token, report, isLoading }) {
                 <Grid container>
                     <Grid item xs={10}>
                         <Typography sx={{ fontSize: 24, fontWeight: "bold" }}>
-                            {report.type}
+                            {request.traineeId.corporation}
                         </Typography>
                     </Grid>
                     <Grid item direction="row" alignItems="center" display="flex" justifyContent="flex-end" xs={2}>
-                        <Chip sx={{ color: "var(--secColor)", borderColor: "var(--secColor)" }} label={report.status} variant="outlined" />
+                        <Chip sx={{ color: "var(--secColor)", borderColor: "var(--secColor)" }} label={moment(request.createdAt).fromNow()} variant="outlined" />
                     </Grid>
                 </Grid>
-                <Typography variant='p' sx={{
-                    display: '-webkit-box',
-                    overflow: 'hidden',
-                    WebkitBoxOrient: 'vertical',
-                    WebkitLineClamp: 3,
-                }}>
-                    {report.details}
+                <Typography>
+                    {request.traineeId.name || request.traineeId.username} is requesting access to "{request.courseId.title}"
                 </Typography>
                 <br />
-                <Button onClick={() => navigate(`/reports/single/${report._id}`)} sx={{ ...main_button, mt:2}}>
-                    View Reported Problem
-                </Button>
-                {role !== "Admin" && report.status !== "Resolved" && (
-                    <Button onClick={() => navigate(`/reports/followup/${report._id}`)} sx={{ ...main_button, mx: 1, mt:2 }}>
-                        Follow Up
+                <Box sx={{ ...left_flex_box, mt: 1 }}>
+                    <Button onClick={() => acceptRequest({ info: { requestId: request._id }, token: token })} sx={{ ...confirm_button, mx: 2 }}>
+                        Accept
                     </Button>
-                )}
+                    <Button onClick={() => rejectRequest({ info: { requestId: request._id }, token: token })} sx={{ ...main_button }}>
+                        Reject
+                    </Button>
+                </Box>
+
             </>)}
         </Card>
     );
@@ -56,9 +53,8 @@ function ReportCard({ token, report, isLoading }) {
 
 const mapStateToProps = (state) => ({
     token: state?.auth?.token,
-    isLoading: state?.reports?.isLoading
 });
 
-const mapDispatchToProps = { };
+const mapDispatchToProps = { acceptRequest, rejectRequest };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ReportCard);
+export default connect(mapStateToProps, mapDispatchToProps)(RequestsCard);

@@ -42,8 +42,7 @@ export const CreateCourse = ({ user, token, createCourse, subjects, getSubjects 
         const data = new FormData(event.currentTarget);
         for (let i = 0; i < subtitleCount; i++) {
             var sub = {
-                title: data.get(`title${i}`),
-                time: data.get(`time${i}`)
+                title: data.get(`title${i}`)
             }
             subtitles.push(sub);
         }
@@ -160,16 +159,6 @@ export const CreateCourse = ({ user, token, createCourse, subjects, getSubjects 
                                         label="Subtitle Title"
                                         name={`title${idx}`}
                                         autoFocus
-                                    />
-                                    <MainInput
-                                        margin="normal"
-                                        required
-                                        fullWidth
-                                        name={`time${idx}`}
-                                        label="Subtitle Time"
-                                        id={`time${idx}`}
-                                        type="number"
-                                        inputProps={{ min: 0 }}
                                     />
                                     <hr />
                                 </Box>

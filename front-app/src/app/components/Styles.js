@@ -24,7 +24,20 @@ export const sec_button = {
     bgcolor: "var(--primaryColor)",
     ":hover": {
         color: "var(--mainWhite)",
-        bgcolor: "var(--secColor)"
+        bgcolor: "var(--terColor)"
+    },
+    ":disabled": {
+        color: "var(--mainWhite)",
+        bgcolor: "gray"
+    }
+}
+
+export const confirm_button = {
+    color: "var(--mainWhite)",
+    bgcolor: "green",
+    ":hover": {
+        bgcolor: "lightgreen", 
+        color: 'green'
     },
     ":disabled": {
         color: "var(--mainWhite)",
@@ -34,9 +47,10 @@ export const sec_button = {
 
 export const card_style = {
     minWidth: "40vw",
+    maxWidth: "40vw",
     padding: 2,
-    marginX: "30vw",
     marginY: 2,
+    marginX:2,
     ":hover": {
         "transition-duration": "0.5s",
         "box-shadow": "0px 10px 5px 0px rgba(231,129,132,0.75)",
