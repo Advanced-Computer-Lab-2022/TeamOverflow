@@ -27,7 +27,7 @@ function SubtitleCard({ token, subtitle }) {
                 </Grid>
             </Grid>
             <br />
-            <Box display="flex" justifyContent="flex-start">
+            {role === "Instructor" && <Box display="flex" justifyContent="flex-start">
                 {subtitle?.videoId ? (
                     <Button onClick={() => navigate(`/course/video/${subtitle?.videoId}`)} sx={{ ...main_button, mt: 2, mr:2 }}>
                         <VisibilityIcon/> View Subtitle Video
@@ -48,7 +48,7 @@ function SubtitleCard({ token, subtitle }) {
                     </Button>
                 )
                 }
-            </Box>
+            </Box>}
         </Card>
     )
 }
