@@ -20,6 +20,7 @@ import DiscountIcon from '@mui/icons-material/Discount';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { connect } from "react-redux";
 import { logout } from '../store/actions/authActions';
 import { useNavigate } from 'react-router-dom';
@@ -27,7 +28,7 @@ import { Tooltip } from '@mui/material';
 import { viewRefunds, viewRequests } from '../store/actions/adminActions';
 import { centered_flex_box } from './Styles';
 
-function MenuAppBar({ auth, logout, viewRefunds, viewRequests  }) {
+function MenuAppBar({ auth, logout, viewRefunds, viewRequests }) {
     const navigate = useNavigate()
     const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -106,14 +107,14 @@ function MenuAppBar({ auth, logout, viewRefunds, viewRequests  }) {
 
     const handleCourseRequests = () => {
         setAnchorEl(null);
-        viewRequests({info: {page: 1}, token})
+        viewRequests({ info: { page: 1 }, token })
         let path = "/Admin/requests";
         navigate(path);
     };
 
     const handleRefundRequests = () => {
         setAnchorEl(null);
-        viewRefunds({info: {page: 1}, token})
+        viewRefunds({ info: { page: 1 }, token })
         let path = "/Admin/requests";
         navigate(path);
     };
@@ -128,15 +129,15 @@ function MenuAppBar({ auth, logout, viewRefunds, viewRequests  }) {
         setAnchorEl(null);
         let path = "/courses/create";
         navigate(path);
-    };    
-    
+    };
+
     const handleInstructorContract = () => {
         setAnchorEl(null);
         let path = "/Instructor/contract";
         navigate(path);
     };
 
-    
+
     const routeLogin = () => {
         setAnchorEl(null);
         logout();
@@ -154,10 +155,21 @@ function MenuAppBar({ auth, logout, viewRefunds, viewRequests  }) {
                             color="inherit"
                             aria-label="menu"
                             sx={{ mr: 2 }}
-                            onClick={handleMenu}
+                            onClick={() => navigate(-1)}
                         >
-                            <MenuIcon />
+                            <ArrowBackIcon />
                         </IconButton>
+                        {role !== "Guest" &&
+                            < IconButton
+                                size="large"
+                                edge="start"
+                                color="inherit"
+                                aria-label="menu"
+                                sx={{ mr: 2 }}
+                                onClick={handleMenu}
+                            >
+                                <MenuIcon />
+                            </IconButton>}
                         {role !== "Guest" && (
                             <Menu
                                 id="menu-appbar"
@@ -213,7 +225,8 @@ function MenuAppBar({ auth, logout, viewRefunds, viewRequests  }) {
                         }
                     </Toolbar >
                 </AppBar >
-            )}
+            )
+            }
         </Box >
     );
 }

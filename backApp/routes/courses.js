@@ -191,7 +191,7 @@ async function coursePreview(id, reqId) {
   var course = await Course.findById(id).populate("videoId")
   var subtitles = await Subtitle.find({ courseId: id })
   var courseObj = JSON.parse(JSON.stringify(course))
-  if(user.bearer !== "Instructor"){
+  if(user?.bearer !== "Instructor"){
     var regCourse = await StudentCourses.findOne({courseId: id, traineeId: reqId})
     courseObj.isEnrolled = regCourse !== null
   }

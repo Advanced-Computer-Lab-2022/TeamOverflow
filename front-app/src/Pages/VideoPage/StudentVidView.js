@@ -69,7 +69,7 @@ export const VideoView = ({ auth, getRegVideo, video, isLoading, addNote, downlo
       <Container component="main" maxWidth="xl">
         <Card sx={{ padding: 1 }}>
           {!isLoading ? (<>
-            <Box sx={{...centered_flex_box, mb:2}}>
+            <Box sx={{ ...centered_flex_box, mb: 2 }}>
               <Typography variant="h3">{video?.title}</Typography><br />
             </Box>
             <Box sx={centered_flex_box}>
@@ -86,11 +86,11 @@ export const VideoView = ({ auth, getRegVideo, video, isLoading, addNote, downlo
 
             <Grid container justifyContent="space-between">
               <Grid item sx={left_flex_box}>
-                <Button sx={{ ...main_button }} onClick={handleAddNote}>{!noteOpen ? (<><CreateIcon /> Write Note</>) : "Close Note"}</Button>
-                <Button sx={{ ...main_button, mx: 2 }} onClick={() => downloadNotes({ videoId: videoId, token: auth?.token })}><DownloadIcon />Download Notes</Button>
+                <Button sx={{ ...main_button }} onClick={() => navigate(`/courses/student/single/${courseId}`)}>Back to Course</Button>
               </Grid>
               <Grid item sx={right_flex_box}>
-                <Button sx={{ ...main_button }} onClick={() => navigate(`/courses/student/single/${courseId}`)}>Back to Course</Button>
+                <Button sx={{ ...main_button }} onClick={handleAddNote}>{!noteOpen ? (<><CreateIcon /> Write Note</>) : "Close Note"}</Button>
+                <Button sx={{ ...main_button, ml: 2 }} onClick={() => downloadNotes({ videoId: videoId, token: auth?.token })}><DownloadIcon />Download Notes</Button>
               </Grid>
             </Grid>
 
