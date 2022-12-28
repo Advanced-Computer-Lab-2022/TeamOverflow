@@ -4,7 +4,7 @@ import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, FormHelperText, InputLabel, Card, Toolbar } from '@mui/material';
+import { Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, FormHelperText, InputLabel, Card, Toolbar, CircularProgress } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { useNavigate, Navigate, NavLink, Route, Routes, useParams } from "react-router-dom";
@@ -14,7 +14,7 @@ import { centered_flex_box, main_button } from '../../app/components/Styles';
 
 const theme = createTheme();
 
-export const Completed = ({ token, user, registerCourse }) => {
+export const Completed = ({ token, user, registerCourse, isLoading }) => {
   const navigate = useNavigate();
   const { session_id, courseId } = useParams()
 
@@ -27,6 +27,14 @@ export const Completed = ({ token, user, registerCourse }) => {
       token: token
     });
   }, [])
+
+  if (isLoading) {
+    return (
+        <Box sx={{ ...centered_flex_box, minHeight: "100vh" }}>
+            <CircularProgress sx={{ color: "var(--secColor)" }} />
+        </Box>
+    )
+}
 
   return (
     <ThemeProvider theme={theme}>
@@ -48,7 +56,8 @@ export const Completed = ({ token, user, registerCourse }) => {
 
 const mapStateToProps = (state) => ({
   user: state?.auth?.user,
-  token: state?.auth?.token
+  token: state?.auth?.token,
+  isLoading: state?.courses?.isLoading
 });
 
 const mapDispatchToProps = { registerCourse };

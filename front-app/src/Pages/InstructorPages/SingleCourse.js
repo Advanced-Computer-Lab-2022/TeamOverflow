@@ -5,16 +5,22 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import PercentIcon from '@mui/icons-material/Percent';
 import QuizIcon from '@mui/icons-material/Quiz';
 import OndemandVideoIcon from '@mui/icons-material/OndemandVideo';
-import { Typography, Box, Card, Container, CssBaseline, Button, FormHelperText, Select, MenuItem, CircularProgress, Tooltip, Chip, Rating } from '@mui/material';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import GroupsIcon from '@mui/icons-material/Groups';
+import CloudIcon from '@mui/icons-material/Cloud';
+import DiscountIcon from '@mui/icons-material/Discount';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import AlarmOffIcon from '@mui/icons-material/AlarmOff';
+import { Typography, Box, Card, Container, CssBaseline, Button, FormHelperText, Select, MenuItem, CircularProgress, Tooltip, Chip, Rating, Grid } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { viewCourse } from '../../app/store/actions/coursesActions';
 import moment from "moment";
-import { centered_flex_box, left_flex_box, main_button } from '../../app/components/Styles';
+import { centered_flex_box, left_flex_box, main_button, right_flex_box } from '../../app/components/Styles';
 import { ActionModal, SubtitleCard } from '../../app/components';
 import { closeCourse, deleteCourse, publishCourse } from '../../app/store/actions/instructorActions';
-import ReactPlayer from 'react-player';
+import ReactPlayer from 'react-player/youtube';
 
 const theme = createTheme();
 
@@ -66,35 +72,40 @@ export const InstructorSingleCourse = ({ auth, viewCourse, course, isLoading, pu
 
     return (
         <Container component="main" maxWidth="xl">
-            <Box className="course-head" sx={{ ...centered_flex_box, justifyContent: "flex-start", flexDirection: "column", mx: "-24px", mt: -2, minWidth: "100%", minHeight: "50vh", mb: 2 }}>
-                <Box sx={{ ...centered_flex_box, flexDirection: "column", mt: 2 }}>
-                    <Typography fontWeight="bold" variant="h2" sx={{ color: "var(--mainWhite)" }}>{course?.title}</Typography>
-                    <Typography variant="h5" sx={{ color: "var(--mainWhite)" }}>{course?.subject}</Typography>
-                    <Rating readOnly value={course?.rating} />
-                    <Typography variant="p" sx={{ color: "var(--mainWhite)" }}>({course?.numberOfRatings})</Typography>
-                    <Typography textAlign="center" variant="p" sx={{ color: "var(--mainWhite)", px: 5, mt: 2, mb: 4 }}>{course?.summary}</Typography>
-                    <Box display="flex" mb={6}>
+            <Box className="course-head" sx={{ display: "flex", alighnItems: "flex-start", flexDirection: "column", mx: "-24px", mt: -2, minWidth: "100%", minHeight: "50vh", mb: 2, p: 2 }}>
+                <Typography fontWeight="bold" variant="h2" sx={{ color: "var(--mainWhite)" }}>{course?.title}</Typography>
+                <Typography variant="h5" sx={{ color: "var(--mainWhite)" }}>{course?.subject}</Typography>
+                <Rating readOnly value={course?.rating} />
+                <Typography variant="p" sx={{ color: "var(--mainWhite)" }}>{course?.numberOfRatings} Ratings</Typography>
+                <Typography textAlign="justify" variant="p" fontSize={18} sx={{ color: "var(--mainWhite)", mt: 2, mb: 10, maxWidth: "90%" }}>{course?.summary}</Typography>
+            </Box>
+            <Grid container direction="row" mb={2}>
+                <Grid item xs={8}>
+                    <Box sx={{ ...centered_flex_box }}>
+                        <Box sx={{ bgcolor: "var(--secWhite)", p: 1 }}>
+                            {course?.videoId ? <ReactPlayer controls={true} url={course?.videoId?.url} /> : <Button onClick={() => navigate(`/course/video/upload/courseId=${course?._id}`)} sx={{ ...main_button, ml: 1 }}><OndemandVideoIcon /> Add Course Preview</Button>}
+                        </Box>
+                    </Box>
+                </Grid>
+                <Grid sx={{ bgcolor: "var(--secWhite)", p: 2 }} item xs={4}>
+                    <Grid container justifyContent="space-evenly" direction="column" sx={{ minHeight: "100%" }}>
+                        <Grid item><Typography fontSize={27} ><GroupsIcon fontSize='large' />   {course?.enrolled} Students</Typography></Grid>
+                        <Grid item><Typography fontSize={27} ><AccessTimeIcon fontSize='large' />   {course?.totalHours} Hours of content</Typography></Grid>
+                        <Grid item><Typography fontSize={27} ><CloudIcon fontSize='large' />   {course?.published ? "Published" : "Unpublished"} course</Typography></Grid>
                         {
                             (course?.deadline && moment().isBefore(course?.deadline)) ? (<>
-                                <Chip sx={{ mx: 1, p: 1, fontSize: 20, color: "green", bgcolor: "var(--mainWhite)", borderColor: "green" }} label={`${course?.currency} ${(course?.price * ((100 - course?.discount) / 100)).toFixed(2)} with ${course?.discount}% discount ending ${moment(course?.deadline).fromNow()}`} variant="outlined" />
-                            </>) : (
-                                <Chip sx={{ mx: 1,p: 1, fontSize: 20, color: "var(--secColor)", bgcolor: "var(--mainWhite)", borderColor: "var(--secColor)" }} label={`${course?.currency} ${course?.price}`} variant="outlined" />
-                            )
+                                <Grid item><Typography fontSize={27} ><AttachMoneyIcon fontSize='large' />   {course?.currency} {(course?.price * (100 - course?.discount) / 100).toFixed(2)}</Typography></Grid>
+                                <Grid item><Typography fontSize={27} ><DiscountIcon fontSize='large' />   {course?.discount}% off</Typography></Grid>
+                                <Grid item><Typography fontSize={27} ><AlarmOffIcon fontSize='large' />   Discount ends {moment(course?.deadline).fromNow()}</Typography></Grid>
+                            </>) : (<>
+                                <Grid item><Typography fontSize={27} ><AttachMoneyIcon fontSize='large' />   {course?.currency} {course?.price}</Typography></Grid>
+                                <Grid item><Typography fontSize={27} ><DiscountIcon fontSize='large' />   No discount</Typography></Grid>
+                            </>)
                         }
-                        <Chip sx={{ mx: 1, p: 1, fontSize: 20, color: "var(--secColor)", bgcolor: "var(--mainWhite)", borderColor: "var(--secColor)" }} label={`${course?.enrolled} students enrolled`} variant="outlined" />
-                        <Chip sx={{ mx: 1, p: 1, fontSize: 20, color: "var(--secColor)", bgcolor: "var(--mainWhite)", borderColor: "var(--secColor)" }} label={`${course?.totalHours} hours`} variant="outlined" />
-                        <Chip sx={{ mx: 1, p: 1, fontSize: 20, color: "var(--secColor)", bgcolor: "var(--mainWhite)", borderColor: "var(--secColor)" }} label={course?.published ? "Published" : "Unpublished"} variant="outlined" />
-                    </Box>
-                </Box>
-            </Box>
-            {course?.videoId && (
-                <Box sx={{ ...centered_flex_box, my: 1, mb: 2 }}>
-                    <Box sx={{ bgcolor: "var(--secWhite)", p: 1 }}>
-                        <ReactPlayer controls={true} url={course?.videoId?.url} />
-                    </Box>
-                </Box>
-            )
-            }
+                    </Grid>
+                </Grid>
+            </Grid>
+
             <Box className="course-info" sx={{ ...centered_flex_box, justifyContent: "flex-start", flexDirection: "column", mx: "-24px", minWidth: "100%", minHeight: "20vh" }}>
                 <Box sx={{ ...centered_flex_box, flexDirection: "column", mt: 2 }}>
                     <Typography variant="h4" sx={{ color: "black", mb: 2 }}>Course Actions</Typography>
@@ -115,7 +126,7 @@ export const InstructorSingleCourse = ({ auth, viewCourse, course, isLoading, pu
             <hr />
             {
                 course?.subtitles?.map((subtitle, i) => {
-                    return <SubtitleCard subtitle={subtitle} key={i}/>
+                    return <SubtitleCard subtitle={subtitle} key={i} />
                 })
             }
         </Container >

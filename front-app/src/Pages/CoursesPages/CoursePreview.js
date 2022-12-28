@@ -13,7 +13,7 @@ import { viewCourse } from '../../app/store/actions/coursesActions';
 import moment from "moment";
 import { centered_flex_box, main_button } from '../../app/components/Styles';
 import { getPaymentLink } from '../../app/store/actions/traineeActions';
-import ReactPlayer from 'react-player'
+import ReactPlayer from 'react-player/youtube'
 import { requestAccess } from '../../app/store/actions/corporateActions';
 
 const theme = createTheme();
