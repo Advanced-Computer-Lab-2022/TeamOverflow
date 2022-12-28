@@ -23,8 +23,8 @@ export const sec_button = {
     color: "var(--secColor)",
     bgcolor: "var(--primaryColor)",
     ":hover": {
-        color: "var(--secColor)",
-        bgcolor: "var(--terColor)"
+        color: "var(--mainWhite)",
+        bgcolor: "var(--secColor)"
     },
     ":disabled": {
         color: "var(--mainWhite)",
@@ -38,7 +38,7 @@ export const card_style = {
     marginX: "30vw",
     marginY: 2,
     ":hover": {
-        "transition-duration": "1s",
+        "transition-duration": "0.5s",
         "box-shadow": "0px 10px 5px 0px rgba(231,129,132,0.75)",
         "-webkit-box-shadow": "0px 10px 5px 0px rgba(231,129,132,0.75)",
         "-moz-box-shadow": "0px 10px 5px 0px rgba(231,129,132,0.75)"
