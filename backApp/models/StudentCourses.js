@@ -4,7 +4,9 @@ const paginate = require("mongoose-paginate");
 var traineeCoursesSchema = new mongoose.Schema({
     traineeId: {type: mongoose.Types.ObjectId, required: true},
     courseId: {type: mongoose.Types.ObjectId, ref:"Course", required: true},
-    completion: {type: JSON, required: true}
+    completion: {type: JSON, required: true},
+    amountPaid: {type: Number},
+    onHold: {type: Boolean, default: false}
 }, {timestamps: true})
 
 traineeCoursesSchema.plugin(paginate)

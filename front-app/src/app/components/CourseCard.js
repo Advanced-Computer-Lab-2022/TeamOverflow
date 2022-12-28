@@ -33,7 +33,7 @@ function CourseCard({ token, course, isLoading }) {
                         </Typography>
                     </Grid>
                     <Grid item direction="row" alignItems="center" display="flex" justifyContent="flex-end" xs={2}>
-                        {course?.deadline && moment().isBefore(course?.deadline) && <Chip sx={{ mx:1, color: "green", borderColor: "green" }} label={`${course?.discount}%`} variant="outlined" />}
+                        {role!=="Corporate" && course?.deadline && moment().isBefore(course?.deadline) && <Chip sx={{ mx:1, color: "green", borderColor: "green" }} label={`${course?.discount}%`} variant="outlined" />}
                         <Chip sx={{ color: "var(--secColor)", borderColor: "var(--secColor)" }} label={`${course.totalHours}h`} variant="outlined" />
                     </Grid>
                 </Grid>

@@ -8,12 +8,13 @@ import CreateIcon from '@mui/icons-material/Create';
 import { Typography, Box, Card, Container, CssBaseline, Button, InputBase, FormHelperText, Select, MenuItem, TextField, TextareaAutosize, Accordion, AccordionSummary, AccordionDetails, CircularProgress } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
-import { NavLink, useParams } from 'react-router-dom';
+import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { getRegVideo, addNote, downloadNotes } from '../../app/store/actions/videoActions';
-import ReactPlayer from 'react-player'
+import ReactPlayer from 'react-player/youtube'
 import TextArea from 'antd/lib/input/TextArea';
-import { centered_flex_box, left_flex_box, MainInput, MainTextArea, main_button } from '../../app/components/Styles';
+import { centered_flex_box, left_flex_box, MainInput, MainTextArea, main_button, right_flex_box } from '../../app/components/Styles';
 import moment from 'moment';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 
 const theme = createTheme();
 
@@ -22,6 +23,11 @@ export const VideoView = ({ auth, getRegVideo, video, isLoading, addNote, downlo
   const params = useParams();
   const courseId = params.courseId
   const videoId = params.videoId;
+
+  const navigate = useNavigate();
+
+  const [timestamp, setTimestamp] = React.useState(0)
+  const [noteOpen, setNoteOpen] = React.useState(false)
 
   React.useEffect(() => {
     getRegVideo({
@@ -45,10 +51,8 @@ export const VideoView = ({ auth, getRegVideo, video, isLoading, addNote, downlo
       token: auth.token
     }
     addNote(details);
+    setNoteOpen(false);
   };
-
-  const [timestamp, setTimestamp] = React.useState(0)
-  const [noteOpen, setNoteOpen] = React.useState(false)
 
   const handleAddNote = (event) => {
     setTimestamp(time)
@@ -65,24 +69,31 @@ export const VideoView = ({ auth, getRegVideo, video, isLoading, addNote, downlo
       <Container component="main" maxWidth="xl">
         <Card sx={{ padding: 1 }}>
           {!isLoading ? (<>
-            <Box sx={centered_flex_box}>
+            <Box sx={{...centered_flex_box, mb:2}}>
               <Typography variant="h3">{video?.title}</Typography><br />
             </Box>
             <Box sx={centered_flex_box}>
               <ReactPlayer controls={true} onProgress={handleTime} url={video?.url} />
             </Box>
-            <Accordion sx={{ m: 4 }}>
-              <AccordionSummary>
-                Description
+            <Accordion sx={{ my: 4 }}>
+              <AccordionSummary expandIcon={<ExpandMore />}>
+                <Typography fontWeight="bold">Description</Typography>
               </AccordionSummary>
               <AccordionDetails>
-                <Typography>{video?.description}</Typography>
+                <Typography textAlign="justify">{video?.description}</Typography>
               </AccordionDetails>
             </Accordion>
-            <Box sx={left_flex_box}>
-              <Button sx={{ ...main_button, mx: 1 }} onClick={handleAddNote}>{!noteOpen ? (<><CreateIcon /> Write Note</>) : "Close Note"}</Button>
-              <Button sx={main_button} onClick={() => downloadNotes({ videoId: videoId, token: auth?.token })}><DownloadIcon />Download Notes</Button>
-            </Box>
+
+            <Grid container justifyContent="space-between">
+              <Grid item sx={left_flex_box}>
+                <Button sx={{ ...main_button }} onClick={handleAddNote}>{!noteOpen ? (<><CreateIcon /> Write Note</>) : "Close Note"}</Button>
+                <Button sx={{ ...main_button, mx: 2 }} onClick={() => downloadNotes({ videoId: videoId, token: auth?.token })}><DownloadIcon />Download Notes</Button>
+              </Grid>
+              <Grid item sx={right_flex_box}>
+                <Button sx={{ ...main_button }} onClick={() => navigate(`/courses/student/single/${courseId}`)}>Back to Course</Button>
+              </Grid>
+            </Grid>
+
           </>) : (
             <Box sx={centered_flex_box}>
               <CircularProgress sx={{ color: "var(--secColor)" }} />

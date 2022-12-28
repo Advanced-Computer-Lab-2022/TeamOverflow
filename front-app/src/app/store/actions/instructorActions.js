@@ -1,8 +1,8 @@
 import { UPDATE_USER, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL } from "./types";
-import { COURSE, COURSE_SUCCESS, COURSE_FAIL, SUBJECT_SUCCESS } from "./types";
+import { COURSE, SINGLE_COURSE_SUCCESS, COURSE_SUCCESS, COURSE_FAIL, SUBJECT_SUCCESS } from "./types";
 import { CONTRACT, CONTRACT_SUCCESS, CONTRACT_FAIL } from "./types";
 
-import { postRequest, putRequest, getRequest } from "../../../core/network";
+import { postRequest, putRequest, getRequest, delRequest } from "../../../core/network";
 import endpoints from "../../../constants/endPoints.json";
 import { notification } from "antd";
 
@@ -20,7 +20,7 @@ export const selectCountry = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({message: err?.response?.data?.message})
+      notification.error({message: err?.response?.data?.message || "Network Error"})
       console.log(err);
       return dispatch({
         type: UPDATE_USER_FAIL,
@@ -42,7 +42,7 @@ export const editProfile = (data) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({message: err?.response?.data?.message})
+      notification.error({message: err?.response?.data?.message || "Network Error"})
       console.log(err);
       return dispatch({
         type: UPDATE_USER_FAIL,
@@ -50,7 +50,7 @@ export const editProfile = (data) => (dispatch) => {
     });
 };
 
-export const createCourse = (data) => (dispatch) => {
+export const createCourse = (data, navigate) => (dispatch) => {
   dispatch({ type: COURSE });
   var {creation, token} = data
 
@@ -59,13 +59,14 @@ export const createCourse = (data) => (dispatch) => {
       console.log(response)
       const { data } = response;
       notification.success({message: "Course Added"})
+      navigate(-1)
       return dispatch({
         type: COURSE_SUCCESS,
         payload: data.payload
       });
     })
     .catch((err) => {
-      notification.error({message: err?.response?.data?.message})
+      notification.error({message: err?.response?.data?.message || "Network Error"})
       console.log(err);
       return dispatch({
         type: COURSE_FAIL,
@@ -73,7 +74,70 @@ export const createCourse = (data) => (dispatch) => {
     });
 };
 
-export const createExercise = (data) => (dispatch) => {
+export const publishCourse = (data) => (dispatch) => {
+  dispatch({ type: COURSE });
+  var {info, token} = data
+
+  postRequest(info, undefined, undefined, token, endpoints.instructor.publishCourse)
+    .then((response) => {
+      console.log(response)
+      const { data } = response;
+      notification.success({message: "Course Published"})
+      return dispatch({
+        type: SINGLE_COURSE_SUCCESS,
+        payload: data
+      });
+    })
+    .catch((err) => {
+      notification.error({message: err?.response?.data?.message || "Network Error"})
+      console.log(err);
+      return dispatch({
+        type: COURSE_FAIL,
+      });
+    });
+};
+
+export const closeCourse = (data) => (dispatch) => {
+  dispatch({ type: COURSE });
+  var {info, token} = data
+
+  postRequest(info, undefined, undefined, token, endpoints.instructor.closeCourse)
+    .then((response) => {
+      console.log(response)
+      const { data } = response;
+      notification.success({message: "Course Closed"})
+      return dispatch({
+        type: SINGLE_COURSE_SUCCESS,
+        payload: data
+      });
+    })
+    .catch((err) => {
+      notification.error({message: err?.response?.data?.message || "Network Error"})
+      console.log(err);
+      return dispatch({
+        type: COURSE_FAIL,
+      });
+    });
+};
+
+export const deleteCourse = (data, navigate) => (dispatch) => {
+  dispatch({ type: COURSE });
+  var {info, token} = data
+
+  delRequest(info, undefined, token, endpoints.instructor.deleteCourse)
+    .then((response) => {
+      console.log(response)
+      const { data } = response;
+      notification.success({message: data.message})
+      navigate(-1)
+    })
+    .catch((err) => {
+      notification.error({message: err?.response?.data?.message || "Network Error"})
+      console.log(err);
+    });
+};
+
+export const createExercise = (data, navigate) => (dispatch) => {
   var {creation, token} = data
   var end;
   if(creation.subtitleId){
@@ -83,47 +147,49 @@ export const createExercise = (data) => (dispatch) => {
   }
   postRequest(creation, undefined, undefined, token, end)
     .then((response) => {
-      console.log(response)
       notification.success({message: "Exercise Added"})
+      navigate(-1);
     })
     .catch((err) => {
-      notification.error({message: err?.response?.data?.message})
+      notification.error({message: err?.response?.data?.message || "Network Error"})
       console.log(err);
     });
 };
 
-export const defineDiscount = (data) => (dispatch) => {
+export const defineDiscount = (data, navigate) => (dispatch) => {
   var {creation, token} = data
 
   postRequest(creation, undefined, undefined, token, endpoints.instructor.defineDiscount)
     .then((response) => {
       console.log(response)
       notification.success({message: "Discount Added"})
+      navigate(-1)
     })
     .catch((err) => {
-      notification.error({message: err?.response?.data?.message})
+      notification.error({message: err?.response?.data?.message || "Network Error"})
       console.log(err);
     });
 };
 
-export const contractResponse = (data) => (dispatch) => {
-  dispatch({ type: CONTRACT });
-  var {edits, token} = data
+export const acceptContract = (data, navigate) => (dispatch) => {
+  dispatch({ type: UPDATE_USER });
+  var {token} = data
 
-  putRequest(edits, undefined, undefined, token, endpoints.instructor.respondContract)
+  putRequest(undefined, undefined, undefined, token, endpoints.instructor.respondContract)
     .then((response) => {
       const { data } = response;
-      notification.success({message: "Contract updated"})
+      notification.success({message: "Contract accepted"})
+      navigate(-1)
       return dispatch({
-        type: CONTRACT_SUCCESS,
+        type: UPDATE_USER_SUCCESS,
         payload: data
       });
     })
     .catch((err) => {
-      notification.error({message: err?.response?.data?.message})
+      notification.error({message: err?.response?.data?.message || "Network Error"})
       console.log(err);
       return dispatch({
-        type: CONTRACT_FAIL,
+        type: UPDATE_USER_FAIL,
       });
     });
 };
@@ -140,10 +206,11 @@ export const getContract = (token) => (dispatch) => {
       });
     })
     .catch((err) => {
-      notification.error({message: err?.response?.data?.message})
+      notification.error({message: err?.response?.data?.message || "Network Error"})
       console.log(err);
       return dispatch({
         type: CONTRACT_FAIL,
       });
     });
 };
+

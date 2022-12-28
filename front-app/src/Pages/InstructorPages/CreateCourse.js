@@ -3,18 +3,27 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, FormHelperText, InputLabel } from '@mui/material';
+import { Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, FormHelperText, InputLabel, FormControl } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { createCourse } from '../../app/store/actions/instructorActions';
 import { getSubjects } from '../../app/store/actions/coursesActions';
+import { MainTextArea, MainInput, main_button, MainInputLabel, StyledInput } from '../../app/components/Styles';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import { useNavigate } from 'react-router-dom';
+import { notification } from 'antd';
 
 const theme = createTheme();
 
-export const CreateCourse = ({ token, createCourse, subjects, getSubjects }) => {
+export const CreateCourse = ({ user, token, createCourse, subjects, getSubjects }) => {
+    const navigate = useNavigate()
+
     React.useEffect(() => {
         getSubjects()
+        if (!user.acceptedContract) {
+            notification.info({ message: "You need to accept the contract before proceeding" })
+            navigate("/Instructor/contract")
+        }
     }, [])
 
     const [subject, setSubject] = React.useState(null)
@@ -31,7 +40,7 @@ export const CreateCourse = ({ token, createCourse, subjects, getSubjects }) => 
         event.preventDefault();
         var subtitles = [];
         const data = new FormData(event.currentTarget);
-        for(let i=0; i<subtitleCount; i++){
+        for (let i = 0; i < subtitleCount; i++) {
             var sub = {
                 title: data.get(`title${i}`),
                 time: data.get(`time${i}`)
@@ -48,7 +57,7 @@ export const CreateCourse = ({ token, createCourse, subjects, getSubjects }) => 
             },
             token: token
         }
-        createCourse(details)
+        createCourse(details, navigate)
     };
 
     return (
@@ -63,14 +72,14 @@ export const CreateCourse = ({ token, createCourse, subjects, getSubjects }) => 
                         alignItems: 'center',
                     }}
                 >
-                    <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                        <LockOutlinedIcon />
+                    <Avatar sx={{ m: 1, bgcolor: 'var(--secColor)' }}>
+                        <AddCircleOutlineIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
                         Add Course
                     </Typography>
                     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-                        <TextField
+                        <MainInput
                             margin="normal"
                             required
                             fullWidth
@@ -79,23 +88,33 @@ export const CreateCourse = ({ token, createCourse, subjects, getSubjects }) => 
                             name="title"
                             autoFocus
                         />
-                        <Select
-                            label="Subject"
-                            id="Subject"
-                            name="subj"
-                            onChange={(event) => setSubject(event.target.value)}
-                            fullWidth
-                        >
-                            {subjects?.map((subject, i) => {
-                                return (
-                                    <MenuItem key={i} value={subject}>
-                                        {subject}
-                                    </MenuItem>
-                                )
-                            })}
-                        </Select>
-                        <FormHelperText>Select course subject</FormHelperText>
-                        <TextField
+                        <FormControl sx={{ minWidth: "100%", mt: 1 }}>
+                            <MainInputLabel id="subject-label" title="Subject" />
+                            <Select
+                                label="Subject"
+                                id="Subject"
+                                name="subj"
+                                labelId='subject-label'
+                                onChange={(event) => setSubject(event.target.value)}
+                                input={<StyledInput />}
+                                value={subject}
+                                defaultValue=""
+                                fullWidth
+                            >
+                                <MenuItem key={-1} value="">
+                                    Any
+                                </MenuItem>
+                                {subjects?.map((subject, i) => {
+                                    return (
+                                        <MenuItem key={i} value={subject}>
+                                            {subject}
+                                        </MenuItem>
+                                    )
+                                })}
+                            </Select>
+                            <FormHelperText>Select course subject</FormHelperText>
+                        </FormControl>
+                        <MainTextArea
                             margin="normal"
                             required
                             fullWidth
@@ -103,7 +122,7 @@ export const CreateCourse = ({ token, createCourse, subjects, getSubjects }) => 
                             label="Course Summary"
                             id="summary"
                         />
-                        <TextField
+                        <MainInput
                             margin="normal"
                             required
                             fullWidth
@@ -111,6 +130,7 @@ export const CreateCourse = ({ token, createCourse, subjects, getSubjects }) => 
                             label="Course Price (USD)"
                             id="price"
                             type="number"
+                            inputProps={{ min: 0 }}
                         />
                         <Select
                             label="Subject"
@@ -132,7 +152,7 @@ export const CreateCourse = ({ token, createCourse, subjects, getSubjects }) => 
                             return (
                                 <Box sx={{ mt: 1 }}>
                                     <Typography>Subtitle {idx + 1}</Typography>
-                                    <TextField
+                                    <MainInput
                                         margin="normal"
                                         required
                                         fullWidth
@@ -141,7 +161,7 @@ export const CreateCourse = ({ token, createCourse, subjects, getSubjects }) => 
                                         name={`title${idx}`}
                                         autoFocus
                                     />
-                                    <TextField
+                                    <MainInput
                                         margin="normal"
                                         required
                                         fullWidth
@@ -149,6 +169,7 @@ export const CreateCourse = ({ token, createCourse, subjects, getSubjects }) => 
                                         label="Subtitle Time"
                                         id={`time${idx}`}
                                         type="number"
+                                        inputProps={{ min: 0 }}
                                     />
                                     <hr />
                                 </Box>
@@ -158,7 +179,7 @@ export const CreateCourse = ({ token, createCourse, subjects, getSubjects }) => 
                             type="submit"
                             fullWidth
                             variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
+                            sx={{ mt: 3, mb: 2, ...main_button }}
                         >
                             Create
                         </Button>

@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { Typography, Paper, IconButton, InputBase, Box, Container, Pagination, CircularProgress, Accordion, AccordionSummary, AccordionDetails, Button, Slider, Select, MenuItem, Card, FormHelperText, Grid } from '@mui/material';
+import { Typography, Paper, IconButton, InputBase, Box, Container, Pagination, CircularProgress, Accordion, AccordionSummary, AccordionDetails, Button, Slider, Select, MenuItem, Card, FormHelperText, Grid, FormControl, InputLabel } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { clearCourses, filterCoursesInstructor, getSubjects } from '../../app/store/actions/coursesActions';
-import { CourseCard } from '../../app/components';
+import { CourseCard, InstructorCourseCard } from '../../app/components';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import SearchIcon from '@mui/icons-material/Search';
-import { centered_flex_box, main_button } from '../../app/components/Styles';
+import { centered_flex_box, MainInput, main_button } from '../../app/components/Styles';
 
 const theme = createTheme();
 
@@ -19,26 +19,21 @@ export const InstructorCourses = ({ auth, courses, getSubjects, filterCoursesIns
     getSubjects()
   }, [])
 
-  const [formData, setFormData] = React.useState({
+  const initialState = {
     minPrice: 0,
     maxPrice: 5000,
     minRating: 0,
     maxRating: 5,
     subject: "",
     searchQuery: "",
-    page: parseInt(courses?.results?.page) || 1
-  })
+    page: 1
+  }
+
+  const [formData, setFormData] = React.useState(initialState)
 
   const handleClearFilter = (event) => {
-    setFormData({
-      minPrice: 0,
-      maxPrice: 5000,
-      minRating: 0,
-      maxRating: 5,
-      subject: "",
-      searchQuery: "",
-      page: 1
-    })
+    setFormData(initialState)
+    filterCoursesInstructor({ token: auth.token, ...initialState });
   }
 
   const { minPrice, maxPrice, minRating, maxRating, searchQuery, page, subject } = formData
@@ -47,6 +42,14 @@ export const InstructorCourses = ({ auth, courses, getSubjects, filterCoursesIns
 
   const handlePriceChange = (event) => {
     setFormData({ ...formData, minPrice: event.target.value[0], maxPrice: event.target.value[1] })
+  }
+
+  const handleMinPriceChange = (event) => {
+    setFormData({ ...formData, minPrice: event.target.value})
+  }
+
+  const handleMaxPriceChange = (event) => {
+    setFormData({ ...formData, maxPrice: event.target.value })
   }
 
   const handleRatingChange = (event) => {
@@ -118,38 +121,46 @@ export const InstructorCourses = ({ auth, courses, getSubjects, filterCoursesIns
                   />
                   {role !== "Corporate" && (
                     <>
-                      Price Filter (USD):
+                      Price Filter:
                       <Slider
                         step={10}
-                        max={5000}
+                        max={10000}
                         value={[minPrice, maxPrice]}
                         getAriaLabel={() => 'Price range'}
                         onChange={handlePriceChange}
                         valueLabelDisplay="auto"
                       />
+                      <Box display="flex" justifyContent="space-between">
+                        <MainInput label="Min" focused type="number" value={minPrice} onChange={handleMinPriceChange}/>
+                        <MainInput label="Max"  focused type="number" value={maxPrice} onChange={handleMaxPriceChange}/>
+                      </Box>
                     </>)}
                   Subject Filter:
-                  <Select
-                    label="Subject"
-                    id="Subject"
-                    name="subj"
-                    onChange={handleSubjectChange}
-                    value={subject}
-                    defaultValue=""
-                    fullWidth
-                  >
-                    <MenuItem key={-1} value="">
-                      Any
-                    </MenuItem>
-                    {courses?.subjects?.map((subject, i) => {
-                      return (
-                        <MenuItem key={i} value={subject}>
-                          {subject}
-                        </MenuItem>
-                      )
-                    })}
-                  </Select>
-                  <FormHelperText>Select subject to filter</FormHelperText>
+                  <FormControl sx={{ minWidth: "100%", mt: 1 }}>
+                    <InputLabel id="subject-label">Subject</InputLabel>
+                    <Select
+                      label="Subject"
+                      id="Subject"
+                      name="subj"
+                      onChange={handleSubjectChange}
+                      value={subject}
+                      labelId="subject-label"
+                      defaultValue=""
+                      fullWidth
+                    >
+                      <MenuItem key={-1} value="">
+                        Any
+                      </MenuItem>
+                      {courses?.subjects?.map((subject, i) => {
+                        return (
+                          <MenuItem key={i} value={subject}>
+                            {subject}
+                          </MenuItem>
+                        )
+                      })}
+                    </Select>
+                    <FormHelperText>Select subject to filter</FormHelperText>
+                  </FormControl>
                   <Button sx={{ ...main_button, margin: 1 }} onClick={handleSearchFilter}>Apply Filters</Button>
                   <Button sx={{ ...main_button, margin: 1 }} onClick={handleClearFilter}>Clear Filters</Button>
                 </AccordionDetails>
@@ -164,7 +175,7 @@ export const InstructorCourses = ({ auth, courses, getSubjects, filterCoursesIns
               {courses?.results?.docs?.map((course) => {
                 return (
                   <Grid item xs={12}>
-                    <CourseCard course={course} />
+                    <InstructorCourseCard course={course} />
                   </Grid>
                 )
               })}

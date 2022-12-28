@@ -27,9 +27,13 @@ const getRequest = async (query, params, token, endPoint) => {
   });
 };
 
-const delRequest = async (query, params, endPoint) => {
+const delRequest = async (query, params, token, endPoint) => {
   return await axios.delete(`${baseURL}/${endPoint}${params ? params : ""}`, {
     params: query,
+    headers: {
+      "Accept": "json",
+      "x-access-token": token
+    },
   });
 };
 

@@ -7,7 +7,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Typography, Box, Card, Container, CssBaseline, Button, FormHelperText, Select, MenuItem } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
-import { NavLink, useParams } from 'react-router-dom';
+import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { openCourse } from '../../app/store/actions/coursesActions';
 import moment from "moment";
 
@@ -16,13 +16,15 @@ const theme = createTheme();
 export const TraineeSingleCourse = ({ auth, openCourse, course }) => {
 
     const courseId = useParams().id
+    const navigate = useNavigate()
+
     React.useEffect(() => {
         openCourse({
             query: {
                 courseId: courseId
             },
             token: auth.token
-        })
+        }, navigate)
     }, [])
 
     const examsSolved = course?.examSolutions.map((sol) => sol.exerciseId)

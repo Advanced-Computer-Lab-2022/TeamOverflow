@@ -1,15 +1,27 @@
 import * as React from 'react';
 import { alpha, styled } from '@mui/material/styles';
-import InputBase from '@mui/material/InputBase';
-import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import TextField from '@mui/material/TextField';
-import FormControl from '@mui/material/FormControl';
 import TextArea from 'antd/lib/input/TextArea';
+import { Select } from '@mui/material';
+import InputBase from '@mui/material/InputBase';
 
 export const main_button = {
     color: "var(--primaryColor)",
     bgcolor: "var(--secColor)",
+    ":hover": {
+        color: "var(--secColor)",
+        bgcolor: "var(--terColor)"
+    },
+    ":disabled": {
+        color: "var(--mainWhite)",
+        bgcolor: "gray"
+    }
+}
+
+export const sec_button = {
+    color: "var(--secColor)",
+    bgcolor: "var(--primaryColor)",
     ":hover": {
         color: "var(--secColor)",
         bgcolor: "var(--terColor)"
@@ -45,6 +57,12 @@ export const left_flex_box = {
     justifyContent: "flex-end"
 }
 
+export const right_flex_box = {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-start"
+}
+
 export const MainInput = styled(TextField)({
     '& label.Mui-focused': {
         color: 'var(--secColor)',
@@ -57,7 +75,7 @@ export const MainInput = styled(TextField)({
     },
     '& .MuiOutlinedInput-root': {
         '& fieldset': {
-            borderColor: 'var(--secColor)',
+            border: '1px solid var(--secColor)',
         },
         '&.Mui-focused fieldset': {
             borderColor: 'var(--terColor)',
@@ -65,9 +83,28 @@ export const MainInput = styled(TextField)({
     },
 });
 
+
+
+export const StyledInput = styled(InputBase)(({ theme }) => ({
+    '& .MuiInputBase-input': {
+        border: "1px solid",
+        borderColor: "var(--secColor)",
+        position: 'relative',
+        fontSize: 16,
+        padding: 16,
+        '&:focus': {
+            borderColor: 'var(--terColor)',
+        },
+    },
+}));
+
 export const MainTextArea = ({ name, autoComplete, autoFocus, label, id, required }) => {
     return (<>
-        <InputLabel sx={{color: 'black'}}>{label}</InputLabel>
-        <TextArea name={name} autoComplete={autoComplete} autoFocus={autoFocus} id={id} aria-label={label} required={required} style={{ borderColor: "var(--secColor)", borderRadius: 4, fontFamily: "sans-serif" }} />
+        <InputLabel sx={{ color: 'black' }}>{label}</InputLabel>
+        <TextArea name={name} autoComplete={autoComplete} autoFocus={autoFocus} id={id} aria-label={label} required={required} style={{ borderColor: "var(--secColor)", borderRadius: 4, fontFamily: "sans-serif", backgroundColor: "var(--mainWhite)" }} />
     </>)
+}
+
+export const MainInputLabel = ({ required, id, title}) => {
+    return <InputLabel required={required} sx={{ bgcolor: "var(--mainWhite)" }} variant='outlined' id={id}>{title}</InputLabel>
 }

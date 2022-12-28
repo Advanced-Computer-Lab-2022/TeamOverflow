@@ -12,7 +12,7 @@ const Answer = require("../models/StudentAnswer");
 const Video = require("../models/Video");
 const jwt = require("jsonwebtoken");
 const { verifyAllUsersCorp, verifyTrainee } = require('../auth/jwt-auth');
-const { submitSolution, getGrade, openExercise, watchVideo, getRegistered, openCourse, getProgress, addNote } = require('../controllers/studentController');
+const { submitSolution, getGrade, openExercise, watchVideo, getRegistered, openCourse, getProgress, addNote, calculateProgress } = require('../controllers/studentController');
 const mongoose = require("mongoose");
 const { processPayment, getPaymentLink, verifyPayment } = require('../controllers/paymentController');
 const Subtitle = require('../models/Subtitle');
@@ -20,6 +20,9 @@ const bcrypt = require('bcrypt');
 const Wallet = require('../models/Wallet');
 const { addAmountOwed, getWallet } = require('../controllers/walletController');
 const { getNotes } = require('../controllers/pdfController');
+const Refund = require('../models/Refund');
+const { forexBack } = require('../controllers/currencyController');
+const { reportProblem, viewReports, viewOneReport, addFollowup } = require('../controllers/reportController');
 
 /* GET trainees listing. */
 router.get('/', async function (req, res) {
@@ -123,7 +126,6 @@ router.get('/checkOut', verifyTrainee, async function (req, res) {
 router.post('/registerCourse', verifyTrainee, async function (req, res) {
   try {
     const course = await Course.findById(req.body.courseId).populate("instructorId")
-    const user = await Trainee.findById(req.reqId)
     const alreadyRegistered = await StudentCourses.findOne({ courseId: req.body.courseId, traineeId: req.reqId })
     if (alreadyRegistered) {
       return res.status(400).json({ message: "You are already registered to this course" })
@@ -136,14 +138,15 @@ router.post('/registerCourse', verifyTrainee, async function (req, res) {
         completion[itemIds[i]] = false
       }
     }
-    const traineeCourse = new StudentCourses({
-      traineeId: req.reqId,
-      courseId: req.body.courseId,
-      completion: completion
-    });
-    console.log(itemIds)
     const paymentSession = await verifyPayment(req, res)
     if (paymentSession.payment_status === "paid") {
+      var amountPaid = await forexBack(paymentSession.amount_subtotal / 100, paymentSession.currency.toUpperCase())
+      const traineeCourse = new StudentCourses({
+        traineeId: req.reqId,
+        courseId: req.body.courseId,
+        completion: completion,
+        amountPaid: amountPaid
+      });
       await addAmountOwed(course.instructorId.walletId, paymentSession.amount_subtotal / 100, paymentSession.currency.toUpperCase())
       const newTraineeCourse = await traineeCourse.save();
       course.$inc("enrolled", 1)
@@ -200,8 +203,11 @@ router.get('/viewExercise', verifyTrainee, async function (req, res) {
 
 router.get('/openCourse', verifyTrainee, async function (req, res) {
   try {
-    if (await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })) {
+    var regCourse = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
+    if (regCourse && !regCourse.onHold) {
       await openCourse(req, res)
+    } else if (regCourse && regCourse.onHold) {
+      res.status(403).json({ message: "You have already requested a refund" })
     } else {
       res.status(403).json({ message: "You are not registered to this course" })
     }
@@ -252,7 +258,12 @@ router.get('/downloadCertificate', verifyTrainee, async function (req, res) {
   try {
     const regCourse = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
     if (regCourse) {
-      await getCertificate(req, res, regCourse)
+      const progress = calculateProgress(registeredCourse.completion)
+      if (progress === 100) {
+        await downloadCertificate(req, res, regCourse)
+      } else {
+        res.status(403).json({ message: "You have not completed this course" })
+      }
     } else {
       res.status(403).json({ message: "You are not registered to this course" })
     }
@@ -270,15 +281,59 @@ router.get('/downloadNotes', verifyTrainee, async function (req, res) {
   }
 });
 
-//report problem with course
-router.post('/reportProblem', verifyTrainee, async function (req, res) {
-  await reportProblem(req, res);
-});
-
 //view the amount available in their wallet from refunded courses
 router.get('/wallet', verifyTrainee, async function (req, res) {
   await getWallet(req, res)
 })
+
+//Request a refund
+router.post('/refund', verifyTrainee, async function (req, res) {
+  try {
+    var registeredCourse = await StudentCourses.findOne({ courseId: req.body.courseId, traineeId: req.reqId }).populate("courseId")
+    var refund = await Refund.findOne({registrationId: registeredCourse._id, traineeId: req.reqId})
+    if (registeredCourse && !refund) {
+      const progress = calculateProgress(registeredCourse.completion)
+      if (progress < 50) {
+        await Refund.create({
+          registrationId: registeredCourse._id,
+          traineeId: req.reqId,
+          instructorId: registeredCourse.courseId.instructorId
+        })
+        registeredCourse.$set("onHold", true)
+        await registeredCourse.save()
+        res.status(201).json({ message: "Refund Request has been sent" })
+      } else {
+        res.status(403).json({ message: "You have completed more than 50% of the course" })
+      }
+    } else if(!refund) {
+      res.status(403).json({ message: "You are not registered to this course" })
+    } else {
+      res.status(403).json({ message: "Refund for this course already requested" })
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
+})
+
+//report a problem
+router.post('/reportProblem', verifyTrainee, async function (req, res) {
+  await reportProblem(req, res);
+});
+
+//view problems
+router.get('/viewReports', verifyTrainee, async function (req, res) {
+  await viewReports(req, res);
+});
+
+//view a problem
+router.get('/viewFollowups', verifyTrainee, async function (req, res) {
+  await viewOneReport(req, res);
+});
+
+//add followup to a problem
+router.post('/addFollowup', verifyTrainee, async function (req, res) {
+  await addFollowup(req, res);
+});
 
 /* Functions */
 

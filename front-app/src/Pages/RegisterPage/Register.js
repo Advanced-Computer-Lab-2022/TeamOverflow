@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
 import Checkbox from '@mui/material/Checkbox';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import {Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, FormHelperText, InputLabel} from '@mui/material';
+import {Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, FormHelperText, InputLabel, FormControl} from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import countryList from 'country-json/src/country-by-name.json'
 import { createUser } from '../../app/store/actions/authActions';
 import { Navigate, NavLink, useNavigate } from 'react-router-dom';
+import { MainInput, MainInputLabel, main_button, StyledInput } from '../../app/components/Styles';
 import { connect } from "react-redux";
 
 const theme = createTheme();
@@ -32,9 +33,7 @@ const Register = ({createUser}) => {
         var details = {
           username: data.get('username'),
           password: data.get('password'),
-          corporation: data.get('corporation'),
-          firstName: data.get('firstName'),
-          lastName: data.get('lastName'),
+          name: data.get('firstName')+" "+data.get('lastName'),
           email: data.get('email'),
           gender: data.get('gender'),
           country: data.get('country'),
@@ -42,7 +41,6 @@ const Register = ({createUser}) => {
         }
         createUser(details)
         navigate("/")
-
       };
 
       const [country, setCountry] = useState("Egypt");
@@ -53,12 +51,10 @@ const Register = ({createUser}) => {
               
 
   return (
-    <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 8,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -71,7 +67,7 @@ const Register = ({createUser}) => {
             Register
           </Typography>
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-            <TextField
+            <MainInput
               margin="normal"
               required
               fullWidth
@@ -81,7 +77,7 @@ const Register = ({createUser}) => {
               autoComplete="username"
               autoFocus
             />
-            <TextField
+            <MainInput
               margin="normal"
               required
               fullWidth
@@ -91,7 +87,7 @@ const Register = ({createUser}) => {
               id="password"
               autoComplete="current-password"
             />
-            <TextField
+            <MainInput
               margin="normal"
               required
               fullWidth
@@ -100,16 +96,7 @@ const Register = ({createUser}) => {
               id="email"
               autoComplete="email"
             />
-
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="corporation"
-              label="Corporation"
-              id="corporation"
-            />
-            <TextField
+            <MainInput
               margin="normal"
               required
               fullWidth
@@ -117,7 +104,7 @@ const Register = ({createUser}) => {
               label="First Name"
               id="firstName"
             />
-            <TextField
+            <MainInput
               margin="normal"
               required
               fullWidth
@@ -125,35 +112,38 @@ const Register = ({createUser}) => {
               label="Last Name"
               id="lastName"
             />
+            
+            <FormControl sx={{minWidth:"100%", mt: 2 }}>
+            <MainInputLabel id="gender-label" title="Gender"/>
             <Select
               margin="normal"
-              required
               fullWidth
-              autoFocus
-              labelId='select-label'
+              labelId='gender-label'
+              input={<StyledInput/>}
               id="gender"
               label="Gender"
               name="gender"
-              sx={{ mt: 2, mb: 1}}
 
             >
               <MenuItem value={"Male"}>Male</MenuItem>
               <MenuItem value={"Female"}>Female</MenuItem>
               <MenuItem value={"Other"}>Other</MenuItem>
-            
             </Select>
-            
+
+            </FormControl>
+            <FormControl sx={{minWidth:"100%", mt: 2 }}>
+            <MainInputLabel required id="country-label" title="Country"/>
             <Select
             margin="normal"
             defaultValue={country}
             fullWidth
+            required
             onChange={handleCountryChange}
-            autoFocus
-            labelId='select-label'
+            input={<StyledInput/>}
+            labelId='country-label'
             id="country"
             label="Country"
             name="country"
-            sx={{ mt: 2}}
 
             >
             {countryList.map((country) => {
@@ -164,6 +154,7 @@ const Register = ({createUser}) => {
                 )
             })}
             </Select>
+            </FormControl>
             
             <NavLink to="/terms" replace={false}> Please Read Terms and Conditions</NavLink>
             <Checkbox
@@ -173,21 +164,18 @@ const Register = ({createUser}) => {
                 id="acceptedTerms"
                 onChange={handleTermsChange}
             />
-            
-            
 
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 2, ...main_button }}
             >
               Register
             </Button>
           </Box>
         </Box>
       </Container>
-    </ThemeProvider>
   )
  }
  const mapStateToProps = (state) => ({

@@ -1,4 +1,4 @@
-import { UPDATE_USER, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL } from "./types";
+import { UPDATE_USER, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL, REGISTERING, REGISTERED } from "./types";
 import { getRequest, postRequest, putRequest } from "../../../core/network";
 import endpoints from "../../../constants/endPoints.json";
 import { notification } from "antd";
@@ -63,11 +63,27 @@ export const getPaymentLink = (data) => (dispatch) => {
 
 export const registerCourse = (data) => (dispatch) => {
   var { courseData, token } = data
+  dispatch({type: REGISTERING})
 
   postRequest(courseData, undefined, undefined, token, endpoints.trainee.registercourse)
     .then((response) => {
       const { data } = response;
-      return notification.success({ message: "successful registration " })
+      dispatch({type: REGISTERED})
+      return notification.success({ message: "Registration Successful" })
+    })
+    .catch((err) => {
+      return notification.error({ message: err?.response?.data?.message })
+    });
+};
+
+export const requestRefund = (data, navigate) => (dispatch) => {
+  var { courseData, token } = data
+
+  postRequest(courseData, undefined, undefined, token, endpoints.trainee.requestRefund)
+    .then((response) => {
+      const { data } = response;
+      navigate("/")
+      return notification.success({ message: data.message })
     })
     .catch((err) => {
       return notification.error({ message: err?.response?.data?.message })

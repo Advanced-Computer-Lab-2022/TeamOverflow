@@ -19,6 +19,8 @@ export const SUBJECT_SUCCESS = "SUBJECT_SUCCESS";
 export const COURSE_FAIL = "COURSE_FAIL";
 export const COURSE = "COURSE";
 export const CLEAR_COURSES = "CLEAR_COURSES";
+export const REGISTERED= "REGISTERED";
+export const REGISTERING = "REGISTERING";
 
 //Guest Dispatch
 export const GUEST = "GUEST";
@@ -52,3 +54,19 @@ export const CONTRACT = "CONTRACT";
 export const EXAM_SUCCESS = "EXAM_SUCCESS";
 export const EXAM_FAIL = "EXAM_FAIL";
 export const EXAM = "EXAM";
+
+//Reports 
+export const REPORTS_SUCCESS = "REPORTS_SUCCESS";
+export const REPORTS_FAIL = "REPORTS_FAIL";
+export const REPORTS = "REPORTS";
+export const SINGLE_REPORT_SUCCESS = "SINGLE_REPORT_SUCCESS";
+export const SINGLE_REPORT_FAIL = "SINGLE_REPORT_FAIL";
+export const CLEAR_REPORTS = "CLEAR_REPORTS";
+
+//Requests
+export const REQUESTS_SUCCESS = "REQUESTS_SUCCESS";
+export const REQUESTS_FAIL = "REQUESTS_FAIL";
+export const REQUESTS = "REQUESTS";
+
+//Terms
+export const TERMS = "TERMS";
