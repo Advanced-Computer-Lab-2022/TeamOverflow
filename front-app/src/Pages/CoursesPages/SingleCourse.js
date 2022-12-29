@@ -17,70 +17,55 @@ import { Typography, Box, Card, Container, CssBaseline, Button, FormHelperText, 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { NavLink, useNavigate, useParams } from 'react-router-dom';
-import { viewCourse } from '../../app/store/actions/coursesActions';
+import { openCourse, viewCourse } from '../../app/store/actions/coursesActions';
 import moment from "moment";
 import { centered_flex_box, left_flex_box, main_button, right_flex_box, sec_button } from '../../app/components/Styles';
-import { ActionModal, SubCard } from '../../app/components';
-import { closeCourse, deleteCourse, publishCourse } from '../../app/store/actions/instructorActions';
+import { ActionModal, RatingModal, SubCard } from '../../app/components';
 import ReactPlayer from 'react-player/youtube';
-import { requestAccess } from '../../app/store/actions/corporateActions';
-import { getPaymentLink } from '../../app/store/actions/traineeActions';
-import SubCard from '../../app/components/SubCard';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { postRating } from '../../app/store/actions/ratingActions';
 
 const theme = createTheme();
 
-export const PreviewCourse = ({ auth, viewCourse, course, isLoading, publishCourse, deleteCourse, closeCourse }) => {
+export const SingleCourse = ({ auth, openCourse, course, isLoading, examSolutions, subtitles, postRating }) => {
 
     const courseId = useParams().id
     const navigate = useNavigate()
     const [modals, setModals] = React.useState({
-        closeModal: false,
-        deleteModal: false,
-        publishModal: false
+        courseRatingModal: false,
+        instructorRatingModal: false,
     })
-    var { closeModal, deleteModal, publishModal } = modals
+    var { courseRatingModal, instructorRatingModal } = modals;
+
+    const examsSolved = examSolutions?.map((sol) => sol.exerciseId)
 
     React.useEffect(() => {
-        viewCourse({ id: courseId, token: auth?.token })
+        openCourse({ query: { courseId: courseId }, token: auth?.token })
     }, [])
 
     const role = auth?.token?.split(" ")[0]
-   
 
-const handleEnroll = (event) => {
-    getPaymentLink({
-        courseId: courseId,
-        token: auth?.token
-    })
-}
-
-const handleRequest = (event) => {
-    requestAccess({
-        courseId: courseId,
-        token: auth?.token
-    })
-}
     const handleClose = () => {
         setModals({
-            closeModal: false,
-            deleteModal: false,
-            publishModal: false
+            courseRatingModal: false,
+            instructorRatingModal: false
         })
     }
 
-    const handlePublish = (event) => {
-        handleClose()
-        publishCourse({ info: { courseId: course?._id }, token: auth?.token })
-    }
-
-    const handleDelete = (event) => {
-        handleClose()
-        deleteCourse({ info: { courseId: course?._id }, token: auth?.token }, navigate)
-    }
-
-    const handleCloseCourse = (event) => {
-        handleClose()
-        closeCourse({ info: { courseId: course?._id }, token: auth?.token })
+    const handleSubmit = (event, message, id) => {
+        event.preventDefault();
+        handleClose();
+        const data = new FormData(event.currentTarget);
+        var details = {
+            creation: {
+                rating: parseInt(event.nativeEvent.target.attributes.value.value),
+                review: data.get('review'),
+                instructorId: message === "Instructor" ? id : undefined,
+                courseId: message === "Course" ? id : undefined
+            },
+            token: auth.token
+        }
+        postRating(details)
     }
 
     if (isLoading) {
@@ -94,40 +79,78 @@ const handleRequest = (event) => {
     return (
         <Container component="main" maxWidth="xl">
             <Box className="course-head" sx={{ display: "flex", alighnItems: "flex-start", flexDirection: "column", mx: "-24px", mt: -2, minWidth: "100%", minHeight: "50vh", mb: 2, p: 2 }}>
-                <Typography fontWeight="bold" variant="h2" sx={{ color: "var(--mainWhite)" }}>{course?.title}</Typography>
-                <Typography variant="h5" sx={{ color: "var(--mainWhite)" }}>{course?.subject}</Typography>
-                <Rating readOnly value={course?.rating} />
-                <Typography variant="p" sx={{ color: "var(--mainWhite)" }}>{course?.numberOfRatings} Ratings</Typography>
-                <Typography textAlign="justify" variant="p" fontSize={18} sx={{ color: "var(--mainWhite)", mt: 2, mb: 10, maxWidth: "90%" }}>{course?.summary}</Typography>
-                <Box sx={{...centered_flex_box, mb:2}}>
-                {role === "Trainee" && <Button onClick={handleEnroll} sx={sec_button}><ShoppingCartCheckoutIcon/> Enroll in Course</Button>}
-                {role === "Corporate" && <Button onClick={handleRequest} sx={sec_button}><RequestPageIcon/> Request access to Course</Button>}
-                </Box>
-                
+                <Grid container>
+                    <Grid item xs={8} flexDirection="column">
+                        <Typography fontWeight="bold" variant="h2" sx={{ color: "var(--mainWhite)" }}>{course?.title}</Typography>
+                        <Typography variant="h5" sx={{ color: "var(--mainWhite)" }}>{course?.subject}</Typography>
+                        <Box><Rating readOnly value={course?.rating} /></Box>
+                        <Box><Typography variant="p" sx={{ color: "var(--mainWhite)" }}>{course?.numberOfRatings} Ratings</Typography></Box>
+                        <Box sx={{ mb: 10 }}><Typography textAlign="justify" variant="p" fontSize={18} sx={{ color: "var(--mainWhite)", mt: 2 }}>{course?.summary}</Typography></Box>
+                    </Grid>
+                    <Grid item xs={4} sx={{ height: "30%", ...centered_flex_box }}>
+                        <Grid container justifyContent="space-evenly" direction="column" sx={{ minHeight: "100%", width: "60%" }}>
+                            {course?.videoId && <Button onClick={() => navigate(`/course/watch/${course?._id}/${course?.videoId._id}`)} sx={{ ...sec_button, mt: 2, mr: 2 }}>
+                                <VisibilityIcon /> Watch Preview Video
+                            </Button>
+                            }
+                            {
+                                course?.examId ? (examsSolved.includes(course?.examId._id) ? (
+                                    <Button onClick={() => navigate(`/course/grade/${examSolutions[examsSolved.indexOf(course?.examId._id)]._id}`)} sx={{ ...sec_button, mt: 2, mr: 2 }}>
+                                        <VisibilityIcon /> View Grade
+                                    </Button>
+                                ) : (
+                                    <Button onClick={() => navigate(`/course/solve/exercise/${course?._id}/${course?.examId._id}`)} sx={{ ...sec_button, mt: 2, mr: 2 }}>
+                                        <QuizIcon /> Solve Exercise
+                                    </Button>
+                                )
+                                ) : (
+                                    <></>
+                                )
+                            }
+                            <Button onClick={() => setModals({ ...modals, courseRatingModal: true })} sx={{ ...sec_button, mt: 2, mr: 2 }}>
+                                <QuizIcon /> Rate Course
+                            </Button>
+                            <RatingModal message="Course" open={courseRatingModal} handleClose={handleClose} action={(event) => handleSubmit(event, "Course", course?._id)} />
+                        </Grid>
+                    </Grid>
+                </Grid>
             </Box>
             <Grid container direction="row" mb={2}>
                 <Grid item xs={8} minHeight="100%">
-                    <Box sx={{ ...centered_flex_box, minHeight:"100%" }}>
-                        <Box sx={{ bgcolor: "var(--secWhite)", p: 1, minHeight:"100%" }}>
+                    <Box sx={{ ...centered_flex_box, minHeight: "100%" }}>
+                        <Box sx={{ bgcolor: "var(--secWhite)", p: 1, minHeight: "100%" }}>
                             {course?.videoId ? <ReactPlayer controls={true} url={course?.videoId?.url} /> : <Button onClick={() => navigate(`/course/video/upload/courseId=${course?._id}`)} sx={{ ...main_button }}><OndemandVideoIcon /> Add Course Preview</Button>}
                         </Box>
                     </Box>
                 </Grid>
-                <Grid sx={{ bgcolor: "var(--secWhite)", p: 2 }} item xs={4}>
-                    <Grid container justifyContent="space-evenly" direction="column" sx={{ minHeight: "100%" }}>
-                    <NavLink to={`/Rate/courseId=${course?.course?._id}`}>Rate Course</NavLink>
-                    <Typography>Exercise: {course?.course?.examId ? (examsSolved.includes(course?.course?.examId?._id) ? <NavLink to={`/course/grade/${course?.examSolutions[examsSolved.indexOf(course?.course?.examId?._id)]._id}`}>Get Grade</NavLink> : <NavLink to={`/course/solve/exercise/${course?.course?._id}/${course?.course?.examId?._id}`}>Solve Exam</NavLink>) : "No Course Exam"}</Typography>
- 
+                <Grid sx={{ bgcolor: "var(--secWhite)", p: 2, ...centered_flex_box }} item xs={4}>
+                    <Grid container justifyContent="space-between" direction="column" sx={{ minHeight: "100%" }}>
+                        <Box>
+                            <Typography fontWeight="bold" variant="h4" sx={{ color: "var(--secColor)" }}>Your Instructor</Typography>
+                            <Typography variant="h3" sx={{ color: "var(--secColor)" }}>{course?.instructorId?.name}</Typography>
+                            <Typography variant="h5" fontStyle="italic" sx={{ color: "var(--secColor)", mb: 1 }}><a target="_blank" rel="noopener noreferrer" href={`mailto:${course?.instructorId?.email}`}>{course?.instructorId?.email}</a></Typography>
+                            <Typography variant="p" sx={{ color: "var(--secColor)", mb: 2 }}>{course?.instructorId?.bio}</Typography>
+                        </Box>
+                        <Box sx={centered_flex_box}>
+                            <Button onClick={() => setModals({ ...modals, instructorRatingModal: true })} sx={{ ...main_button, mt: 2, mr: 2 }}>
+                                <QuizIcon /> Rate Instructor
+                            </Button>
+                            <RatingModal message="Instructor" open={instructorRatingModal} handleClose={handleClose} action={(event) => handleSubmit(event, "Instructor", course?.instructorId?._id)} />
+                        </Box>
                     </Grid>
                 </Grid>
             </Grid>
             <hr />
-            <Grid container>
-            {
-                course?.subtitles?.map((subtitle, i) => {
-                    return <SubCard subtitle={subtitle} key={i} />
-                })
-            }
+            <Grid container sx={centered_flex_box}>
+                {
+                    subtitles?.map((subtitle, i) => {
+                        return (
+                            <Grid item xs={12} sx={centered_flex_box}>
+                                <SubCard subtitle={subtitle} course={course} examsSolved={examsSolved} examSolutions={examSolutions} key={i} />
+                            </Grid>
+                        )
+                    })
+                }
             </Grid>
         </Container >
     );
@@ -135,16 +158,12 @@ const handleRequest = (event) => {
 
 const mapStateToProps = (state) => ({
     auth: state?.auth,
-    course: state?.courses?.single,
+    course: state?.courses?.single?.course,
+    subtitles: state?.courses?.single?.subtitles,
+    examSolutions: state?.courses?.single?.examSolutions,
     isLoading: state?.courses?.isLoading
 });
 
-const mapDispatchToProps = { viewCourse, publishCourse, deleteCourse, closeCourse };
+const mapDispatchToProps = { openCourse, postRating };
 
-export default connect(mapStateToProps, mapDispatchToProps)(PreviewCourse);
-
-
-
-// //This page
-//   <NavLink to={`/Rate/courseId=${course?.course?._id}`}>Rate Course</NavLink>
-//   <Typography>Exercise: {course?.course?.examId ? (examsSolved.includes(course?.course?.examId?._id) ? <NavLink to={`/course/grade/${course?.examSolutions[examsSolved.indexOf(course?.course?.examId?._id)]._id}`}>Get Grade</NavLink> : <NavLink to={`/course/solve/exercise/${course?.course?._id}/${course?.course?.examId?._id}`}>Solve Exam</NavLink>) : "No Course Exam"}</Typography>
+export default connect(mapStateToProps, mapDispatchToProps)(SingleCourse);

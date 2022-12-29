@@ -10,6 +10,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { centered_flex_box, main_button } from '../../app/components/Styles';
 import { viewRefunds, viewRequests } from '../../app/store/actions/adminActions';
 import { useNavigate } from 'react-router-dom';
+import SubCard from '../../app/components';
 const theme = createTheme();
 
 export const ReportedProblems = ({ auth, requests, viewRequests, viewRefunds, isLoading }) => {

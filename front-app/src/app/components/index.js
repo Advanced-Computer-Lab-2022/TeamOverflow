@@ -8,5 +8,7 @@ import SubtitleCard from "./SubtitleCard";
 import RequestsCard from "./RequestsCard";
 import WalletModal from "./WalletModal";
 import RefundsCard from "./RefundsCard";
+import SubCard from "./SubCard";
+import RatingModal from "./RatingModal";
 
-export {TopBar, CourseCard, RegisteredCourseCard, InstructorCourseCard, ReportCard, ActionModal, WalletModal, SubtitleCard, RefundsCard, RequestsCard}
+export {RatingModal, SubCard, TopBar, CourseCard, RegisteredCourseCard, InstructorCourseCard, ReportCard, ActionModal, WalletModal, SubtitleCard, RefundsCard, RequestsCard}

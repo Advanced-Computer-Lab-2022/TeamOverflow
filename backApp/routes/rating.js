@@ -11,7 +11,7 @@ const { getCourseReviews, getInstructorReviews } = require('../controllers/stude
 router.post('/instructor', verifyAnyTrainee, async function (req, res) {
   var ratingBefore = await InstructorRating.findOne({ userId: req.reqId, instructorId: req.body.instructorId })
   if (ratingBefore) {
-    return res.status(200).json({ message: "You have rated this instructor before" })
+    return res.status(400).json({ message: "You have rated this instructor before" })
   }
   const review = new InstructorRating({
     rating: req.body.rating,
@@ -34,7 +34,7 @@ router.post('/instructor', verifyAnyTrainee, async function (req, res) {
 router.post('/course', verifyAnyTrainee, async function (req, res) {
   var ratingBefore = await CourseRating.findOne({ userId: req.reqId, courseId: req.body.courseId })
   if (ratingBefore) {
-    return res.status(200).json({ message: "You have rated this course before" })
+    return res.status(400).json({ message: "You have rated this course before" })
   }
   const review = new CourseRating({
     rating: req.body.rating,

@@ -8,8 +8,9 @@ import { useNavigate } from 'react-router-dom';
 import { Card } from '@mui/material';
 import { card_style, main_button } from './Styles';
 import moment from "moment"
+import { NavLink } from 'react-router-dom';
 
-function SubCard({ token, subtitle }) {
+function SubCard({ token, subtitle, course, examsSolved, examSolutions }) {
 
     const navigate = useNavigate();
     const role = token.split(" ")[0];
@@ -27,10 +28,24 @@ function SubCard({ token, subtitle }) {
                 </Grid>
             </Grid>
             <br />
-            <Typography>Video: {subtitle?.videoId ? <NavLink to={`/course/watch/${course?.course?._id}/${subtitle?.videoId._id}`}>View Subtitle Video</NavLink> : "No Video"}</Typography>
-            <Typography>Exercise: {subtitle?.exerciseId ? (examsSolved.includes(subtitle?.exerciseId._id) ? <NavLink to={`/course/grade/${course?.examSolutions[examsSolved.indexOf(subtitle?.exerciseId._id)]._id}`}>Get Grade</NavLink> : <NavLink to={`/course/solve/exercise/${course?.course?._id}/${subtitle?.exerciseId._id}`}>Solve Exercise</NavLink>) : "No Exercise"}</Typography>
-
-        </Card>
+            <Button disabled={!subtitle?.videoId} onClick={() => navigate(`/course/watch/${course?._id}/${subtitle?.videoId._id}`)} sx={{ ...main_button, mt: 2, mr: 2 }}>
+                <VisibilityIcon /> View Subtitle Video
+            </Button>
+            {
+                subtitle?.exerciseId ? (examsSolved.includes(subtitle?.exerciseId._id) ? (
+                    <Button onClick={() => navigate(`/course/grade/${examSolutions[examsSolved.indexOf(subtitle?.exerciseId._id)]._id}`)} sx={{ ...main_button, mt: 2, mr: 2 }}>
+                        <VisibilityIcon /> View Grade
+                    </Button>
+                ) : (
+                    <Button onClick={() => navigate(`/course/solve/exercise/${course?._id}/${subtitle?.exerciseId._id}`)} sx={{ ...main_button, mt: 2, mr: 2 }}>
+                        <QuizIcon /> Solve Exercise
+                    </Button>
+                )
+                ) : (
+                    <></>
+                )
+            }
+        </Card >
     )
 }
 
