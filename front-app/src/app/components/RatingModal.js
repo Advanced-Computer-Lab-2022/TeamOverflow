@@ -48,7 +48,7 @@ export default function RatingModal({ message, open, handleClose, action }) {
                             minRows={8}
                         />
                         <Box sx={{ ...centered_flex_box, mt: 1 }}>
-                            <Button type="submit" sx={{ ...confirm_button, mx: 2 }}>Confirm</Button>
+                            <Button type="submit" sx={{ ...confirm_button, mr: 2 }}>Confirm</Button>
                             <Button onClick={handleClose} sx={main_button}>Cancel</Button>
                         </Box>
                     </Box>

@@ -91,7 +91,7 @@ export const reportProblem = (data, navigate) => (dispatch) => {
         .then((response) => {
             const { data } = response;
             notification.success({ message: data.message })
-            navigate(-1)
+            navigate && navigate(-1)
         })
         .catch((err) => {
             notification.error({ message: err?.response?.data?.message })

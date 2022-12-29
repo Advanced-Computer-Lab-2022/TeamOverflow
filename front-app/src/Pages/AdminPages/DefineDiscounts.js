@@ -23,6 +23,8 @@ export const DefineDiscount = ({ token, courses, filterCoursesAll, clearCourses,
         clearCourses()
         getSubjects()
         filterCoursesAll({ token: token, ...formData });
+        courses?.docs?.map((course) => courseIds[course._id] = false)
+        setIsAllSelected(false)
     }, [])
 
     const initialState = {
@@ -40,6 +42,7 @@ export const DefineDiscount = ({ token, courses, filterCoursesAll, clearCourses,
     const handleClearFilter = (event) => {
         setFormData(initialState)
         filterCoursesAll({ token: token, ...initialState });
+        setIsAllSelected(false)
     }
 
     const { minPrice, maxPrice, minRating, maxRating, searchQuery, page, subject } = formData
@@ -73,48 +76,47 @@ export const DefineDiscount = ({ token, courses, filterCoursesAll, clearCourses,
     const handlePageChange = (event, value) => {
         setFormData({ ...formData, page: value })
         filterCoursesAll({ token: token, ...formData, page: value });
+        setIsAllSelected(false)
     }
 
     const handleSearchFilter = (event) => {
         filterCoursesAll({ token: token, ...formData });
+        setIsAllSelected(false)
     }
 
-    var [courseIds, setCourseIds] = React.useState([])
+    var [courseIds, setCourseIds] = React.useState({})
 
     const onChange = (event, courseId) => {
-        console.log(event)
-        if (event.target.checked) {
-            var ids = courseIds
-            ids.push(courseId)
-            setCourseIds(ids)
-        } else {
-            setCourseIds(courseIds.filter((id) => (id !== courseId)))
+        setCourseIds({ ...courseIds, [courseId]: event.target.checked })
+        if (isAllSelected) {
+            setIsAllSelected(event.target.checked)
         }
     }
 
     const handleDefineDiscount = (event) => {
         event.preventDefault()
         const data = new FormData(event.currentTarget);
+        var ids = courses.docs.filter((course) => courseIds[course._id]).map((course) => course._id)
         var info = {
             discount: data.get('discount'),
             startDate: data.get('startDate'),
             deadline: data.get('deadline'),
-            courseIds: courseIds
+            courseIds: ids
         }
         defineDiscount({ info: info, token: token })
-        setCourseIds([])
+        filterCoursesAll({ token: token, ...formData });
+        setCourseIds({})
+        setIsAllSelected(false)
     }
 
     const handleSelectAll = (event) => {
-        if (event.target.checked) {
-            var ids = []
-            courses?.docs?.map((course) => ids.push(course._id))
-            setCourseIds(ids)
-        } else {
-            setCourseIds([])
-        }
-        console.log(courseIds)
+        var ids = {}
+        courses?.docs?.map((course) => ids[course._id] = event.target.checked)
+        setCourseIds(ids)
+        setIsAllSelected(event.target.checked)
     }
+
+    const [isAllSelected, setIsAllSelected] = React.useState(false)
 
     return (
         <ThemeProvider theme={theme}>
@@ -235,16 +237,17 @@ export const DefineDiscount = ({ token, courses, filterCoursesAll, clearCourses,
                         {!isLoading ? (
                             <TableBody>
                                 <TableRow>
-                                    <TableCell colSpan={8}>
-                                        Select All <Checkbox onChange={handleSelectAll} />
+                                    <TableCell align="center">
+                                        Select All <br /><Checkbox checked={isAllSelected} onChange={handleSelectAll} />
                                     </TableCell>
+                                    <TableCell align="center" colSpan={7} />
                                 </TableRow>
                                 {courses?.docs?.map((course) => (
                                     <TableRow
                                         key={course._id}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                     >
-                                        <TableCell align="center"><Checkbox checked={courseIds?.includes(course?._id)} onChange={(event) => onChange(event, course._id)} /></TableCell>
+                                        <TableCell align="center"><Checkbox checked={courseIds[course._id]} onChange={(event) => onChange(event, course._id)} /></TableCell>
                                         <TableCell align="center">{course.title}</TableCell>
                                         <TableCell align="center">{course.subject}</TableCell>
                                         <TableCell align="center">{course.enrolled}</TableCell>

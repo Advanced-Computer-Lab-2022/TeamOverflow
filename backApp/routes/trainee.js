@@ -106,8 +106,7 @@ router.get('/checkOut', verifyTrainee, async function (req, res) {
       await req.user.populate("walletId")
       const walletAmount = req.user.walletId.balance
       if (walletAmount >= coursePrice) {
-        await Wallet.findByIdAndUpdate(req.user.walletId._id, { $inc: { balance: (-1 * coursePrice) } })
-        const subtitles = await Subtitle.find({ courseId: req.body.courseId }, { _id: 1, exerciseId: 1, videoId: 1 })
+        const subtitles = await Subtitle.find({ courseId: req.query.courseId }, { _id: 1, exerciseId: 1, videoId: 1 })
         const itemIds = [course.examId?.toString(), course.videoId?.toString(), subtitles.map((sub) => [sub.exerciseId?.toString(), sub.videoId?.toString()])].flat().flat()
         var completion = {}
         for (let i = 0; i < itemIds.length; i++) {
@@ -115,14 +114,14 @@ router.get('/checkOut', verifyTrainee, async function (req, res) {
             completion[itemIds[i]] = false
           }
         }
-        var amountPaid = await forexBack(paymentSession.amount_subtotal / 100, paymentSession.currency.toUpperCase())
         const traineeCourse = new StudentCourses({
           traineeId: req.reqId,
-          courseId: req.body.courseId,
+          courseId: req.query.courseId,
           completion: completion,
-          amountPaid: amountPaid
+          amountPaid: coursePrice
         });
-        await addAmountOwed(course.instructorId.walletId, paymentSession.amount_subtotal / 100, paymentSession.currency.toUpperCase())
+        await Wallet.findByIdAndUpdate(req.user.walletId._id, { $inc: { balance: (-1 * coursePrice) } })
+        await addAmountOwed(req.reqId, course, coursePrice)
         await traineeCourse.save();
         course.$inc("enrolled", 1)
         await course.save()
@@ -159,7 +158,7 @@ router.post('/registerCourse', verifyTrainee, async function (req, res) {
       }
     }
     const paymentSession = await verifyPayment(req, res)
-    if (paymentSession.payment_status === "paid") {
+    if (paymentSession?.payment_status === "paid") {
       var amountPaid = await forexBack(paymentSession.amount_subtotal / 100, paymentSession.currency.toUpperCase())
       var amountWallet = parseInt(req.body.fromWallet)
       const rawAmount = amountPaid + amountWallet
@@ -177,6 +176,8 @@ router.post('/registerCourse', verifyTrainee, async function (req, res) {
       course.$inc("enrolled", 1)
       await course.save()
       res.status(201).json(newTraineeCourse)
+    } else {
+
     }
   } catch (err) {
     res.status(400).json({ message: err.message })

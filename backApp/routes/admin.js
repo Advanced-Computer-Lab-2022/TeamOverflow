@@ -283,13 +283,14 @@ router.post('/refundTraniee', verifyAdmin, async function (req, res) {
 //reject refund
 router.post('/rejectRefund', verifyAdmin, async function (req, res) {
   try {
-    var refund = await Refund.findById(req.body.refundId).populate(["traineeId", "instructorId", "registrationId"])
+    var refund = await Refund.findById(req.body.refundId).populate(["traineeId", "instructorId"])
     if (refund) {
       await refund.delete()
+      var reg = await StudentCourses.findByIdAndUpdate(refund.registrationId, {onHold: false}, {new: true}).populate("courseId")
       const content = `
-      <h1>Hello ${refund.traineeId.name} !</h1>
-      <p>Your request to refund the course "${course.title}" has been accepted</p><br/>
-      <p>USD ${reg.amountPaid} has been added to your wallet</p>
+      <h1>Hello ${refund?.traineeId?.name} !</h1>
+      <p>Sadly, your request to refund the course "${reg?.courseId?.title}" has been rejected</p><br/>
+      <p>Feel free to request a refund again and try emailing your instructor</p>
     `
       await sendGenericEmail(refund.traineeId.email, "Refund Rejected", content)
       var results = await Refund.paginate({}, { page: req.body.page, limit: 10, populate: ["registrationId", { path: "instructorId", select: { _id: 1, name: 1, email: 1 } }, { path: "traineeId", select: { _id: 1, name: 1, email: 1, username: 1 } }] })

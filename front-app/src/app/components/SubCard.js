@@ -28,13 +28,15 @@ function SubCard({ token, subtitle, course, examsSolved, examSolutions }) {
                 </Grid>
             </Grid>
             <br />
-            <Button disabled={!subtitle?.videoId} onClick={() => navigate(`/course/watch/${course?._id}/${subtitle?.videoId._id}`)} sx={{ ...main_button, mt: 2, mr: 2 }}>
-                <VisibilityIcon /> View Subtitle Video
-            </Button>
+            {subtitle?.videoId &&
+                <Button onClick={() => navigate(`/course/watch/${course?._id}/${subtitle?.videoId._id}`)} sx={{ ...main_button, mt: 2, mr: 2 }}>
+                    <OndemandVideoIcon /> Watch Subtitle Video
+                </Button>
+            }
             {
-                subtitle?.exerciseId ? (examsSolved.includes(subtitle?.exerciseId._id) ? (
-                    <Button onClick={() => navigate(`/course/grade/${examSolutions[examsSolved.indexOf(subtitle?.exerciseId._id)]._id}`)} sx={{ ...main_button, mt: 2, mr: 2 }}>
-                        <VisibilityIcon /> View Grade
+                subtitle?.exerciseId ? (examsSolved?.includes(subtitle?.exerciseId._id) ? (
+                    <Button onClick={() => navigate(`/course/grade/${examSolutions[examsSolved?.indexOf(subtitle?.exerciseId._id)]._id}`)} sx={{ ...main_button, mt: 2, mr: 2 }}>
+                        <VisibilityIcon /> View Exercise Grade
                     </Button>
                 ) : (
                     <Button onClick={() => navigate(`/course/solve/exercise/${course?._id}/${subtitle?.exerciseId._id}`)} sx={{ ...main_button, mt: 2, mr: 2 }}>

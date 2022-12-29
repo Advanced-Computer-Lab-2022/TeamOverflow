@@ -7,7 +7,8 @@ async function reportProblem(req, res) {
             userId: req.reqId,
             userRef: req.userRef,
             type: req.body.type,
-            details: req.body.details
+            details: req.body.details,
+            courseId: req.body.courseId
         })
         res.status(201).json({ message: "Report Successful" })
     } catch (err) {
