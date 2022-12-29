@@ -6,7 +6,8 @@ var ReportSchema = new mongoose.Schema({
     userRef: {type: String, required: true},
     type: {type: String, enum: ["Financial", "Technical", "Other"], required: true},
     details: {type: String, required: true},
-    status: {type: String, enum: ["Unseen", "Resolved", "Pending"], default: "Unseen"}
+    status: {type: String, enum: ["Unseen", "Resolved", "Pending"], default: "Unseen"},
+    courseId: {type: mongoose.Types.ObjectId, ref: "Course"}
 }, {timestamps: true})
 
 ReportSchema.plugin(paginate)
