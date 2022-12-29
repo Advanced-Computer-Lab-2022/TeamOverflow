@@ -22,6 +22,7 @@ export const DefineDiscount = ({ token, courses, filterCoursesAll, clearCourses,
     React.useEffect(() => {
         clearCourses()
         getSubjects()
+        filterCoursesAll({ token: token, ...formData });
     }, [])
 
     const initialState = {
@@ -81,10 +82,13 @@ export const DefineDiscount = ({ token, courses, filterCoursesAll, clearCourses,
     var [courseIds, setCourseIds] = React.useState([])
 
     const onChange = (event, courseId) => {
+        console.log(event)
         if (event.target.checked) {
-            courseIds.push(courseId)
+            var ids = courseIds
+            ids.push(courseId)
+            setCourseIds(ids)
         } else {
-            courseIds = courseIds.filter((id) => (id !== courseId))
+            setCourseIds(courseIds.filter((id) => (id !== courseId)))
         }
     }
 
@@ -99,6 +103,17 @@ export const DefineDiscount = ({ token, courses, filterCoursesAll, clearCourses,
         }
         defineDiscount({ info: info, token: token })
         setCourseIds([])
+    }
+
+    const handleSelectAll = (event) => {
+        if (event.target.checked) {
+            var ids = []
+            courses?.docs?.map((course) => ids.push(course._id))
+            setCourseIds(ids)
+        } else {
+            setCourseIds([])
+        }
+        console.log(courseIds)
     }
 
     return (
@@ -219,12 +234,17 @@ export const DefineDiscount = ({ token, courses, filterCoursesAll, clearCourses,
                         </TableHead>
                         {!isLoading ? (
                             <TableBody>
+                                <TableRow>
+                                    <TableCell colSpan={8}>
+                                        Select All <Checkbox onChange={handleSelectAll} />
+                                    </TableCell>
+                                </TableRow>
                                 {courses?.docs?.map((course) => (
                                     <TableRow
                                         key={course._id}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                     >
-                                        <TableCell align="center"><Checkbox checked={courseIds.find((id) => id === course._id)} onChange={(event) => onChange(event, course._id)} /></TableCell>
+                                        <TableCell align="center"><Checkbox checked={courseIds?.includes(course?._id)} onChange={(event) => onChange(event, course._id)} /></TableCell>
                                         <TableCell align="center">{course.title}</TableCell>
                                         <TableCell align="center">{course.subject}</TableCell>
                                         <TableCell align="center">{course.enrolled}</TableCell>

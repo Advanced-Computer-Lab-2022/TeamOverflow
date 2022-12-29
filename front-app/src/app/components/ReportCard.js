@@ -12,6 +12,8 @@ function ReportCard({ token, report, isLoading }) {
     const navigate = useNavigate();
     const role = token.split(" ")[0];
     
+    const statusColor = report?.status === "Pending" ? 'orange': (report?.status === "Unseen" ? 'red':'green')
+
     return (
         <Card sx={card_style}>
             {isLoading && (
@@ -29,7 +31,7 @@ function ReportCard({ token, report, isLoading }) {
                         </Typography>
                     </Grid>
                     <Grid item direction="row" alignItems="center" display="flex" justifyContent="flex-end" xs={2}>
-                        <Chip sx={{ color: "var(--secColor)", borderColor: "var(--secColor)" }} label={report.status} variant="outlined" />
+                        <Chip sx={{ color: statusColor, borderColor: statusColor, fontWeight: 'bold' }} label={report.status} variant="outlined" />
                     </Grid>
                 </Grid>
                 <Typography variant='p' sx={{

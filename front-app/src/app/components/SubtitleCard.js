@@ -9,7 +9,7 @@ import { Card } from '@mui/material';
 import { card_style, main_button } from './Styles';
 import moment from "moment"
 
-function SubtitleCard({ token, subtitle }) {
+function SubtitleCard({ token, subtitle, examsSolved }) {
 
     const navigate = useNavigate();
     const role = token.split(" ")[0];
