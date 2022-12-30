@@ -5,8 +5,9 @@ var corptrainSchema = new mongoose.Schema({
     password: {type: String, required: true},
     corporation: {type: String, required: true},
     country: {type: String},
-    name: {type: String},
-    email: {type: String},
+    name: {type: String, required: true},
+    email: {type: String, required: true},
+    acceptedTerms: {type: Boolean, default: false},
     bearer: {type: String, default: "Corporate"}
 }, {timestamps: true})
 

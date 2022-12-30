@@ -1,9 +1,10 @@
-import { INVOICE, INVOICE_FAIL, INVOICE_SUCCESS, WALLET, WALLET_FAIL, WALLET_SUCCESS, LOGIN, LOGIN_FAIL, LOGIN_SUCCESS, LOGOUT_SUCCESS, GUEST, UPDATE_USER, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL, CREATE, CREATE_FAIL, CREATE_SUCCESS, TERMS } from "../actions/types";
+import { INVOICE, INVOICE_FAIL, INVOICE_SUCCESS, WALLET, WALLET_FAIL, WALLET_SUCCESS, LOGIN, LOGIN_FAIL, LOGIN_SUCCESS, LOGOUT_SUCCESS, GUEST, UPDATE_USER, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL, CREATE, CREATE_FAIL, CREATE_SUCCESS, TERMS, CORPORATIONS, CORPORATIONS_SUCCESS, CORPORATIONS_FAIL } from "../actions/types";
 
 const initialState = {
   user: null,
   wallet: null,
   invoices: null,
+  corporations: null,
   token: null,
   isLoading: false,
   isError: false,
@@ -65,12 +66,20 @@ export default function store(state = initialState, action) {
         isLoading: false,
         isError: false
       }
+    case CORPORATIONS:
     case INVOICE:
     case WALLET:
     case CREATE:
       return {
         ...state,
         isLoading: true,
+        isError: false
+      }
+    case CORPORATIONS_SUCCESS:
+      return {
+        ...state,
+        corporations: payload,
+        isLoading: false,
         isError: false
       }
     case INVOICE_SUCCESS:
@@ -94,6 +103,7 @@ export default function store(state = initialState, action) {
         isError: false,
         terms: null
       }
+    case CORPORATIONS_FAIL:
     case INVOICE_FAIL:
     case UPDATE_USER_FAIL:
     case WALLET_FAIL:

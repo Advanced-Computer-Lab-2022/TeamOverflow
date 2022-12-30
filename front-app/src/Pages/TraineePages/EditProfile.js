@@ -4,8 +4,7 @@ import { Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Sel
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { editProfile } from '../../app/store/actions/traineeActions';
-import { changePassword } from '../../app/store/actions/authActions';
-
+import { editProfile as editCorpProfile } from '../../app/store/actions/corporateActions';
 import countryList from 'country-json/src/country-by-name.json'
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -14,16 +13,17 @@ import { MainInput, main_button } from '../../app/components/Styles';
 
 const theme = createTheme();
 
-export const EditProfile = ({ auth, editProfile }) => {
+export const EditProfile = ({ auth, editProfile, editCorpProfile }) => {
 
     const [country, setCountry] = useState(auth.user.country)
     const handleCountryChange = (event) => {
-      setCountry(event.target.value)
+        setCountry(event.target.value)
     }
 
-    let navigate = useNavigate(); 
-    let path = `/Trainee/profile`; 
-        
+    const role = auth?.token?.split(" ")[0]
+    let navigate = useNavigate();
+    let path = `/${role}/profile`;
+
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -37,18 +37,19 @@ export const EditProfile = ({ auth, editProfile }) => {
             token: auth.token
         }
 
-        editProfile(details);
+        role === "Trainee" && editProfile(details);
+        role === "Corporate" && editCorpProfile(details);
         navigate(path);
 
-        
+
 
 
     };
-  
+
 
     return (
         <ThemeProvider theme={theme}>
-            <Container component="main" sx={{maxWidth: "800px"}}>
+            <Container component="main" sx={{ maxWidth: "800px" }}>
                 <CssBaseline />
                 <Box
                     sx={{
@@ -56,7 +57,7 @@ export const EditProfile = ({ auth, editProfile }) => {
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
-                        
+
                     }}
                     component="form" onSubmit={handleSubmit}
                 >
@@ -66,41 +67,43 @@ export const EditProfile = ({ auth, editProfile }) => {
                     <Typography component="h1" variant="h5">
                         Update Profile
                     </Typography>
-                    <Box  sx={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-                        <Box   sx={{ mt: 1}}>
-                        <MainInput
+                    <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                        <Box sx={{ mt: 1 }}>
+                            <MainInput
                                 margin="normal"
                                 fullWidth
                                 name="email"
                                 label="Email"
                                 type="email"
                                 id="email"
-                                
+
                             />
-                        <MainInput
+                            <MainInput
                                 margin="normal"
                                 fullWidth
                                 id="name"
                                 label="Full Name"
                                 name="name"
-                                autoFocus                            
+                                autoFocus
                             />
                             <Select
-                                sx={{marginTop:"15px"}}
+                                sx={{ marginTop: "15px" }}
                                 defaultValue={country}
                                 name="country"
                                 id='country'
                                 label="User Country"
                                 fullWidth
-                                onChange={handleCountryChange}        
-                                >
-                                {countryList.map((country, i) => {return (
-                                    <MenuItem key={i} value={country.country}>
-                                    {country.country}
-                                    </MenuItem>
-                                )})}
+                                onChange={handleCountryChange}
+                            >
+                                {countryList.map((country, i) => {
+                                    return (
+                                        <MenuItem key={i} value={country.country}>
+                                            {country.country}
+                                        </MenuItem>
+                                    )
+                                })}
                             </Select>
-                            
+
                             <FormHelperText>Select your country</FormHelperText>
 
 
@@ -109,11 +112,11 @@ export const EditProfile = ({ auth, editProfile }) => {
                     </Box>
                     <Button
                         type="submit"
-                        
+
                         variant="contained"
                         sx={{ mt: 3, mb: 2, ...main_button }}
 
-                   >
+                    >
                         Update
                     </Button>
 
@@ -127,6 +130,6 @@ const mapStateToProps = (state) => ({
     auth: state?.auth
 });
 
-const mapDispatchToProps = { editProfile };
+const mapDispatchToProps = { editProfile, editCorpProfile };
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditProfile);

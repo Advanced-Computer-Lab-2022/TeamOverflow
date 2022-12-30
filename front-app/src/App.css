@@ -50,6 +50,22 @@ a :hover{
   color: var(--terColor) !important;
 }
 
+.a2 {
+  color: var(--mainWhite) !important;
+}
+
+.a2 :hover{
+  color: var(--terColor) !important;
+}
+
+.a3 {
+  color: black !important;
+}
+
+.a3 :hover{
+  color: var(--mainWhite) !important;
+}
+
 .MuiTypography-root {
   white-space: pre-wrap !important;
   font-family: 'Open Sans', sans-serif !important;

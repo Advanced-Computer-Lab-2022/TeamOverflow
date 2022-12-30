@@ -22,6 +22,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ReceiptIcon from '@mui/icons-material/Receipt';
+import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
 import { connect } from "react-redux";
 import { logout } from '../store/actions/authActions';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -111,6 +112,13 @@ function MenuAppBar({ auth, logout, viewRefunds, viewRequests }) {
         setAnchorEl(null);
         viewRequests({ info: { page: 1 }, token })
         let path = "/Admin/requests";
+        navigate(path);
+    };
+
+    const handleAccess = () => {
+        setAnchorEl(null);
+        viewRequests({ info: { page: 1 }, token })
+        let path = "/Admin/access";
         navigate(path);
     };
 
@@ -208,6 +216,7 @@ function MenuAppBar({ auth, logout, viewRefunds, viewRequests }) {
                                     <MenuItem onClick={handleAddUsers}><AccountCircle /><Typography marginX={2}>Add Users</Typography></MenuItem>
                                     <Tooltip placement="right" title="View and respond to trainee refund requests"><MenuItem onClick={handleRefundRequests}><PaidIcon /><Typography marginX={2}>Refund Requests</Typography></MenuItem ></Tooltip>
                                     <Tooltip placement="right" title="View and respond to trainee course access requests"><MenuItem onClick={handleCourseRequests}><MenuBookIcon /><Typography marginX={2}>Course Access Requests</Typography></MenuItem ></Tooltip>
+                                    <Tooltip placement="right" title="Grant corporates access to certain courses"><MenuItem onClick={handleAccess}><AssuredWorkloadIcon /><Typography marginX={2}>Grant Course Access</Typography></MenuItem ></Tooltip>
                                     <Tooltip placement="right" title="Issue discounts to courses"><MenuItem onClick={handlePromotions}><DiscountIcon /><Typography marginX={2}>Issue Promotions</Typography></MenuItem ></Tooltip>
                                     <Tooltip placement="right" title="View and respond to reported problems"><MenuItem onClick={handleAllReports}><FlagCircleIcon /><Typography marginX={2}>Reported Problems</Typography></MenuItem ></Tooltip>
                                 </>)}

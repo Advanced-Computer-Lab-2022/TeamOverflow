@@ -61,7 +61,7 @@ router.post("/selectCountry", verifyInstructor, async (req, res) => {
 //view ratings and reviews of instructor
 router.get('/viewOwnRatings', verifyInstructor, async function (req, res) {
   try {
-    var ratingreview = await InstructorRating.find({ instructorId: req.reqId }, { rating: 1, review: 1 });
+    var ratingreview = await InstructorRating.paginate({ instructorId: req.reqId }, { page: req.query.page, limit: 12, select: { rating: 1, review: 1 } });
     res.status(200).json(ratingreview);
   } catch (err) {
     res.status(400).json({ message: err.message })
@@ -90,11 +90,14 @@ module.exports = router;
 //view ratings and reviews of instructors' courses
 router.get('/viewCourseRatings', verifyInstructor, async function (req, res) {
   try {
-    var courses = await Course.find({ instructorId: req.reqId });
-    var courseIds = courses.map((course) => course._id.toString());
-    var results = await CourseRating.find({ courseId: { $in: courseIds } }).populate({ path: "courseId", select: { _id: 1, title: 1 } }).select(["rating", "review", "courseId"]).sort("courseId")
+    if(!req.query.courseId) {
+      var results = await CourseRating.paginate({ instructorId: req.reqId }, { page: req.query.page, limit: 12, populate: { path: "courseId", select: { _id: 1, title: 1 } }, select: ["rating", "review", "courseId"], sort: { createdAt: -1 } })
+    } else {
+      var results = await CourseRating.paginate({ instructorId: req.reqId, courseId: req.query.courseId }, { page: req.query.page, limit: 12, populate: { path: "courseId", select: { _id: 1, title: 1 } }, select: ["rating", "review", "courseId"], sort: { createdAt: -1 } })
+    }
     res.status(200).json(results)
   } catch (err) {
+    console.log(err)
     res.status(400).json({ message: err.message })
   }
 })

@@ -25,6 +25,8 @@ const { forexBack, forexCode, getCode } = require('../controllers/currencyContro
 const { reportProblem, viewReports, viewOneReport, addFollowup } = require('../controllers/reportController');
 const moment = require("moment");
 const Invoice = require('../models/Invoice');
+const Admin = require('../models/Admin');
+const CorporateTrainee = require('../models/CorporateTrainee');
 
 /* GET trainees listing. */
 router.get('/', async function (req, res) {
@@ -89,8 +91,6 @@ router.put("/edit", verifyTrainee, async (req, res) => {
     return res.status(400).json({ message: "Edit Failed" })
   }
 })
-module.exports = router;
-
 
 router.get('/checkOut', verifyTrainee, async function (req, res) {
   try {

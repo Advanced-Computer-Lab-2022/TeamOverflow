@@ -36,15 +36,16 @@ router.post('/course', verifyAnyTrainee, async function (req, res) {
   if (ratingBefore) {
     return res.status(400).json({ message: "You have rated this course before" })
   }
+  var course = await Course.findById(req.body.courseId);
   const review = new CourseRating({
     rating: req.body.rating,
     review: req.body.review,
     courseId: req.body.courseId,
+    instructorId: course.instructorId,
     userId: req.reqId
   })
   try {
     const newReview = await review.save();
-    var course = await Course.findById(req.body.courseId);
     var newRate = course.rating ? ((course.numberOfRatings * course.rating) + req.body.rating) / (course.numberOfRatings + 1) : req.body.rating;
     await course.updateOne({ rating: newRate, numberOfRatings: course.numberOfRatings + 1 });
     res.status(200).json(newReview)

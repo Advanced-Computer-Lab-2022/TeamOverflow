@@ -11,17 +11,18 @@ import { Rating, FormHelperText, Select, MenuItem, Button, Typography, Paper, Ic
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { filterCoursesAll, getSubjects, clearCourses } from '../../app/store/actions/coursesActions';
-import { defineDiscount } from '../../app/store/actions/adminActions';
+import { addAccess, getCorporations } from '../../app/store/actions/adminActions';
 import { centered_flex_box, MainInput, MainInputLabel, main_button, StyledInput } from '../../app/components/Styles';
 import moment from 'moment';
 
 
 const theme = createTheme();
-export const DefineDiscount = ({ token, courses, filterCoursesAll, clearCourses, getSubjects, isLoading, defineDiscount }) => {
+export const AddAccess = ({ token, courses, filterCoursesAll, clearCourses, getSubjects, isLoading, addAccess, corporations, getCorporations, subjects }) => {
 
     React.useEffect(() => {
         clearCourses()
         getSubjects()
+        getCorporations(token)
         filterCoursesAll({ token: token, ...formData });
         !isLoading && courses?.docs?.map((course) => courseIds[course._id] = false)
         setIsAllSelected(false)
@@ -96,17 +97,15 @@ export const DefineDiscount = ({ token, courses, filterCoursesAll, clearCourses,
         }
     }
 
-    const handleDefineDiscount = (event) => {
+    const handleAddAccess = (event) => {
         event.preventDefault()
         const data = new FormData(event.currentTarget);
         var ids = courses.docs.filter((course) => courseIds[course._id]).map((course) => course._id)
         var info = {
-            discount: data.get('discount'),
-            startDate: data.get('startDate'),
-            deadline: data.get('deadline'),
+            corporation: data.get('corporation'),
             courseIds: ids
         }
-        defineDiscount({ info: info, token: token })
+        addAccess({ info: info, token: token })
         filterCoursesAll({ token: token, ...formData });
         !isLoading && courses?.docs?.map((course) => courseIds[course._id] = false)
         setIsAllSelected(false)
@@ -197,7 +196,7 @@ export const DefineDiscount = ({ token, courses, filterCoursesAll, clearCourses,
                                             <MenuItem key={-1} value="">
                                                 Any
                                             </MenuItem>
-                                            {courses?.subjects?.map((subject, i) => {
+                                            {subjects?.map((subject, i) => {
                                                 return (
                                                     <MenuItem key={i} value={subject}>
                                                         {subject}
@@ -216,11 +215,27 @@ export const DefineDiscount = ({ token, courses, filterCoursesAll, clearCourses,
                     </Grid>
                 )}
                 <hr />
-                <Box component="form" onSubmit={handleDefineDiscount} sx={centered_flex_box}>
-                    <MainInput required={true} focused name="discount" label="Discount %" inputProps={{ min: 0, max: 100 }} type="number" sx={{ mx: 1 }} />
-                    <MainInput required={true} focused name="startDate" label="Discount Start Date" type="datetime-local" sx={{ mx: 1 }} />
-                    <MainInput required={true} focused name="deadline" label="Discount Deadline" type="datetime-local" sx={{ mx: 1 }} />
-                    <Tooltip title="Define Discount for current selection"><Button type="submit" sx={main_button}>Add Promotion</Button></Tooltip>
+                <Box component="form" onSubmit={handleAddAccess} sx={{...centered_flex_box, alignItems: 'center', width: "100%"}}>
+                    <FormControl sx={{ mt: 1, minWidth:"20%" }}>
+                        <MainInputLabel id="corporation-label" title="Corporation" />
+                        <Select
+                            label="Corporation"
+                            id="corporation"
+                            name="corporation"
+                            labelId='corporation-label'
+                            input={<StyledInput />}
+                            fullWidth
+                        >
+                            {corporations?.map((corporate, i) => {
+                                return (
+                                    <MenuItem key={i} value={corporate}>
+                                        {corporate}
+                                    </MenuItem>
+                                )
+                            })}
+                        </Select>
+                    </FormControl>
+                    <Tooltip title="Grant access to this corporation's users to the course(s) selected"><Button type="submit" sx={{mx:1, ...main_button}}>Grant Access</Button></Tooltip>
                 </Box>
                 <hr />
                 <TableContainer component={Paper}>
@@ -233,9 +248,7 @@ export const DefineDiscount = ({ token, courses, filterCoursesAll, clearCourses,
                                 <TableCell align="center">Enrolled Students</TableCell>
                                 <TableCell align="center">Rating</TableCell>
                                 <TableCell align="center">Price</TableCell>
-                                <TableCell align="center">Current Discount</TableCell>
-                                <TableCell align="center">Current Start Date</TableCell>
-                                <TableCell align="center">Current Deadline</TableCell>
+                                <TableCell align="center">Discounted Price</TableCell>
                             </TableRow>
                         </TableHead>
                         {!isLoading ? (
@@ -244,7 +257,7 @@ export const DefineDiscount = ({ token, courses, filterCoursesAll, clearCourses,
                                     <TableCell align="center">
                                         Select All <br /><Checkbox checked={isAllSelected} onChange={handleSelectAll} />
                                     </TableCell>
-                                    <TableCell align="center" colSpan={8} />
+                                    <TableCell align="center" colSpan={7} />
                                 </TableRow>
                                 {courses?.docs?.map((course) => (
                                     <TableRow
@@ -262,14 +275,12 @@ export const DefineDiscount = ({ token, courses, filterCoursesAll, clearCourses,
                                                 readOnly
                                             /></TableCell>
                                         <TableCell align="center">USD {course.price}</TableCell>
-                                        <TableCell align="center">{course.discount}</TableCell>
-                                        <TableCell align="center">{course.startDate ? (moment().isAfter(course.startDate) ? `Started ${moment(course.startDate).fromNow()}` : `Starting in ${moment(course.startDate).fromNow()}`) : "None"}</TableCell>
-                                        <TableCell align="center">{moment().isAfter(course.deadline) ? "Expired" : (course.deadline ? "Ends in " + moment(course.deadline).fromNow() : "None")}</TableCell>
+                                        <TableCell align="center">USD {course.discount && moment().isBefore(course.deadline) && moment().isAfter(course.startDate) ? (course.price*((100-Accordion.discount)/100)).toFixed(2) : course.price}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
                         ) : (
-                            < TableCell align="center" colSpan={9}>
+                            < TableCell align="center" colSpan={8}>
                                 <CircularProgress sx={{ color: "var(--secColor)" }} />
                             </TableCell>
                         )}
@@ -286,9 +297,11 @@ export const DefineDiscount = ({ token, courses, filterCoursesAll, clearCourses,
 const mapStateToProps = (state) => ({
     token: state?.auth?.token,
     courses: state?.courses?.results,
-    isLoading: state?.courses?.isLoading
+    subjects: state?.courses?.subjects,
+    isLoading: state?.courses?.isLoading,
+    corporations: state?.auth?.corporations
 });
 
-const mapDispatchToProps = { filterCoursesAll, getSubjects, clearCourses, defineDiscount };
+const mapDispatchToProps = { filterCoursesAll, getSubjects, clearCourses, addAccess, getCorporations };
 
-export default connect(mapStateToProps, mapDispatchToProps)(DefineDiscount);
+export default connect(mapStateToProps, mapDispatchToProps)(AddAccess);

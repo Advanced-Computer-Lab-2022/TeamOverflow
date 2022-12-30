@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { Card } from '@mui/material';
 import { card_style, main_button } from './Styles';
 import moment from "moment"
+import Stars from '@mui/icons-material/Stars';
+import Visibility from '@mui/icons-material/Visibility';
 
 function InstructorCourseCard({ token, course, isLoading }) {
 
@@ -49,10 +51,11 @@ function InstructorCourseCard({ token, course, isLoading }) {
                     fullWidth
                     value={course.rating}
                     readOnly
+                    size='large'
                 />
                 <br />
                 <Grid container >
-                    <Grid item xs={9}>
+                    <Grid item xs={4}>
                         {
                             (course?.deadline && moment().isBefore(course?.deadline)) ? (
                                 <>
@@ -64,9 +67,12 @@ function InstructorCourseCard({ token, course, isLoading }) {
                             )
                         }
                     </Grid>
-                    <Grid item xs={3} direction="row" alignItems="center" display="flex" justifyContent="flex-end">
+                    <Grid item xs={8} direction="row" alignItems="center" display="flex" justifyContent="flex-end">
+                        <Button disabled={course?.numberOfRatings === 0} onClick={() => navigate(`/courses/ratings/${course?._id}`)} sx={{ ...main_button, mr: 1 }}>
+                            <Stars /> View Ratings
+                        </Button>
                         <Button onClick={reroute} sx={{ ...main_button }}>
-                            View Course
+                            <Visibility /> View Course
                         </Button>
                     </Grid>
                 </Grid>

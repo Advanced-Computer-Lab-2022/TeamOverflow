@@ -1,7 +1,8 @@
 {
    "auth": {
       "admin":{
-         "add":"admin/addAdmin"
+         "add":"admin/addAdmin",
+         "addMany":"admin/addMany"
       },
       "instructor":{
          "add":"admin/addInstructor"
@@ -26,7 +27,9 @@
       "viewRefunds":"admin/viewRefunds",
       "acceptRefund":"admin/refundTraniee",
       "rejectRefund":"admin/rejectRefund",
-      "defineDiscount":"admin/defineDiscount"
+      "defineDiscount":"admin/defineDiscount",
+      "addAccess":"admin/addAccess",
+      "getCorporations":"admin/corporations"
    },
    "instructor":{
       "setCountry":"instructor/selectCountry",
@@ -67,7 +70,9 @@
       "reportProblem":"corpTrainee/reportProblem",
       "viewReports":"corpTrainee/viewReports",
       "viewFollowups":"corpTrainee/viewFollowups",
-      "addFollowup":"corpTrainee/addFollowup"
+      "addFollowup":"corpTrainee/addFollowup",
+      "editProfile":"corpTrainee/edit",
+      "acceptTerms":"corpTrainee/acceptTerms"
    },
    "trainee": {
       "setCountry":"trainee/selectCountry",
@@ -103,6 +108,8 @@
    },
    "rate":{
       "rateInstructor":"rate/instructor",
-      "rateCourse":"rate/course"
+      "rateCourse":"rate/course",
+      "viewInstructorRatings":"rate/instructor",
+      "viewCourseRatings":"rate/course"
    }
 }

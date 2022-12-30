@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Typography, Box, Container, TextField, CssBaseline, Button, Avatar} from '@mui/material';
+import { Typography, Box, Container, TextField, CssBaseline, Button, Avatar } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { changePassword } from '../../app/store/actions/authActions';
@@ -11,9 +11,11 @@ import { MainInput, main_button } from '../../app/components/Styles';
 
 const theme = createTheme();
 
-export const EditPassword = ({ auth,  changePassword }) => {
-    let navigate = useNavigate(); 
-    let path = `/Trainee/profile`; 
+export const EditPassword = ({ auth, changePassword }) => {
+
+    const role = auth?.token?.split(" ")[0]
+    let navigate = useNavigate();
+    let path = `/${role}/profile`;
 
 
 
@@ -30,15 +32,15 @@ export const EditPassword = ({ auth,  changePassword }) => {
         changePassword(details);
         navigate(path);
 
-        
+
 
 
     };
-  
+
 
     return (
         <ThemeProvider theme={theme}>
-            <Container component="main" sx={{maxWidth: "800px"}}>
+            <Container component="main" sx={{ maxWidth: "800px" }}>
                 <CssBaseline />
                 <Box
                     sx={{
@@ -46,7 +48,7 @@ export const EditPassword = ({ auth,  changePassword }) => {
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
-                        
+
                     }}
                     component="form" onSubmit={handleSubmit}
                 >
@@ -56,34 +58,34 @@ export const EditPassword = ({ auth,  changePassword }) => {
                     <Typography component="h1" variant="h5">
                         Update Password
                     </Typography>
-                    <Box  sx={{ maxWidth:"300px"}}>
+                    <Box sx={{ maxWidth: "300px" }}>
 
-                            <MainInput
-                                margin="normal"
-                                fullWidth
-                                name='prevPassword'
-                                id="prevPassword"
-                                label="Old Password"
-                                autoFocus
-                                required={true}                         
-                            />
-                            <MainInput
-                                margin="normal"
-                                fullWidth
-                                name='password'
-                                id="password"
-                                label="New Password"
-                                autoFocus  
-                                required={true}                       
-                            />
+                        <MainInput
+                            margin="normal"
+                            fullWidth
+                            name='prevPassword'
+                            id="prevPassword"
+                            label="Old Password"
+                            autoFocus
+                            required={true}
+                        />
+                        <MainInput
+                            margin="normal"
+                            fullWidth
+                            name='password'
+                            id="password"
+                            label="New Password"
+                            autoFocus
+                            required={true}
+                        />
 
                     </Box>
                     <Button
                         type="submit"
                         variant="contained"
-                        sx={{ mt: 3, mb: 2, ...main_button}}
+                        sx={{ mt: 3, mb: 2, ...main_button }}
 
-                   >
+                    >
                         Update
                     </Button>
 
@@ -97,6 +99,6 @@ const mapStateToProps = (state) => ({
     auth: state?.auth
 });
 
-const mapDispatchToProps = {changePassword };
+const mapDispatchToProps = { changePassword };
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditPassword);

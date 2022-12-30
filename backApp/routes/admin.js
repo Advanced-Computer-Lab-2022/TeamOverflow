@@ -19,12 +19,118 @@ const Followup = require('../models/ReportFollowup');
 const Notes = require('../models/Notes');
 const Answer = require('../models/StudentAnswer');
 const { sendGenericEmail } = require('../controllers/mailingController');
+const Corporate = require('../models/Corporate');
 
 /* GET admins listing. */
 router.get('/', function (req, res) {
   res.send('respond with a resource');
 
 });
+
+//Get corporations
+router.get('/corporations', verifyAdmin, async function (req, res) {
+  var results = await Corporate.findOne({})
+  res.status(200).json(results.corporates)
+});
+
+//add many users
+router.post('/addMany', verifyAdmin, async function (req, res) {
+  res.setTimeout(0);
+  var message = "All Users Added";
+  var errorWith = [];
+  try {
+    for (let i = 0; i < req.body.instructors.length; i++) {
+      var found = (await Admin.findOne({ username: req.body.instructors[i].username })) ||
+        (await CorporateTrainee.findOne({ username: req.body.instructors[i].username })) ||
+        (await Trainee.findOne({ username: req.body.instructors[i].username })) ||
+        (await Instructor.findOne({ username: req.body.instructors[i].username }))
+
+      if (found) {
+        message = "Some Users Added"
+        errorWith.push(`Username "${req.body.instructors[i].username}" already exists`)
+        continue;
+      }
+
+      try {
+        var wallet = await Wallet.create({})
+        var hash = await bcrypt.hash(req.body.instructors[i].password, 10)
+        const add = new Instructor({
+          username: req.body.instructors[i].username,
+          name: req.body.instructors[i].name,
+          password: hash,
+          email: req.body.instructors[i].email,
+          walletId: wallet._id
+        })
+        const newInstructor = await add.save()
+      } catch (err) {
+        message = "Some Users Added"
+        errorWith.push(`${req.body.instructors[i].username} faced error: ${err.message}`)
+      }
+    }
+
+    for (let i = 0; i < req.body.admins.length; i++) {
+      var found = (await Admin.findOne({ username: req.body.admins[i].username })) ||
+        (await CorporateTrainee.findOne({ username: req.body.admins[i].username })) ||
+        (await Trainee.findOne({ username: req.body.admins[i].username })) ||
+        (await Instructor.findOne({ username: req.body.admins[i].username }))
+
+      if (found) {
+        message = "Some Users Added"
+        errorWith.push(`Username "${req.body.admins[i].username}" already exists`)
+        continue;
+      }
+
+      var hash = await bcrypt.hash(req.body.admins[i].password, 10)
+      try {
+        const add = new Admin({
+          username: req.body.admins[i].username,
+          password: hash
+        })
+        const newAdmin = await add.save()
+      } catch (err) {
+        message = "Some Users Added"
+        errorWith.push(`${req.body.instructors[i].username} faced error: ${err.message}`)
+      }
+    }
+
+    for (let i = 0; i < req.body.trainees.length; i++) {
+      var found = (await Admin.findOne({ username: req.body.trainees[i].username })) ||
+        (await CorporateTrainee.findOne({ username: req.body.trainees[i].username })) ||
+        (await Trainee.findOne({ username: req.body.trainees[i].username })) ||
+        (await Instructor.findOne({ username: req.body.trainees[i].username }))
+
+      if (found) {
+        message = "Some Users Added"
+        errorWith.push(`Username "${req.body.trainees[i].username}" already exists`)
+        continue;
+      }
+      var corporations = await Corporate.findOne({})
+      var hash = await bcrypt.hash(req.body.trainees[i].password, 10)
+      try {
+        const add = new CorporateTrainee({
+          username: req.body.trainees[i].username,
+          name: req.body.trainees[i].name,
+          password: hash,
+          email: req.body.trainees[i].email,
+          corporation: req.body.trainees[i].corporation
+        })
+        if (!corporations.corporates.includes(req.body.trainees[i].corporation)) {
+          var newCorps = [req.body.trainees[i].corporation]
+          newCorps.push(corporations.corporates)
+          corporations.$set("corporates", newCorps.flat())
+          await corporations.save()
+        }
+        const newCorporateTrainee = await add.save()
+      } catch (err) {
+        message = "Some Users Added"
+        errorWith.push(`${req.body.trainees[i].username} faced error: ${err.message}`)
+      }
+    }
+    res.status(200).json({ message: message, errors: errorWith })
+  } catch (err) {
+    return res.status(400).json({ message: err.message })
+  }
+})
 
 //add admin
 router.post('/addAdmin', verifyAdmin, async function (req, res) {
@@ -64,6 +170,7 @@ router.post('/addInstructor', verifyAdmin, async function (req, res) {
     var hash = await bcrypt.hash(req.body.password, 10)
     const add = new Instructor({
       username: req.body.username,
+      name: req.body.name,
       password: hash,
       email: req.body.email,
       walletId: wallet._id
@@ -89,6 +196,7 @@ router.post('/addTrainee', verifyAdmin, async function (req, res) {
     var hash = await bcrypt.hash(req.body.password, 10)
     const add = new CorporateTrainee({
       username: req.body.username,
+      name: req.body.name,
       password: hash,
       email: req.body.email,
       corporation: req.body.corporation
@@ -106,7 +214,7 @@ router.post('/defineDiscount', verifyAdmin, async function (req, res) {
     if (moment(req.body.startDate).isBefore(req.body.deadline)) {
       const courses = req.body.courseIds
       for (let i = 0; i < courses.length; i++) {
-        await Course.findByIdAndUpdate(courses[i], { $set: { discount: req.body.discount, deadline: req.body.deadline } })
+        await Course.findByIdAndUpdate(courses[i], { $set: { discount: req.body.discount, deadline: req.body.deadline, startDate: req.body.startDate } })
       }
       res.status(200).json({ message: `Discount added to ${courses.length} course(s)` })
     } else {
@@ -134,30 +242,32 @@ router.post('/addAccess', verifyAdmin, async function (req, res) {
   try {
     var users = await CorporateTrainee.find({ corporation: req.body.corporation })
     if (users) {
-      const course = await Course.findById(req.body.courseId).populate("instructorId")
-      const subtitles = await Subtitle.find({ courseId: req.body.courseId }, { _id: 1, exerciseId: 1, videoId: 1 })
-      const itemIds = [course.examId?.toString(), course.videoId?.toString(), subtitles.map((sub) => [sub.exerciseId?.toString(), sub.videoId?.toString()])].flat().flat()
-      var completion = {}
-      for (let i = 0; i < itemIds.length; i++) {
-        if (itemIds[i]) {
-          completion[itemIds[i]] = false
+      for (let i = 0; i < req.body.courseIds.length; i++) {
+        const course = await Course.findById(req.body.courseIds[i]).populate("instructorId")
+        const subtitles = await Subtitle.find({ courseId: req.body.courseIds[i] }, { _id: 1, exerciseId: 1, videoId: 1 })
+        const itemIds = [course.examId?.toString(), course.videoId?.toString(), subtitles.map((sub) => [sub.exerciseId?.toString(), sub.videoId?.toString()])].flat().flat()
+        var completion = {}
+        for (let i = 0; i < itemIds.length; i++) {
+          if (itemIds[i]) {
+            completion[itemIds[i]] = false
+          }
+        }
+        var courseSubtotal = course.discount && moment().isAfter(course.startDate) && moment().isBefore(course.deadline) ? course.price * ((100 - course.discount) / 100) : course.price
+        for(let j = 0; j<users.length; j++){
+          if (!(await StudentCourses.findOne({ traineeId: users[j]._id, courseId: course._id }))) {
+            const traineeCourse = new StudentCourses({
+              traineeId: users[j]._id,
+              courseId: req.body.courseIds[i],
+              completion: completion
+            });
+            await addAmountOwed(users[j]._id, course, courseSubtotal)
+            await traineeCourse.save();
+            course.$inc("enrolled", 1);
+            await course.save()
+          }
         }
       }
-      var courseSubtotal = course.discount && moment().isAfter(course.startDate) && moment().isBefore(course.deadline) ? course.price * ((100 - course.discount) / 100) : course.price
-      users.map(async (user) => {
-        if (!(await StudentCourses.findOne({ traineeId: user._id, courseId: course._id }))) {
-          const traineeCourse = new StudentCourses({
-            traineeId: user._id,
-            courseId: req.body.courseId,
-            completion: completion
-          });
-          await addAmountOwed(user._id, course, courseSubtotal)
-          await traineeCourse.save();
-          course.$inc("enrolled", 1)
-          await course.save()
-        }
-      })
-      res.status(200).json({ message: `Access to "${course.title}" granted to ${req.body.corporation}` })
+      res.status(200).json({ message: `Access to ${req.body.courseIds.length} course(s) granted to ${req.body.corporation}` })
     } else {
       res.status(400).json({ message: "No users in this corporation" })
     }
@@ -286,7 +396,7 @@ router.post('/rejectRefund', verifyAdmin, async function (req, res) {
     var refund = await Refund.findById(req.body.refundId).populate(["traineeId", "instructorId"])
     if (refund) {
       await refund.delete()
-      var reg = await StudentCourses.findByIdAndUpdate(refund.registrationId, {onHold: false}, {new: true}).populate("courseId")
+      var reg = await StudentCourses.findByIdAndUpdate(refund.registrationId, { onHold: false }, { new: true }).populate("courseId")
       const content = `
       <h1>Hello ${refund?.traineeId?.name} !</h1>
       <p>Sadly, your request to refund the course "${reg?.courseId?.title}" has been rejected</p><br/>

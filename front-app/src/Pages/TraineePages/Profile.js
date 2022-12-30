@@ -13,22 +13,22 @@ import { Box } from '@mui/system';
 import { getWallet } from '../../app/store/actions/authActions';
 const theme = createTheme();
 
-export const TraineeProfile = ({ user, wallet, getWallet, token }) => {
+export const TraineeProfile = ({ user, wallet, getWallet, token, isLoading }) => {
 
-    const role = token.split(" ")[0];
+    const role = token?.split(" ")[0];
 
     let navigate = useNavigate();
     const routeChange = () => {
-        let path = `/Trainee/edit`;
+        let path = `/${role}/edit`;
         navigate(path);
     }
     const routeChange1 = () => {
-        let path = `/Trainee/editPassword`;
+        let path = `/${role}/editPassword`;
         navigate(path);
     }
 
     React.useEffect(() => {
-        token && getWallet(token)
+        role === "Trainee" && token && getWallet(token)
     }, [])
 
     return (
@@ -73,7 +73,7 @@ export const TraineeProfile = ({ user, wallet, getWallet, token }) => {
                                 <AccountBalanceWalletIcon sx={{ fontSize: 25, marginTop: 0.3 }} />
                                 <Typography color={"var(--secColor)"} fontSize="20px">Wallet:</Typography>
                             </Box>
-                            <Typography color={"#5b5b5b"} fontSize="20px" sx={{ ml: 4 }}>{wallet?.currency} {wallet?.balance}</Typography>
+                            <Typography color={"#5b5b5b"} fontSize="20px" sx={{ ml: 4 }}>{!isLoading && `${wallet?.currency} ${wallet?.balance}`} {isLoading && "Fetching..."}</Typography>
                         </Box>
                     )}
                 </Box>
@@ -86,7 +86,8 @@ export const TraineeProfile = ({ user, wallet, getWallet, token }) => {
 const mapStateToProps = (state) => ({
     user: state?.auth?.user,
     token: state?.auth?.token,
-    wallet: state?.auth?.wallet
+    wallet: state?.auth?.wallet,
+    isLoading: state?.auth?.isLoading
 });
 
 const mapDispatchToProps = { getWallet };

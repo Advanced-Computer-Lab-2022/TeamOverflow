@@ -73,5 +73,10 @@ export const REQUESTS_SUCCESS = "REQUESTS_SUCCESS";
 export const REQUESTS_FAIL = "REQUESTS_FAIL";
 export const REQUESTS = "REQUESTS";
 
+//Corporations
+export const CORPORATIONS_SUCCESS = "CORPORATIONS_SUCCESS";
+export const CORPORATIONS_FAIL = "CORPORATIONS_FAIL";
+export const CORPORATIONS = "CORPORATIONS";
+
 //Terms
 export const TERMS = "TERMS";
