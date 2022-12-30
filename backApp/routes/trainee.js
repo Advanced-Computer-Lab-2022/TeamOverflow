@@ -91,8 +91,6 @@ router.put("/edit", verifyTrainee, async (req, res) => {
     return res.status(400).json({ message: "Edit Failed" })
   }
 })
-module.exports = router;
-
 
 router.get('/checkOut', verifyTrainee, async function (req, res) {
   try {

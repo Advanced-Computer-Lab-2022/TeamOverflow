@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Typography, Container, CssBaseline, Button, FormHelperText, Select, MenuItem } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
-import { NavLink } from 'react-router-dom';
+import { Navigate, NavLink, useNavigate } from 'react-router-dom';
 import { logout } from '../../app/store/actions/authActions';
 import countryList from 'country-json/src/country-by-name.json'
 import { selectCountry } from '../../app/store/actions/traineeActions';
@@ -10,6 +10,8 @@ import { selectCountry } from '../../app/store/actions/traineeActions';
 const theme = createTheme();
 
 export const Home = ({ auth, logout, selectCountry }) => {
+
+  const navigate = useNavigate();
 
   const [country, setCountry] = React.useState(auth.user.country)
   const handleCountryChange = (event) => {

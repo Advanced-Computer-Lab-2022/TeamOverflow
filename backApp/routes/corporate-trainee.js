@@ -48,6 +48,32 @@ router.post('/create', async function (req, res) {
   }
 })
 
+//edit corporate trainee
+router.put("/edit", verifyCorpTrainee, async (req, res) => {
+  try {
+    var update = {
+      name: req.body.name ? req.body.name : undefined,
+      email: req.body.email ? req.body.email : undefined,
+      country: req.body.country ? req.body.country : undefined
+    }
+    console.log(update)
+    var user = await CorporateTrainee.findByIdAndUpdate(req.reqId, update, { new: true }).select({ password: 0 });
+    return res.status(200).json(user)
+  } catch (err) {
+    return res.status(400).json({ message: "Edit Failed" })
+  }
+})
+
+//accept terms and conditions
+router.put("/acceptTerms", verifyCorpTrainee, async (req, res) => {
+  try {
+    var user = await CorporateTrainee.findByIdAndUpdate(req.reqId, { $set: { acceptedTerms: true } }, { new: true }).select({ password: 0 });
+    return res.status(200).json(user)
+  } catch (err) {
+    return res.status(400).json({ message: "Terms Acceptance Failed" })
+  }
+})
+
 router.post("/selectCountry", verifyCorpTrainee, async (req, res) => {
   try {
     await CorporateTrainee.updateOne({ _id: req.reqId }, { country: req.body.country })

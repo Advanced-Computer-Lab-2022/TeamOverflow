@@ -27,6 +27,12 @@ router.get('/', function (req, res) {
 
 });
 
+//Get corporations
+router.get('/corporations', verifyAdmin, async function (req, res) {
+  var results = await Corporate.findOne({})
+  res.status(200).json(results.corporates)
+});
+
 //add many users
 router.post('/addMany', verifyAdmin, async function (req, res) {
   res.setTimeout(0);
@@ -108,7 +114,7 @@ router.post('/addMany', verifyAdmin, async function (req, res) {
           email: req.body.trainees[i].email,
           corporation: req.body.trainees[i].corporation
         })
-        if(!corporations.corporates.includes(req.body.trainees[i].corporation)){
+        if (!corporations.corporates.includes(req.body.trainees[i].corporation)) {
           var newCorps = [req.body.trainees[i].corporation]
           newCorps.push(corporations.corporates)
           corporations.$set("corporates", newCorps.flat())
@@ -208,7 +214,7 @@ router.post('/defineDiscount', verifyAdmin, async function (req, res) {
     if (moment(req.body.startDate).isBefore(req.body.deadline)) {
       const courses = req.body.courseIds
       for (let i = 0; i < courses.length; i++) {
-        await Course.findByIdAndUpdate(courses[i], { $set: { discount: req.body.discount, deadline: req.body.deadline } })
+        await Course.findByIdAndUpdate(courses[i], { $set: { discount: req.body.discount, deadline: req.body.deadline, startDate: req.body.startDate } })
       }
       res.status(200).json({ message: `Discount added to ${courses.length} course(s)` })
     } else {
@@ -236,30 +242,32 @@ router.post('/addAccess', verifyAdmin, async function (req, res) {
   try {
     var users = await CorporateTrainee.find({ corporation: req.body.corporation })
     if (users) {
-      const course = await Course.findById(req.body.courseId).populate("instructorId")
-      const subtitles = await Subtitle.find({ courseId: req.body.courseId }, { _id: 1, exerciseId: 1, videoId: 1 })
-      const itemIds = [course.examId?.toString(), course.videoId?.toString(), subtitles.map((sub) => [sub.exerciseId?.toString(), sub.videoId?.toString()])].flat().flat()
-      var completion = {}
-      for (let i = 0; i < itemIds.length; i++) {
-        if (itemIds[i]) {
-          completion[itemIds[i]] = false
+      for (let i = 0; i < req.body.courseIds.length; i++) {
+        const course = await Course.findById(req.body.courseIds[i]).populate("instructorId")
+        const subtitles = await Subtitle.find({ courseId: req.body.courseIds[i] }, { _id: 1, exerciseId: 1, videoId: 1 })
+        const itemIds = [course.examId?.toString(), course.videoId?.toString(), subtitles.map((sub) => [sub.exerciseId?.toString(), sub.videoId?.toString()])].flat().flat()
+        var completion = {}
+        for (let i = 0; i < itemIds.length; i++) {
+          if (itemIds[i]) {
+            completion[itemIds[i]] = false
+          }
+        }
+        var courseSubtotal = course.discount && moment().isAfter(course.startDate) && moment().isBefore(course.deadline) ? course.price * ((100 - course.discount) / 100) : course.price
+        for(let j = 0; j<users.length; j++){
+          if (!(await StudentCourses.findOne({ traineeId: users[j]._id, courseId: course._id }))) {
+            const traineeCourse = new StudentCourses({
+              traineeId: users[j]._id,
+              courseId: req.body.courseIds[i],
+              completion: completion
+            });
+            await addAmountOwed(users[j]._id, course, courseSubtotal)
+            await traineeCourse.save();
+            course.$inc("enrolled", 1);
+            await course.save()
+          }
         }
       }
-      var courseSubtotal = course.discount && moment().isAfter(course.startDate) && moment().isBefore(course.deadline) ? course.price * ((100 - course.discount) / 100) : course.price
-      users.map(async (user) => {
-        if (!(await StudentCourses.findOne({ traineeId: user._id, courseId: course._id }))) {
-          const traineeCourse = new StudentCourses({
-            traineeId: user._id,
-            courseId: req.body.courseId,
-            completion: completion
-          });
-          await addAmountOwed(user._id, course, courseSubtotal)
-          await traineeCourse.save();
-          course.$inc("enrolled", 1)
-          await course.save()
-        }
-      })
-      res.status(200).json({ message: `Access to "${course.title}" granted to ${req.body.corporation}` })
+      res.status(200).json({ message: `Access to ${req.body.courseIds.length} course(s) granted to ${req.body.corporation}` })
     } else {
       res.status(400).json({ message: "No users in this corporation" })
     }

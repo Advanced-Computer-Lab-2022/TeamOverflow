@@ -7,7 +7,7 @@ import { useLocation } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import Profile from "./Pages/InstructorPages/Profile";
 import { EditTraineePassword } from "./Pages/TraineePages";
-import { AdminProfile, EditAdminPassword, EditAdminProfile, Requests } from "./Pages/AdminPages";
+import { AddAccess, AdminProfile, EditAdminPassword, EditAdminProfile, Requests } from "./Pages/AdminPages";
 
 export const Router = () => {
   return (
@@ -25,7 +25,7 @@ export const Router = () => {
         <Route path="/Admin/editPassword" exact element={<EditAdminPassword />} />
         <Route path="/Admin/requests" exact element={<Requests />} />
         <Route path="/Admin/promotions" exact element={<DefineDiscounts />} />
-
+        <Route path="/Admin/access" exact element={<AddAccess />} />
       </Route>
       <Route exact element={<ProtectedRoute allowed={["Instructor"]} />}>
         <Route path="/courses/instructor" exact element={<InstructorCourses />} />
@@ -54,6 +54,9 @@ export const Router = () => {
       </Route>
       <Route exact element={<ProtectedRoute allowed={["Corporate"]} />}>
         <Route path="/Corporate" exact element={<TraineeHome />} />
+        <Route path="/Corporate/profile" exact element={<TraineeProfile />} />
+        <Route path="/Corporate/edit" exact element={<EditTraineeProfile />} />
+        <Route path="/Corporate/editPassword" exact element={<EditTraineePassword />} />
       </Route>
       <Route exact element={<ProtectedRoute allowed={["Corporate", "Trainee", "Guest", "Instructor"]} />}>
         <Route path="/courses" exact element={<AllCourses />} />

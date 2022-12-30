@@ -31,7 +31,7 @@ router.get('/allSubj', async function (req, res) {
 })
 
 // preview course
-router.get('/view', verifyAllUsers, async function (req, res) {
+router.get('/view', verifyAllUsersCorp, async function (req, res) {
   try {
     var result = await coursePreview(req.query.id, req.reqId)
     res.status(200).json(result)
@@ -164,7 +164,7 @@ async function searchAndFilterCourse(data, reqId) {
   var minRate = minRating || 0
   var maxRate = maxRating || 5
   const currency = getCode(user?.country)
-  var min = minPrice ? await forexBack(minPrice, currency): 0
+  var min = minPrice ? await forexBack(minPrice, currency) : 0
   var max = maxPrice ? await forexBack(maxPrice, currency) : 10000
   console.log(min, max)
   const mongoQuery = { published: true, price: { $gte: min, $lt: max }, subject: sub, rating: { $gte: minRate, $lte: maxRate }, ...search }
@@ -183,15 +183,17 @@ async function searchAndFilterCourse(data, reqId) {
 
 async function coursePreview(id, reqId) {
   var user = (await Trainee.findById(reqId) || await Corporate.findById(reqId) || await Instructor.findById(reqId))
-  var course = await Course.findById(id).populate(["videoId", {path: "instructorId", select:{_id: 1, name: 1, username: 1, email: 1}}])
+  var course = await Course.findById(id).populate(["videoId", { path: "instructorId", select: { _id: 1, name: 1, username: 1, email: 1 } }])
   var subtitles = await Subtitle.find({ courseId: id })
   var courseObj = JSON.parse(JSON.stringify(course))
-  if(user?.bearer !== "Instructor"){
-    var regCourse = await StudentCourses.findOne({courseId: id, traineeId: reqId})
+  if (user?.bearer !== "Instructor") {
+    var regCourse = await StudentCourses.findOne({ courseId: id, traineeId: reqId })
     courseObj.isEnrolled = regCourse !== null
   }
-  courseObj.currency = getCode(user?.country)
-  courseObj.price = await forexCode(courseObj.price, courseObj.currency)
+  if (user?.bearer !== "Corporate") {
+    courseObj.currency = getCode(user?.country)
+    courseObj.price = await forexCode(courseObj.price, courseObj.currency)
+  }
   courseObj.subtitles = JSON.parse(JSON.stringify(subtitles))
   return courseObj
 }

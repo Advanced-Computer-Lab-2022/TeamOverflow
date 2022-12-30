@@ -1,5 +1,5 @@
 import {getRequest, postRequest, putRequest } from "../../../core/network";
-import { CREATE, CREATE_SUCCESS, CREATE_FAIL, UPDATE_USER, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL, REQUESTS, REQUESTS_FAIL, REQUESTS_SUCCESS } from "./types";
+import { CREATE, CREATE_SUCCESS, CREATE_FAIL, UPDATE_USER, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL, REQUESTS, REQUESTS_FAIL, REQUESTS_SUCCESS, CORPORATIONS, CORPORATIONS_SUCCESS, CORPORATIONS_FAIL } from "./types";
 import endpoints from "../../../constants/endPoints.json";
 import { notification } from "antd";
 
@@ -43,7 +43,7 @@ export const addUser = (data, navigate) => (dispatch) => {
 
 export const addUsers = (data, navigate) => (dispatch) => {
   dispatch({ type: CREATE });
-  var { admins, instructors, trainees, token } = data
+  var { token } = data
 
   postRequest(data, undefined, undefined, token, endpoints.auth.admin.addMany)
     .then((response) => {
@@ -234,3 +234,42 @@ export const defineDiscount = (data) => (dispatch) => {
     });
 };
 
+export const addAccess = (data) => (dispatch) => {
+  var { info, token } = data
+
+  postRequest(info, undefined, undefined, token, endpoints.admin.addAccess)
+    .then((response) => {
+      const { data } = response;
+      notification.success({ message: data.message })
+    })
+    .catch((err) => {
+      notification.error({ message: err?.response?.data?.message })
+      console.log(err);
+      return dispatch({
+        type: REQUESTS_FAIL,
+      });
+    });
+};
+
+export const getCorporations = (token) => (dispatch) => {
+
+  dispatch({
+    type: CORPORATIONS
+  })
+
+  getRequest(undefined, undefined, token, endpoints.admin.getCorporations)
+    .then((response) => {
+      const { data } = response;
+      dispatch({
+        type: CORPORATIONS_SUCCESS,
+        payload: data
+      })
+    })
+    .catch((err) => {
+      notification.error({ message: err?.response?.data?.message })
+      console.log(err);
+      return dispatch({
+        type: CORPORATIONS_FAIL
+      })
+    });
+};

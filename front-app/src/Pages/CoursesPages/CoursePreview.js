@@ -24,10 +24,11 @@ import { getPaymentLink } from '../../app/store/actions/traineeActions';
 import { getWallet } from '../../app/store/actions/authActions';
 import School from '@mui/icons-material/School';
 import Stars from '@mui/icons-material/Stars';
+import { notification } from 'antd';
 
 const theme = createTheme();
 
-export const PreviewCourse = ({ auth, viewCourse, course, isLoading, getWallet, getPaymentLink }) => {
+export const PreviewCourse = ({ auth, viewCourse, course, isLoading, getWallet, getPaymentLink, requestAccess }) => {
 
     const courseId = useParams().id
     const navigate = useNavigate()
@@ -40,6 +41,7 @@ export const PreviewCourse = ({ auth, viewCourse, course, isLoading, getWallet, 
 
     const handleEnroll = (event) => {
         setWalletOpen(false)
+        notification.info({message: "Redirecting to payment gateway..."})
         getPaymentLink({
             courseId: courseId,
             fromWallet: event.target.value,
@@ -53,6 +55,7 @@ export const PreviewCourse = ({ auth, viewCourse, course, isLoading, getWallet, 
     }
 
     const handleRequest = (event) => {
+        notification.info({message: "Sending Request..."})
         requestAccess({
             courseId: courseId,
             token: auth?.token
@@ -76,12 +79,12 @@ export const PreviewCourse = ({ auth, viewCourse, course, isLoading, getWallet, 
                     </Grid>
                     <Grid item xs={2}>
                         <Box sx={{ ...centered_flex_box, flexDirection: "column" }}>
-                            {
-                                (course?.deadline && course?.startDate && moment().isBefore(course?.deadline) && moment().isAfter(course?.startDate)) ? (<>
+                            {role !== "Corporate" &&
+                                ((course?.deadline && course?.startDate && moment().isBefore(course?.deadline) && moment().isAfter(course?.startDate)) ? (<>
                                     <Chip sx={{ color: "green", fontSize: 27, mb: 1, bgcolor: "var(--mainWhite)", p: 2 }} label={`${course?.currency} ${(course?.price * (100 - course?.discount) / 100).toFixed(2)}`} />
                                 </>) : (<>
                                     <Chip sx={{ color: "var(--secColor)", fontSize: 27, mb: 1, bgcolor: "var(--mainWhite)", p: 2 }} label={`${course?.currency} ${course?.price}`} />
-                                </>)
+                                </>))
                             }
                             {role === "Trainee" && !course?.isEnrolled && (<>
                                 <Button onClick={handleOpenWallet} sx={sec_button}><ShoppingCartCheckoutIcon /> Enroll in Course</Button>
@@ -112,15 +115,15 @@ export const PreviewCourse = ({ auth, viewCourse, course, isLoading, getWallet, 
                         <Grid item><Typography fontSize={27} ><Stars fontSize='large' />   <NavLink className="a3" to={`/instructor/ratings/${course?.instructorId?._id}`}>View Instructor Ratings</NavLink></Typography></Grid>
                         <Grid item><Typography fontSize={27} ><GroupsIcon fontSize='large' />   {course?.enrolled} Students</Typography></Grid>
                         <Grid item><Typography fontSize={27} ><AccessTimeIcon fontSize='large' />   {course?.totalHours} Hours of content</Typography></Grid>
-                        {
-                            (course?.deadline && course?.startDate && moment().isBefore(course?.deadline) && moment().isAfter(course?.startDate)) ? (<>
+                        {role !== "Corporate" &&
+                            ((course?.deadline && course?.startDate && moment().isBefore(course?.deadline) && moment().isAfter(course?.startDate)) ? (<>
                                 <Grid item><Typography fontSize={27} ><AttachMoneyIcon fontSize='large' />   {course?.currency} {(course?.price * (100 - course?.discount) / 100).toFixed(2)}</Typography></Grid>
                                 <Grid item><Typography fontSize={27} ><DiscountIcon fontSize='large' />   {course?.discount}% off</Typography></Grid>
                                 <Grid item><Typography fontSize={27} ><AlarmOffIcon fontSize='large' />   Discount ends {moment(course?.deadline).fromNow()}</Typography></Grid>
                             </>) : (<>
                                 <Grid item><Typography fontSize={27} ><AttachMoneyIcon fontSize='large' />   {course?.currency} {course?.price}</Typography></Grid>
                                 <Grid item><Typography fontSize={27} ><DiscountIcon fontSize='large' />   No discount</Typography></Grid>
-                            </>)
+                            </>))
                         }
                     </Grid>
                 </Grid>
@@ -147,7 +150,7 @@ const mapStateToProps = (state) => ({
     isLoading: state?.courses?.isLoading
 });
 
-const mapDispatchToProps = { viewCourse, getWallet, getPaymentLink };
+const mapDispatchToProps = { viewCourse, getWallet, getPaymentLink, requestAccess };
 
 export default connect(mapStateToProps, mapDispatchToProps)(PreviewCourse);
 

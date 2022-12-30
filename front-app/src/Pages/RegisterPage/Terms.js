@@ -4,13 +4,14 @@ import React from 'react'
 import { connect } from "react-redux";
 import { getTerms } from '../../app/store/actions/authActions';
 import ReactMarkdown from 'react-markdown';
-import { main_button } from '../../app/components/Styles';
+import { confirm_button, main_button } from '../../app/components/Styles';
 import { useNavigate } from 'react-router-dom';
+import { acceptTerms } from '../../app/store/actions/corporateActions';
 
-const Terms = ({ getTerms, terms }) => {
+const Terms = ({ getTerms, terms, user, acceptTerms, token }) => {
 
   const navigate = useNavigate();
-  
+
   React.useEffect(() => {
     getTerms();
   }, [])
@@ -29,7 +30,7 @@ const Terms = ({ getTerms, terms }) => {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Terms&Conditions
+          Terms & Conditions
         </Typography>
 
       </Box>
@@ -45,14 +46,25 @@ const Terms = ({ getTerms, terms }) => {
       >
         Back
       </Button>
+      {!user?.acceptedTerms &&
+        <Button
+          variant="contained"
+          sx={{ mx:1, mt: 3, mb: 2, ...confirm_button }}
+          onClick={() => acceptTerms(token, navigate)}
+        >
+          Accept Terms
+        </Button>
+      }
     </Container>
   )
 }
 
 const mapStateToProps = (state) => ({
-  terms: state?.auth?.terms
+  terms: state?.auth?.terms,
+  user: state?.auth?.user,
+  token: state?.auth?.token
 });
 
-const mapDispatchToProps = { getTerms };
+const mapDispatchToProps = { getTerms, acceptTerms };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Terms);

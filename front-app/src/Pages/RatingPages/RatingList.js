@@ -36,7 +36,7 @@ export const RatingsList = ({ auth, ratings, getCoursesRatings, getInstructorRat
             setFormData({ ...formData, courseId: params?.id })
             getCoursesRatings({ ...formData, courseId: params?.id, token: auth?.token })
         } else if (location.pathname.includes("/course/ratings") && role !== "Instructor") {
-            setTitle("Single Course Ratings");
+            setTitle("Course Ratings");
             setFormData({ ...formData, courseId: params?.id })
             viewCoursesRatings({ ...formData, courseId: params?.id, token: auth?.token })
         } else if (location.pathname === "/Instructor/ratings" && role === "Instructor") {
