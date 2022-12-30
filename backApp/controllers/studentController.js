@@ -15,6 +15,7 @@ const { forex } = require('../controllers/currencyController');
 const Trainee = require('../models/Trainee');
 const Requests = require('../models/Requests');
 const Notes = require('../models/Notes');
+const { populate } = require('../models/CourseRating');
 
 function calculateProgress(completion) {
   var progress = 0
@@ -85,8 +86,8 @@ async function submitSolution(req, res, regCourse) {
 
 async function openCourse(req, res) {
   try {
-    var course = await Course.findById(req.query.courseId).populate(["videoId", { path: "examId", select: { correctIndecies: 0 } }, {path: "instructorId", select:{name: 1, email: 1, bio: 1, rating:1, numberOfRatings: 1}}]).select({ examId: { correctIndecies: 0 } })
-    var registration = await StudentCourses.findOne({traineeId: req.reqId, courseId: req.query.courseId})
+    var course = await Course.findById(req.query.courseId).populate(["videoId", { path: "examId", select: { correctIndecies: 0 } }, { path: "instructorId", select: { name: 1, email: 1, bio: 1, rating: 1, numberOfRatings: 1 } }]).select({ examId: { correctIndecies: 0 } })
+    var registration = await StudentCourses.findOne({ traineeId: req.reqId, courseId: req.query.courseId })
     var courseObj = course?.toJSON()
     courseObj.progress = calculateProgress(registration.completion)
     courseObj.price = await forex(courseObj.price, req.user.country)
@@ -168,7 +169,7 @@ async function addNote(req, res) {
 
 async function getCourseReviews(req, res) {
   try {
-    const results = CourseRating.paginate({courseId: req.query.courseId}, {page: req.query.page, limit:12})
+    const results = await CourseRating.paginate({ courseId: req.query.courseId }, { page: req.query.page, limit: 12, populate: "courseId" })
     res.status(200).json(results)
   } catch (err) {
     res.status(400).json({ message: err.message })
@@ -177,7 +178,7 @@ async function getCourseReviews(req, res) {
 
 async function getInstructorReviews(req, res) {
   try {
-    const results = InstructorRating.paginate({instructorId: req.query.instructorId}, {page: req.query.page, limit:12})
+    const results = await InstructorRating.paginate({ instructorId: req.query.instructorId }, { page: req.query.page, limit: 12, populate: { path: "instructorId", select: { name: 1, username: 1 } } })
     res.status(200).json(results)
   } catch (err) {
     res.status(400).json({ message: err.message })

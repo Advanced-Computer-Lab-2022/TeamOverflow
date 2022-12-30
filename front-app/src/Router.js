@@ -38,6 +38,7 @@ export const Router = () => {
         <Route path="/Instructor/contract" exact element={<InstructorContract />} />
         <Route path="/Instructor/invoices" exact element={<Invoices />} />
         <Route path="/courses/create" exact element={<CreateCourse />} />
+        <Route path="/courses/ratings/:id" exact element={<RatingList />} />
         <Route path="/courses/ratings" exact element={<RatingList />} />
         <Route path="/course/exercise/create/:id" exact element={<CreateExam />} />
         <Route path="/course/exercise/view/:id" exact element={<ViewExam />} />
@@ -69,6 +70,8 @@ export const Router = () => {
       </Route>
       <Route exact element={<ProtectedRoute allowed={["Corporate", "Trainee"]} />}>
         <Route path="/Rate/:id" exact element={<Rate />} />
+        <Route path="/instructor/ratings/:id" exact element={<RatingList />} />
+        <Route path="/course/ratings/:id" exact element={<RatingList />} />
         <Route path="/courses/student" exact element={<TraineeCourses />} />
         <Route path="/courses/student/single/:id" exact element={<SingleCourse />} />
         <Route path="/course/watch/:courseId/:videoId" exact element={<StudentVidView />} />

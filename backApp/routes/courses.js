@@ -183,7 +183,7 @@ async function searchAndFilterCourse(data, reqId) {
 
 async function coursePreview(id, reqId) {
   var user = (await Trainee.findById(reqId) || await Corporate.findById(reqId) || await Instructor.findById(reqId))
-  var course = await Course.findById(id).populate("videoId")
+  var course = await Course.findById(id).populate(["videoId", {path: "instructorId", select:{_id: 1, name: 1, username: 1, email: 1}}])
   var subtitles = await Subtitle.find({ courseId: id })
   var courseObj = JSON.parse(JSON.stringify(course))
   if(user?.bearer !== "Instructor"){

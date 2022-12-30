@@ -22,6 +22,8 @@ import ReactPlayer from 'react-player/youtube';
 import { requestAccess } from '../../app/store/actions/corporateActions';
 import { getPaymentLink } from '../../app/store/actions/traineeActions';
 import { getWallet } from '../../app/store/actions/authActions';
+import School from '@mui/icons-material/School';
+import Stars from '@mui/icons-material/Stars';
 
 const theme = createTheme();
 
@@ -91,8 +93,8 @@ export const PreviewCourse = ({ auth, viewCourse, course, isLoading, getWallet, 
                     </Grid>
                 </Grid>
                 <Typography variant="h5" sx={{ color: "var(--mainWhite)" }}>{course?.subject}</Typography>
-                <Rating readOnly value={course?.rating} />
-                <Typography variant="p" sx={{ color: "var(--mainWhite)" }}>{course?.numberOfRatings} Ratings</Typography>
+                <Rating size='large' readOnly value={course?.rating} />
+                <NavLink className="a2" to={`/course/ratings/${course?._id}`}>View {course?.numberOfRatings} Ratings</NavLink>
                 <Typography textAlign="justify" variant="p" fontSize={18} sx={{ color: "var(--mainWhite)", mt: 2, mb: 10, maxWidth: "90%" }}>{course?.summary}</Typography>
 
             </Box>
@@ -106,9 +108,10 @@ export const PreviewCourse = ({ auth, viewCourse, course, isLoading, getWallet, 
                 </Grid>
                 <Grid sx={{ bgcolor: "var(--secWhite)", p: 2 }} item xs={4}>
                     <Grid container justifyContent="space-evenly" direction="column" sx={{ minHeight: "100%" }}>
+                        <Grid item><Typography fontSize={27} ><School fontSize='large' />   {course?.instructorId?.name || course?.instructorId?.username}</Typography></Grid>
+                        <Grid item><Typography fontSize={27} ><Stars fontSize='large' />   <NavLink className="a3" to={`/instructor/ratings/${course?.instructorId?._id}`}>View Instructor Ratings</NavLink></Typography></Grid>
                         <Grid item><Typography fontSize={27} ><GroupsIcon fontSize='large' />   {course?.enrolled} Students</Typography></Grid>
                         <Grid item><Typography fontSize={27} ><AccessTimeIcon fontSize='large' />   {course?.totalHours} Hours of content</Typography></Grid>
-                        <Grid item><Typography fontSize={27} ><CloudIcon fontSize='large' />   {course?.published ? "Published" : "Unpublished"} course</Typography></Grid>
                         {
                             (course?.deadline && course?.startDate && moment().isBefore(course?.deadline) && moment().isAfter(course?.startDate)) ? (<>
                                 <Grid item><Typography fontSize={27} ><AttachMoneyIcon fontSize='large' />   {course?.currency} {(course?.price * (100 - course?.discount) / 100).toFixed(2)}</Typography></Grid>

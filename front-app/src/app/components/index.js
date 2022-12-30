@@ -11,5 +11,6 @@ import RefundsCard from "./RefundsCard";
 import SubCard from "./SubCard";
 import RatingModal from "./RatingModal";
 import ReportModal from "./ReportModal";
+import ReviewCard from "./ReviewCard";
 
-export {ReportModal, RatingModal, SubCard, TopBar, CourseCard, RegisteredCourseCard, InstructorCourseCard, ReportCard, ActionModal, WalletModal, SubtitleCard, RefundsCard, RequestsCard}
+export {ReviewCard,ReportModal, RatingModal, SubCard, TopBar, CourseCard, RegisteredCourseCard, InstructorCourseCard, ReportCard, ActionModal, WalletModal, SubtitleCard, RefundsCard, RequestsCard}

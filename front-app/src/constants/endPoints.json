@@ -1,7 +1,8 @@
 {
    "auth": {
       "admin":{
-         "add":"admin/addAdmin"
+         "add":"admin/addAdmin",
+         "addMany":"admin/addMany"
       },
       "instructor":{
          "add":"admin/addInstructor"
@@ -103,6 +104,8 @@
    },
    "rate":{
       "rateInstructor":"rate/instructor",
-      "rateCourse":"rate/course"
+      "rateCourse":"rate/course",
+      "viewInstructorRatings":"rate/instructor",
+      "viewCourseRatings":"rate/course"
    }
 }

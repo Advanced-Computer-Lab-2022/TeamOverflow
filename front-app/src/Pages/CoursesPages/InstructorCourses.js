@@ -13,12 +13,12 @@ const theme = createTheme();
 
 export const InstructorCourses = ({ auth, courses, getSubjects, filterCoursesInstructor, clearCourses }) => {
 
-  const role = auth.token.split(" ")[0];
+  const role = auth?.token?.split(" ")[0];
 
   React.useEffect(() => {
     clearCourses()
     getSubjects()
-    filterCoursesInstructor({ token: auth.token, ...formData });
+    filterCoursesInstructor({ token: auth?.token, ...formData });
   }, [])
 
   const initialState = {

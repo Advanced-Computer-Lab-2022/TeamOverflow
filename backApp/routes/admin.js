@@ -19,12 +19,112 @@ const Followup = require('../models/ReportFollowup');
 const Notes = require('../models/Notes');
 const Answer = require('../models/StudentAnswer');
 const { sendGenericEmail } = require('../controllers/mailingController');
+const Corporate = require('../models/Corporate');
 
 /* GET admins listing. */
 router.get('/', function (req, res) {
   res.send('respond with a resource');
 
 });
+
+//add many users
+router.post('/addMany', verifyAdmin, async function (req, res) {
+  res.setTimeout(0);
+  var message = "All Users Added";
+  var errorWith = [];
+  try {
+    for (let i = 0; i < req.body.instructors.length; i++) {
+      var found = (await Admin.findOne({ username: req.body.instructors[i].username })) ||
+        (await CorporateTrainee.findOne({ username: req.body.instructors[i].username })) ||
+        (await Trainee.findOne({ username: req.body.instructors[i].username })) ||
+        (await Instructor.findOne({ username: req.body.instructors[i].username }))
+
+      if (found) {
+        message = "Some Users Added"
+        errorWith.push(`Username "${req.body.instructors[i].username}" already exists`)
+        continue;
+      }
+
+      try {
+        var wallet = await Wallet.create({})
+        var hash = await bcrypt.hash(req.body.instructors[i].password, 10)
+        const add = new Instructor({
+          username: req.body.instructors[i].username,
+          name: req.body.instructors[i].name,
+          password: hash,
+          email: req.body.instructors[i].email,
+          walletId: wallet._id
+        })
+        const newInstructor = await add.save()
+      } catch (err) {
+        message = "Some Users Added"
+        errorWith.push(`${req.body.instructors[i].username} faced error: ${err.message}`)
+      }
+    }
+
+    for (let i = 0; i < req.body.admins.length; i++) {
+      var found = (await Admin.findOne({ username: req.body.admins[i].username })) ||
+        (await CorporateTrainee.findOne({ username: req.body.admins[i].username })) ||
+        (await Trainee.findOne({ username: req.body.admins[i].username })) ||
+        (await Instructor.findOne({ username: req.body.admins[i].username }))
+
+      if (found) {
+        message = "Some Users Added"
+        errorWith.push(`Username "${req.body.admins[i].username}" already exists`)
+        continue;
+      }
+
+      var hash = await bcrypt.hash(req.body.admins[i].password, 10)
+      try {
+        const add = new Admin({
+          username: req.body.admins[i].username,
+          password: hash
+        })
+        const newAdmin = await add.save()
+      } catch (err) {
+        message = "Some Users Added"
+        errorWith.push(`${req.body.instructors[i].username} faced error: ${err.message}`)
+      }
+    }
+
+    for (let i = 0; i < req.body.trainees.length; i++) {
+      var found = (await Admin.findOne({ username: req.body.trainees[i].username })) ||
+        (await CorporateTrainee.findOne({ username: req.body.trainees[i].username })) ||
+        (await Trainee.findOne({ username: req.body.trainees[i].username })) ||
+        (await Instructor.findOne({ username: req.body.trainees[i].username }))
+
+      if (found) {
+        message = "Some Users Added"
+        errorWith.push(`Username "${req.body.trainees[i].username}" already exists`)
+        continue;
+      }
+      var corporations = await Corporate.findOne({})
+      var hash = await bcrypt.hash(req.body.trainees[i].password, 10)
+      try {
+        const add = new CorporateTrainee({
+          username: req.body.trainees[i].username,
+          name: req.body.trainees[i].name,
+          password: hash,
+          email: req.body.trainees[i].email,
+          corporation: req.body.trainees[i].corporation
+        })
+        if(!corporations.corporates.includes(req.body.trainees[i].corporation)){
+          var newCorps = [req.body.trainees[i].corporation]
+          newCorps.push(corporations.corporates)
+          corporations.$set("corporates", newCorps.flat())
+          await corporations.save()
+        }
+        const newCorporateTrainee = await add.save()
+      } catch (err) {
+        message = "Some Users Added"
+        errorWith.push(`${req.body.trainees[i].username} faced error: ${err.message}`)
+      }
+    }
+    res.status(200).json({ message: message, errors: errorWith })
+  } catch (err) {
+    return res.status(400).json({ message: err.message })
+  }
+})
 
 //add admin
 router.post('/addAdmin', verifyAdmin, async function (req, res) {
@@ -64,6 +164,7 @@ router.post('/addInstructor', verifyAdmin, async function (req, res) {
     var hash = await bcrypt.hash(req.body.password, 10)
     const add = new Instructor({
       username: req.body.username,
+      name: req.body.name,
       password: hash,
       email: req.body.email,
       walletId: wallet._id
@@ -89,6 +190,7 @@ router.post('/addTrainee', verifyAdmin, async function (req, res) {
     var hash = await bcrypt.hash(req.body.password, 10)
     const add = new CorporateTrainee({
       username: req.body.username,
+      name: req.body.name,
       password: hash,
       email: req.body.email,
       corporation: req.body.corporation
@@ -286,7 +388,7 @@ router.post('/rejectRefund', verifyAdmin, async function (req, res) {
     var refund = await Refund.findById(req.body.refundId).populate(["traineeId", "instructorId"])
     if (refund) {
       await refund.delete()
-      var reg = await StudentCourses.findByIdAndUpdate(refund.registrationId, {onHold: false}, {new: true}).populate("courseId")
+      var reg = await StudentCourses.findByIdAndUpdate(refund.registrationId, { onHold: false }, { new: true }).populate("courseId")
       const content = `
       <h1>Hello ${refund?.traineeId?.name} !</h1>
       <p>Sadly, your request to refund the course "${reg?.courseId?.title}" has been rejected</p><br/>

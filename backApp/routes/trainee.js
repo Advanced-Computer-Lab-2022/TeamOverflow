@@ -25,6 +25,8 @@ const { forexBack, forexCode, getCode } = require('../controllers/currencyContro
 const { reportProblem, viewReports, viewOneReport, addFollowup } = require('../controllers/reportController');
 const moment = require("moment");
 const Invoice = require('../models/Invoice');
+const Admin = require('../models/Admin');
+const CorporateTrainee = require('../models/CorporateTrainee');
 
 /* GET trainees listing. */
 router.get('/', async function (req, res) {

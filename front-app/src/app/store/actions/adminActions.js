@@ -41,6 +41,29 @@ export const addUser = (data, navigate) => (dispatch) => {
     });
 };
 
+export const addUsers = (data, navigate) => (dispatch) => {
+  dispatch({ type: CREATE });
+  var { admins, instructors, trainees, token } = data
+
+  postRequest(data, undefined, undefined, token, endpoints.auth.admin.addMany)
+    .then((response) => {
+      const { data } = response;
+      console.log(data)
+      notification.success({ message: data.message })
+      navigate(-1)
+      return dispatch({
+        type: CREATE_SUCCESS,
+      });
+    })
+    .catch((err) => {
+      notification.error({ message: err?.response?.data?.message })
+      console.log(err);
+      return dispatch({
+        type: CREATE_FAIL,
+      });
+    });
+};
+
 
 export const editProfile = (data) => (dispatch) => {
   dispatch({ type: UPDATE_USER });
