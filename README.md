@@ -91,87 +91,87 @@ And our website itself is in a private repository on GitHub.
 ## ScreenShots
 ##### Admin
 
-![alt text](assets/images/screenshot1.png)
+![alt text](assets/images/Screenshot1.png)
 
 
-![alt text](assets/images/screenshot2.png)
+![alt text](assets/images/Screenshot2.png)
 
 
-![alt text](assets/images/screenshot3.png)
+![alt text](assets/images/Screenshot3.png)
 
 
-![alt text](assets/images/screenshot4.png)
+![alt text](assets/images/Screenshot4.png)
 
 
-![alt text](assets/images/screenshot5.png)
+![alt text](assets/images/Screenshot5.png)
 
 
-![alt text](assets/images/screenshot6.png)
+![alt text](assets/images/Screenshot6.png)
 
 ##### Individual Trainee
 
-![alt text](assets/images/screenshot7.png)
+![alt text](assets/images/Screenshot7.png)
 
 
-![alt text](assets/images/screenshot8.png)
+![alt text](assets/images/Screenshot8.png)
 
 
-![alt text](assets/images/screenshot9.png)
+![alt text](assets/images/Screenshot9.png)
 
 
-![alt text](assets/images/screenshot10.png)
+![alt text](assets/images/Screenshot10.png)
 
 
-![alt text](assets/images/screenshot11.png)
+![alt text](assets/images/Screenshot11.png)
 
 
-![alt text](assets/images/screenshot12.png)
+![alt text](assets/images/Screenshot12.png)
 
 
-![alt text](assets/images/screenshot13.png)
+![alt text](assets/images/Screenshot13.png)
 
 
-![alt text](assets/images/screenshot14.png)
+![alt text](assets/images/Screenshot14.png)
 
 
-![alt text](assets/images/screenshot15.png)
+![alt text](assets/images/Screenshot15.png)
 
 ##### Instructor
 
-![alt text](assets/images/screenshot16.png)
+![alt text](assets/images/Screenshot16.png)
 
 
-![alt text](assets/images/screenshot17.png)
+![alt text](assets/images/Screenshot17.png)
 
 
-![alt text](assets/images/screenshot18.png)
+![alt text](assets/images/Screenshot18.png)
 
 
-![alt text](assets/images/screenshot19.png)
+![alt text](assets/images/Screenshot19.png)
 
 
-![alt text](assets/images/screenshot20.png)
+![alt text](assets/images/Screenshot20.png)
 
 
-![alt text](assets/images/screenshot21.png)
+![alt text](assets/images/Screenshot21.png)
 
 
-![alt text](assets/images/screenshot22.png)
+![alt text](assets/images/Screenshot22.png)
 
 
-![alt text](assets/images/screenshot23.png)
+![alt text](assets/images/Screenshot23.png)
 
 
-![alt text](assets/images/screenshot24.png)
+![alt text](assets/images/Screenshot24.png)
 
 
-![alt text](assets/images/screenshot25.png)
+![alt text](assets/images/Screenshot25.png)
 
 
-![alt text](assets/images/screenshot26.png)
+![alt text](assets/images/Screenshot26.png)
 
 
-![alt text](assets/images/screenshot27.png)
+![alt text](assets/images/Screenshot27.png)
 
 
 
