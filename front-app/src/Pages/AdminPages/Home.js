@@ -3,7 +3,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 import { Typography, Box, Container, CssBaseline, Button, FormHelperText, Select, MenuItem, Rating, CircularProgress, Avatar } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
@@ -43,7 +43,7 @@ export const Home = ({ auth, logout, viewRequests, viewRefunds}) => {
       </Box>
       <Typography variant="h3" sx={{ color: "var(--secColor)", mb: 5 }}>Your Actions</Typography>
       <Box sx={centered_flex_box}>
-        <Button onClick={() => { navigate("/Admin/addUsers") }} sx={{ width: 200, height: 200, fontSize: 20, mr: 1, ...main_button }}><AutoStoriesIcon fontSize='large' /> Add Users</Button>
+        <Button onClick={() => { navigate("/Admin/addUsers") }} sx={{ width: 200, height: 200, fontSize: 20, mr: 1, ...main_button }}><AccountCircle fontSize='large' /> Add Users</Button>
         <Button onClick={() => { navigate("/Admin/access") }} sx={{ width: 200, height: 200, fontSize: 20, mr: 1, ...main_button }}><AssuredWorkloadIcon fontSize='large' /> Add corporate access</Button>
         <Button onClick={() => { navigate("/Admin/promotions") }} sx={{ width: 200, height: 200, fontSize: 20, mr: 1, ...main_button }}><DiscountIcon fontSize='large' /> Add Promotion</Button><br/>
         <Button onClick={() => { viewRefunds({ info: { page: 1 }, token: auth?.token }); navigate("/Admin/requests") }} sx={{ width: 200, height: 200, fontSize: 20, mr: 1, ...main_button }}><PaidIcon fontSize='large' /> view Refund Requests</Button>
