@@ -12,8 +12,8 @@ const Exercise = require("../models/Exercise");
 const Answer = require("../models/StudentAnswer");
 const Video = require("../models/Video");
 var StudentCourses = require("../models/StudentCourses");
-const { openExercise, getGrade, submitSolution, openCourse, watchVideo, getRegistered, requestCourse } = require('../controllers/studentController');
-const { getNotes } = require("../controllers/pdfController")
+const { openExercise, getGrade, submitSolution, openCourse, watchVideo, getRegistered, requestCourse , calculateProgress} = require('../controllers/studentController');
+const { getNotes, downloadCertificate } = require("../controllers/pdfController")
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const { reportProblem, viewReports, viewOneReport, addFollowup } = require('../controllers/reportController');
@@ -219,8 +219,8 @@ router.get('/downloadCertificate', verifyCorpTrainee, async function (req, res) 
   try {
     const regCourse = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
     if (regCourse) {
-      const progress = calculateProgress(registeredCourse.completion)
-      if (progress === 100) {
+      const progress = calculateProgress(regCourse.completion)
+      if (progress == 100) {
         await downloadCertificate(req, res, regCourse)
       } else {
         res.status(403).json({ message: "You have not completed this course" })

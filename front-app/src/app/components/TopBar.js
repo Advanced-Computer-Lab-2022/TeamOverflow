@@ -26,7 +26,7 @@ import AssuredWorkloadIcon from '@mui/icons-material/AssuredWorkload';
 import { connect } from "react-redux";
 import { logout } from '../store/actions/authActions';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Tooltip } from '@mui/material';
+import { Avatar, Tooltip } from '@mui/material';
 import { viewRefunds, viewRequests } from '../store/actions/adminActions';
 import { centered_flex_box } from './Styles';
 
@@ -166,17 +166,17 @@ function MenuAppBar({ auth, logout, viewRefunds, viewRequests }) {
             {auth.user && (
                 <AppBar position="static" color='inherit'>
                     <Toolbar>
-                        {!location.pathname.includes("/course/solve/exercise/") && 
-                        <IconButton
-                            size="large"
-                            edge="start"
-                            color="inherit"
-                            aria-label="menu"
-                            sx={{ mr: 2 }}
-                            onClick={() => navigate(-1)}
-                        >
-                            <ArrowBackIcon />
-                        </IconButton>}
+                        {!location.pathname.includes("/course/solve/exercise/") &&
+                            <IconButton
+                                size="large"
+                                edge="start"
+                                color="inherit"
+                                aria-label="menu"
+                                sx={{ mr: 2 }}
+                                onClick={() => navigate(-1)}
+                            >
+                                <ArrowBackIcon />
+                            </IconButton>}
                         {role !== "Guest" &&
                             < IconButton
                                 size="large"
@@ -229,8 +229,9 @@ function MenuAppBar({ auth, logout, viewRefunds, viewRequests }) {
 
                             </Menu >
                         )}
+                        <Avatar onClick={handleHome} sx={{cursor: "pointer"}} src={`${process.env.PUBLIC_URL}/logo192.png`} /> 
                         <Typography onClick={handleHome} variant="h6" component="div" sx={{ flexGrow: 1, cursor: "pointer" }}>
-                            CanCham Online Learning System
+                            {" "}CanCham Online Learning System
                         </Typography>
 
 

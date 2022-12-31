@@ -1,4 +1,4 @@
-import { UPDATE_USER, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL, REGISTERING, REGISTERED } from "./types";
+import { UPDATE_USER, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL, REGISTERING, REGISTERED, WAITING, WAITING_SUCCESS, WAITING_FAIL } from "./types";
 import { getRequest, postRequest, putRequest } from "../../../core/network";
 import endpoints from "../../../constants/endPoints.json";
 import { notification } from "antd";
@@ -49,11 +49,13 @@ export const editProfile = (data) => (dispatch) => {
 };
 
 export const getPaymentLink = (data) => (dispatch) => {
+  dispatch({type: WAITING})
   var { courseId, fromWallet, token } = data
 
   getRequest({ courseId: courseId, fromWallet: fromWallet }, undefined, token, endpoints.trainee.getPaymentLink)
     .then((response) => {
       const { data } = response;
+      dispatch({type: WAITING_SUCCESS})
       if(data.paymentUrl) {
         window.open(data.paymentUrl)
       } else {
@@ -62,6 +64,7 @@ export const getPaymentLink = (data) => (dispatch) => {
     })
     .catch((err) => {
       notification.error({ message: err?.response?.data?.message })
+      dispatch({type: WAITING_FAIL})
     });
 };
 

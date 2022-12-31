@@ -7,7 +7,7 @@ import { Card } from '@mui/material';
 import { card_style, main_button } from './Styles';
 import moment from "moment"
 
-function CourseCard({ token, course, isLoading }) {
+function CourseCard({ token, course, isLoading, rank }) {
 
     const role = token.split(" ")[0];
     const navigate = useNavigate();
@@ -29,10 +29,11 @@ function CourseCard({ token, course, isLoading }) {
                 <Grid container>
                     <Grid item xs={10}>
                         <Typography sx={{ fontSize: 24, fontWeight: "bold" }}>
-                            {course.title}
+                            {rank ? `#${rank}. `:""}{course.title}
                         </Typography>
                     </Grid>
                     <Grid item direction="row" alignItems="center" display="flex" justifyContent="flex-end" xs={2}>
+                        {/* {rank && <Chip sx={{ color: "green", borderColor: "green", mx: 1, fontWeight: "bold" }} label={`#${rank}`} variant="outlined" />} */}
                         {role !== "Corporate" && course?.deadline && course?.startDate && moment().isBefore(course?.deadline) && moment().isAfter(course?.startDate) && <Chip sx={{ mx: 1, color: "green", borderColor: "green", fontWeight: "bold" }} label={`${course?.discount}% SALE`} variant="outlined" />}
                         <Chip sx={{ color: "var(--secColor)", borderColor: "var(--secColor)" }} label={`${course.totalHours}h`} variant="outlined" />
                     </Grid>

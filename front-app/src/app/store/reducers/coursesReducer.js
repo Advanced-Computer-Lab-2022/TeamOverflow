@@ -1,8 +1,9 @@
-import { CLEAR_COURSES, COURSE, COURSE_FAIL, COURSE_SUCCESS, REGISTERED, REGISTERING, SINGLE_COURSE_SUCCESS, SUBJECT_SUCCESS } from "../actions/types";
+import { CLEAR_COURSES, COURSE, COURSE_FAIL, COURSE_SUCCESS, POPULAR_FAIL, POPULAR_SUCCESS, REGISTERED, REGISTERING, SINGLE_COURSE_SUCCESS, SUBJECT_SUCCESS } from "../actions/types";
 
 const initialState = {
     results: null,
     single: null,
+    popular: null,
     isLoading: false,
     isError: false,
     subjects: null
@@ -30,6 +31,13 @@ export default function store(state = initialState, action) {
                 isLoading: false,
                 isError: false,
             };
+        case POPULAR_SUCCESS:
+            return {
+                ...state,
+                popular: payload,
+                isLoading: false,
+                isError: false,
+            };
         case COURSE_SUCCESS:
             return {
                 ...state,
@@ -45,11 +53,13 @@ export default function store(state = initialState, action) {
                 isLoading: false,
                 isError: false,
             };
+        case POPULAR_FAIL:
         case COURSE_FAIL:
             return {
                 ...state,
                 results: null,
                 single: null,
+                popular: null,
                 isLoading: false,
                 isError: true,
             };

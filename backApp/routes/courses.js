@@ -93,7 +93,8 @@ router.get('/filter', verifyAllUsersCorp, async function (req, res) {
 //Get 10 most propular courses
 router.get('/mostPopular', verifyAllUsersCorp, async function (req, res) {
   try {
-    var results = await Course.paginate({}, { page: 1, limit: 10, sort: { enrolled: -1, _id: 1 } })
+    var user = (await Trainee.findById(req.reqId) || await Corporate.findById(req.reqId) || await Instructor.findById(req.reqId))
+    var results = await Course.paginate({published: true}, { page: 1, limit: 10, sort: { enrolled: -1, _id: 1 } })
     var allResults = []
     for (let i = 0; i < results.docs.length; i++) {
       var courseObj = JSON.parse(JSON.stringify(results.docs[i]))

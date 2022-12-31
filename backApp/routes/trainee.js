@@ -19,7 +19,7 @@ const Subtitle = require('../models/Subtitle');
 const bcrypt = require('bcrypt');
 const Wallet = require('../models/Wallet');
 const { addAmountOwed, getWallet } = require('../controllers/walletController');
-const { getNotes } = require('../controllers/pdfController');
+const { getNotes, downloadCertificate } = require('../controllers/pdfController');
 const Refund = require('../models/Refund');
 const { forexBack, forexCode, getCode } = require('../controllers/currencyController');
 const { reportProblem, viewReports, viewOneReport, addFollowup } = require('../controllers/reportController');
@@ -284,8 +284,8 @@ router.get('/downloadCertificate', verifyTrainee, async function (req, res) {
   try {
     const regCourse = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
     if (regCourse) {
-      const progress = calculateProgress(registeredCourse.completion)
-      if (progress === 100) {
+      const progress = calculateProgress(regCourse.completion)
+      if (progress == 100) {
         await downloadCertificate(req, res, regCourse)
       } else {
         res.status(403).json({ message: "You have not completed this course" })

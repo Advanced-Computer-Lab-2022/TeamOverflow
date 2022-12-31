@@ -1,63 +1,106 @@
 import * as React from 'react';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
+import NoteAddIcon from '@mui/icons-material/NoteAdd';
+import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import {Typography, Box, Container, CssBaseline, Button, FormHelperText, Select, MenuItem} from '@mui/material';
+import { Typography, Box, Container, CssBaseline, Button, FormHelperText, Select, MenuItem, Rating, CircularProgress, Avatar } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
-import { NavLink } from 'react-router-dom';
+import { Navigate, NavLink, useNavigate } from 'react-router-dom';
 import { logout } from '../../app/store/actions/authActions';
 import countryList from 'country-json/src/country-by-name.json'
 import { selectCountry } from '../../app/store/actions/instructorActions';
 import { getCoursesRatings, getInstructorRatings } from '../../app/store/actions/ratingActions';
+import { filterCoursesInstructor, getPopularCourses } from '../../app/store/actions/coursesActions';
+import { CourseCard, InstructorCourseCard } from '../../app/components';
+import Inbox from '@mui/icons-material/Inbox';
+import { centered_flex_box, main_button, right_flex_box } from '../../app/components/Styles';
 
 const theme = createTheme();
-export const Home = ({auth, logout, selectCountry, getCoursesRatings, getInstructorRatings}) => {
-  
-  const [country, setCountry] = React.useState(auth.user.country)
-  const handleCountryChange = (event) => {
-    setCountry(event.target.value)
-  }
+export const Home = ({ auth, logout, filterCoursesInstructor, courses, getPopularCourses }) => {
+
+  const navigate = useNavigate()
+
+  React.useEffect(() => {
+    filterCoursesInstructor({ page: 1, searchQuery: "", token: auth?.token })
+    getPopularCourses(auth?.token)
+  }, [])
 
   return (
-    <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xl">
-        <CssBaseline/>
-        <Typography>Instructor Home Page</Typography>
-        <Typography>Welcome {auth.user.username}</Typography>
-        {/* <NavLink to="/Instructor/profile">My Profile</NavLink><br/> */}
-        <NavLink to="/Instructor/contract">My Contract</NavLink><br/>
-        <NavLink onClick={() => getInstructorRatings(auth?.token)} to="/Instructor/ratings">My Ratings and Reviews</NavLink><br/>
-        <NavLink to="/courses">All Courses</NavLink><br/>
-        <NavLink to="/courses/instructor">My Courses</NavLink><br/>
-        <NavLink to="/courses/create">Add Courses</NavLink><br/>
-        <NavLink onClick={() => getCoursesRatings(auth?.token)} to="/courses/ratings">My Courses Ratings and Reviews</NavLink><br/>
-        <Select 
-          defaultValue={country}
-          label="User Country"
-          fullWidth
-          onChange={handleCountryChange}        
-        >
-          {countryList.map((country, i) => {return (
-            <MenuItem key={i} value={country.country}>
-              {country.country}
-            </MenuItem>
-          )})}
-        </Select>
-        <FormHelperText>Select your country</FormHelperText>
-        <Button onClick={() => selectCountry({token: auth.token, country: country})}>Set Country</Button><br/>
-        <Button onClick={logout}>Log Out</Button>
-      </Container>
-    </ThemeProvider>
+    <Container component="main" maxWidth="xl">
+      <Box className="course-head" sx={{ display: "flex", alighnItems: "flex-start", flexDirection: "column", mx: "-24px", mt: -2, minWidth: "100%", minHeight: "35vh", mb: 2, p: 2 }}>
+        <Box sx={{ display: "flex", alighnItems: "flex-start", flexDirection: "row" }}><a href="https://cancham.org.eg/en/"><Avatar sx={{ cursor: "pointer", width: 72, height: 72 }} src={`${process.env.PUBLIC_URL}/logo192.png`} /></a><Typography fontWeight="bold" variant="h2" sx={{ color: "var(--mainWhite)" }}>{" "}CanCham | Online Learning</Typography></Box>
+        <Typography variant="h3" sx={{ color: "var(--mainWhite)" }}>Welcome {auth?.user?.name || auth?.user?.username}!</Typography>
+        <Rating readOnly size='large' value={auth?.user?.rating} />
+      </Box>
+
+      <Typography variant="h3" sx={{ color: "var(--secColor)", mb: 1 }}>Your courses</Typography>
+      <Box sx={right_flex_box}>
+        <Button onClick={() => { navigate("/courses/instructor") }} sx={{ mr: 1, ...main_button }}><AutoStoriesIcon /> See More Courses</Button>
+        <Button onClick={() => { navigate("/courses/create") }} sx={{ mr: 1, ...main_button }}><NoteAddIcon /> Create Courses</Button>
+      </Box>
+      <hr />
+      {!courses?.isLoading ? (
+        <Grid container spacing={3} sx={centered_flex_box}>
+          {courses?.results?.docs?.map((course) => {
+            return (
+              <Grid item xs={5}>
+                <InstructorCourseCard course={course} />
+              </Grid>
+            )
+          })}
+          {courses?.results?.docs?.length === 0 && (
+            <Grid item sx={{ ...centered_flex_box, flexDirection: "column", mt: 2 }}>
+              <Inbox fontSize="large" />
+              <Typography fontSize={40}>No results</Typography>
+            </Grid>
+          )}
+        </Grid>
+      ) : (
+        <Box sx={centered_flex_box}>
+          <CircularProgress sx={{ color: "var(--secColor)" }} />
+        </Box>
+      )}
+
+      <Typography variant="h3" sx={{ color: "var(--secColor)", mb: 1 }}>Most popular courses</Typography>
+      <Box sx={right_flex_box}>
+        <Button onClick={() => { navigate("/courses") }} sx={{ mr: 1, ...main_button }}><AutoStoriesIcon /> View All Courses</Button>
+      </Box>
+      <hr />
+      {!courses?.isLoading ? (
+        <Grid container spacing={3} sx={centered_flex_box}>
+          {courses?.popular?.map((course, i) => {
+            return (
+              <Grid item xs={5}>
+                <CourseCard course={course} rank={i + 1} key={i} />
+              </Grid>
+            )
+          })}
+          {courses?.popular?.length === 0 && (
+            <Grid item sx={{ ...centered_flex_box, flexDirection: "column", mt: 2 }}>
+              <Inbox fontSize="large" />
+              <Typography fontSize={40}>No results</Typography>
+            </Grid>
+          )}
+        </Grid>
+      ) : (
+        <Box sx={centered_flex_box}>
+          <CircularProgress sx={{ color: "var(--secColor)" }} />
+        </Box>
+      )}
+    </Container>
   );
 }
 
 const mapStateToProps = (state) => ({
-    auth: state?.auth
+  auth: state?.auth,
+  courses: state?.courses
 });
 
-const mapDispatchToProps = {logout, selectCountry, getCoursesRatings, getInstructorRatings};
+const mapDispatchToProps = {
+  filterCoursesInstructor,
+  getPopularCourses
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
