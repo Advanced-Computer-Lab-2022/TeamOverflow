@@ -91,88 +91,88 @@ And our website itself is in a private repository on GitHub.
 ## ScreenShots
 ##### Admin
 
-![alt text](assets/images/Screenshot1.png)
+![alt text](assets/images/screenshot1.png)
 
-```md
+
 ![alt text](assets/images/screenshot2.png)
-```
-```md
+
+
 ![alt text](assets/images/screenshot3.png)
-```
-```md
+
+
 ![alt text](assets/images/screenshot4.png)
-```
-```md
+
+
 ![alt text](assets/images/screenshot5.png)
-```
-```md
+
+
 ![alt text](assets/images/screenshot6.png)
-```
+
 ##### Individual Trainee
-```md
+
 ![alt text](assets/images/screenshot7.png)
-```
-```md
+
+
 ![alt text](assets/images/screenshot8.png)
-```
-```md
+
+
 ![alt text](assets/images/screenshot9.png)
-```
-```md
+
+
 ![alt text](assets/images/screenshot10.png)
-```
-```md
+
+
 ![alt text](assets/images/screenshot11.png)
-```
-```md
+
+
 ![alt text](assets/images/screenshot12.png)
-```
-```md
+
+
 ![alt text](assets/images/screenshot13.png)
-```
-```md
+
+
 ![alt text](assets/images/screenshot14.png)
-```
-```md
+
+
 ![alt text](assets/images/screenshot15.png)
-```
+
 ##### Instructor
-```md
+
 ![alt text](assets/images/screenshot16.png)
-```
-```md
+
+
 ![alt text](assets/images/screenshot17.png)
-```
-```md
+
+
 ![alt text](assets/images/screenshot18.png)
-```
-```md
+
+
 ![alt text](assets/images/screenshot19.png)
-```
-```md
+
+
 ![alt text](assets/images/screenshot20.png)
-```
-```md
+
+
 ![alt text](assets/images/screenshot21.png)
-```
-```md
+
+
 ![alt text](assets/images/screenshot22.png)
-```
-```md
+
+
 ![alt text](assets/images/screenshot23.png)
-```
-```md
+
+
 ![alt text](assets/images/screenshot24.png)
-```
-```md
+
+
 ![alt text](assets/images/screenshot25.png)
-```
-```md
+
+
 ![alt text](assets/images/screenshot26.png)
-```
-```md
+
+
 ![alt text](assets/images/screenshot27.png)
-```
+
 
 
 
