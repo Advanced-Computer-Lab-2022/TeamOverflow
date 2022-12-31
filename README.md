@@ -3,7 +3,6 @@
 ## Table of Contents
 
 - [Descrption](#descrption)
-- [Motivation](#motivation)
 - [Features](#features)
 - [Getting Started](#getting_started)
 - [Tech](#tech)
