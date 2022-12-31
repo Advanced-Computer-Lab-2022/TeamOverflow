@@ -91,7 +91,7 @@ And our website itself is in a private repository on GitHub.
 ## ScreenShots
 ##### Admin
 ```md
-![alt text](assets/images/screenshot1.png)
+![screenshot1](assets/images/screenshot1.png)
 ```
 ```md
 ![alt text](assets/images/screenshot2.png)
