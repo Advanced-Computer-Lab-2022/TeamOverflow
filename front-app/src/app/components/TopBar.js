@@ -117,7 +117,6 @@ function MenuAppBar({ auth, logout, viewRefunds, viewRequests }) {
 
     const handleAccess = () => {
         setAnchorEl(null);
-        viewRequests({ info: { page: 1 }, token })
         let path = "/Admin/access";
         navigate(path);
     };
