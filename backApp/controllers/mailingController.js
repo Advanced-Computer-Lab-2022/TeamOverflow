@@ -9,13 +9,14 @@ var transporter = nodemailer.createTransport({
     },
 });
 
-async function sendGenericEmail(email, subject, content) {
+async function sendGenericEmail(email, subject, content, attachments) {
     try {
         var mailOptions = {
             from: process.env.EMAIL,
             to: email,
             subject: subject,
-            html: content
+            html: content,
+            attachments: attachments
         };
 
         await transporter.sendMail(mailOptions)

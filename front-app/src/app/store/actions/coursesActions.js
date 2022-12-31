@@ -202,7 +202,7 @@ export const downloadCertificate = (data) => (dispatch) => {
     .then((response) => {
       console.log(response.headers)
       download(response.data, response.headers["filename"], response.headers.getContentType)
-      notification.success({ message: "Certificate Downloaded" })
+      notification.success({ message: "Certificate downloaded and sent to Email" })
     }).catch((err) => {
       notification.error({ message: err?.response?.data?.message })
       console.log(err);

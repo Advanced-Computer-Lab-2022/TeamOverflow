@@ -116,7 +116,7 @@ export const SingleCourse = ({ auth, openCourse, course, isLoading, examSolution
                             }
                             {parseInt(course?.progress) === 100 &&
                                 <Button onClick={() => downloadCertificate({courseId: course?._id, token: auth?.token})} sx={{ ...sec_button, mt: 2, mr: 2 }}>
-                                    <SchoolIcon /> Download Certificate
+                                    <SchoolIcon /> Receive Certificate
                                 </Button>
                             }
                             <Button onClick={() => setModals({ ...modals, courseRatingModal: true })} sx={{ ...sec_button, mt: 2, mr: 2 }}>
