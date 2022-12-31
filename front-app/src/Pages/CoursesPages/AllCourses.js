@@ -2,22 +2,25 @@ import * as React from 'react';
 import { Typography, Paper, IconButton, InputBase, Box, Container, Pagination, CircularProgress, Accordion, AccordionSummary, AccordionDetails, Button, Slider, Select, MenuItem, Card, FormHelperText, Grid, InputLabel, FormControl } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
-import { clearCourses, filterCoursesAll, getSubjects } from '../../app/store/actions/coursesActions';
+import { clearCourses, filterCoursesAll, getPopularCourses, getSubjects } from '../../app/store/actions/coursesActions';
 import { CourseCard } from '../../app/components';
 import InboxIcon from '@mui/icons-material/Inbox';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import SearchIcon from '@mui/icons-material/Search';
 import { centered_flex_box, MainInput, MainInputLabel, main_button, StyledInput } from '../../app/components/Styles';
+import Inbox from '@mui/icons-material/Inbox';
 
 const theme = createTheme();
 
-export const AllCourses = ({ auth, courses, getSubjects, filterCoursesAll, clearCourses }) => {
+export const AllCourses = ({ auth, courses, getSubjects, filterCoursesAll, clearCourses, getPopularCourses }) => {
 
   const role = auth.token.split(" ")[0];
 
   React.useEffect(() => {
     clearCourses()
-    filterCoursesAll({ token: auth.token, ...formData });
+    getSubjects();
+    filterCoursesAll({ token: auth?.token, ...formData });
+    getPopularCourses(auth?.token)
   }, [])
 
   const initialState = {
@@ -77,6 +80,37 @@ export const AllCourses = ({ auth, courses, getSubjects, filterCoursesAll, clear
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xl">
+        {
+          role === "Guest" && (<>
+            <Box sx={{ ...centered_flex_box, marginY: 2 }}>
+              <Typography variant="h3" sx={{ mb: 1 }}>Most popular courses</Typography>
+            </Box>
+            <hr />
+            {!courses?.isLoading ? (
+              <Grid container spacing={3} sx={centered_flex_box}>
+                {courses?.popular?.map((course, i) => {
+                  return (
+                    <Grid item xs={5}>
+                      <CourseCard course={course} rank={i + 1} key={i} />
+                    </Grid>
+                  )
+                })}
+                {courses?.popular?.length === 0 && (
+                  <Grid item sx={{ ...centered_flex_box, flexDirection: "column", mt: 2 }}>
+                    <Inbox fontSize="large" />
+                    <Typography fontSize={40}>No results</Typography>
+                  </Grid>
+                )}
+              </Grid>
+            ) : (
+              <Box sx={centered_flex_box}>
+                <CircularProgress sx={{ color: "var(--secColor)" }} />
+              </Box>
+            )}
+            <hr />
+          </>)
+        }
+
         <Box sx={{ ...centered_flex_box, marginY: 2 }}>
           <Typography variant="h3">Available Courses</Typography>
         </Box>
@@ -209,6 +243,6 @@ const mapStateToProps = (state) => ({
   courses: state?.courses
 });
 
-const mapDispatchToProps = { filterCoursesAll, getSubjects, clearCourses };
+const mapDispatchToProps = { filterCoursesAll, getSubjects, clearCourses, getPopularCourses };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AllCourses);

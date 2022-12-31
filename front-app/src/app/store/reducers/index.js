@@ -7,6 +7,7 @@ import examReducer from "./examReducer";
 import contractReducer from "./contractReducer";
 import reportsReducer from "./reportsReducer";
 import requestsReducer from "./requestsReducer";
+import waitingReducer from "./waitingReducer";
 
 export default combineReducers({
     auth: authReducer,
@@ -16,5 +17,6 @@ export default combineReducers({
     exercise: examReducer,
     contract: contractReducer,
     reports: reportsReducer,
-    requests: requestsReducer
+    requests: requestsReducer,
+    waiting: waitingReducer
 });

@@ -1,5 +1,5 @@
 import {getRequest, postRequest, putRequest } from "../../../core/network";
-import { CREATE, CREATE_SUCCESS, CREATE_FAIL, UPDATE_USER, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL, REQUESTS, REQUESTS_FAIL, REQUESTS_SUCCESS, CORPORATIONS, CORPORATIONS_SUCCESS, CORPORATIONS_FAIL } from "./types";
+import { CREATE, CREATE_SUCCESS, CREATE_FAIL, UPDATE_USER, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL, REQUESTS, REQUESTS_FAIL, REQUESTS_SUCCESS, CORPORATIONS, CORPORATIONS_SUCCESS, CORPORATIONS_FAIL, WAITING, WAITING_SUCCESS, WAITING_FAIL } from "./types";
 import endpoints from "../../../constants/endPoints.json";
 import { notification } from "antd";
 
@@ -218,36 +218,36 @@ export const rejectRequest = (data) => (dispatch) => {
 };
 
 export const defineDiscount = (data) => (dispatch) => {
+  dispatch({type: WAITING})
   var { info, token } = data
 
   postRequest(info, undefined, undefined, token, endpoints.admin.defineDiscount)
     .then((response) => {
       const { data } = response;
       notification.success({ message: data.message })
+      dispatch({type: WAITING_SUCCESS})
     })
     .catch((err) => {
       notification.error({ message: err?.response?.data?.message })
       console.log(err);
-      return dispatch({
-        type: REQUESTS_FAIL,
-      });
+      dispatch({type: WAITING_FAIL})
     });
 };
 
 export const addAccess = (data) => (dispatch) => {
+  dispatch({type: WAITING})
   var { info, token } = data
 
   postRequest(info, undefined, undefined, token, endpoints.admin.addAccess)
     .then((response) => {
       const { data } = response;
       notification.success({ message: data.message })
+      dispatch({type: WAITING_SUCCESS})
     })
     .catch((err) => {
       notification.error({ message: err?.response?.data?.message })
       console.log(err);
-      return dispatch({
-        type: REQUESTS_FAIL,
-      });
+      dispatch({type: WAITING_FAIL})
     });
 };
 

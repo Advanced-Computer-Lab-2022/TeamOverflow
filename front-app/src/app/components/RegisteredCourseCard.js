@@ -45,12 +45,6 @@ function RegisteredCourseCard({ token, courseData, isLoading }) {
                     {course?.summary}
                 </Typography>
                 <br />
-                <Rating
-                    fullWidth
-                    value={course?.rating}
-                    readOnly
-                />
-                <br />
                 <Button onClick={reroute} sx={{ ...main_button }}>
                     Open Course
                 </Button>

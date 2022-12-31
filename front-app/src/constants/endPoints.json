@@ -72,7 +72,8 @@
       "viewFollowups":"corpTrainee/viewFollowups",
       "addFollowup":"corpTrainee/addFollowup",
       "editProfile":"corpTrainee/edit",
-      "acceptTerms":"corpTrainee/acceptTerms"
+      "acceptTerms":"corpTrainee/acceptTerms",
+      "downloadCertificate":"corpTrainee/downloadCertificate"
    },
    "trainee": {
       "setCountry":"trainee/selectCountry",
@@ -93,7 +94,8 @@
       "viewReports":"trainee/viewReports",
       "viewFollowups":"trainee/viewFollowups",
       "addFollowup":"trainee/addFollowup",
-      "requestRefund":"trainee/refund"
+      "requestRefund":"trainee/refund",
+      "downloadCertificate":"trainee/downloadCertificate"
    },
    "course":{
       "searchUsers":"course/search/course",
@@ -104,7 +106,8 @@
       "filterInstructor":"course/filter/instructor",
       "viewInstructor":"course/view/instructor",
       "viewSingleCourse":"course/view",
-      "getSubjects":"course/allSubj"
+      "getSubjects":"course/allSubj",
+      "mostPopular":"course/mostPopular"
    },
    "rate":{
       "rateInstructor":"rate/instructor",

@@ -15,7 +15,7 @@ import { getWallet } from '../../app/store/actions/authActions';
 
 const theme = createTheme();
 
-export const InstructorProfile = ({ user, token, wallet, getWallet }) => {
+export const InstructorProfile = ({ user, token, wallet, getWallet, isLoading }) => {
 
     let navigate = useNavigate();
     const routeChange = () => {
@@ -80,7 +80,7 @@ export const InstructorProfile = ({ user, token, wallet, getWallet }) => {
                             <AccountBalanceWalletIcon sx={{ fontSize: 25, marginTop: 0.3, color:"var(--secColor)" }} />
                             <Typography fontSize="20px" color={"var(--secColor)"}>Wallet:</Typography>
                         </Box>
-                        <Typography color={"#5b5b5b"} fontSize="20px" sx={{ ml: 4 }}>{wallet?.currency} {wallet?.balance}</Typography>
+                        <Typography color={"#5b5b5b"} fontSize="20px" sx={{ ml: 4 }}>{isLoading ? "Fetching...":`${wallet?.currency} ${wallet?.balance}`}</Typography>
                     </Box>
             </Box>
         </Container>
@@ -93,7 +93,8 @@ export const InstructorProfile = ({ user, token, wallet, getWallet }) => {
 const mapStateToProps = (state) => ({
     user: state?.auth?.user,
     token: state?.auth?.token,
-    wallet: state?.auth?.wallet
+    wallet: state?.auth?.wallet,
+    isLoading: state?.auth?.isLoading
 });
 
 const mapDispatchToProps = { getWallet };

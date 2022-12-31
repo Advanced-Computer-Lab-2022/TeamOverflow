@@ -1,7 +1,8 @@
-import { COURSE, SINGLE_COURSE_SUCCESS, COURSE_SUCCESS, COURSE_FAIL, SUBJECT_SUCCESS, CLEAR_COURSES } from "./types";
+import { COURSE, SINGLE_COURSE_SUCCESS, COURSE_SUCCESS, COURSE_FAIL, POPULAR_FAIL, POPULAR_SUCCESS, SUBJECT_SUCCESS, CLEAR_COURSES } from "./types";
 import { getRequest, postRequest } from "../../../core/network";
 import endpoints from "../../../constants/endPoints.json";
 import { notification } from "antd";
+import download from "downloadjs";
 
 export const clearCourses = () => (dispatch) => {
   dispatch({ type: CLEAR_COURSES });
@@ -138,6 +139,27 @@ export const getRegisteredCourses = ({token, page}) => (dispatch) => {
     });
 };
 
+export const getPopularCourses = (token) => (dispatch) => {
+  dispatch({ type: COURSE });
+
+  getRequest(undefined, undefined, token, endpoints.course.mostPopular)
+    .then((response) => {
+      console.log(response)
+      const { data } = response;
+      return dispatch({
+        type: POPULAR_SUCCESS,
+        payload: data
+      });
+    })
+    .catch((err) => {
+      notification.error({ message: err?.response?.data?.message })
+      console.log(err);
+      return dispatch({
+        type: POPULAR_FAIL,
+      });
+    });
+};
+
 export const openCourse = (data, navigate) => (dispatch) => {
   dispatch({ type: COURSE });
   const {query, token} = data;
@@ -161,5 +183,28 @@ export const openCourse = (data, navigate) => (dispatch) => {
       return dispatch({
         type: COURSE_FAIL,
       });
+    });
+};
+
+export const downloadCertificate = (data) => (dispatch) => {
+  var { courseId, token } = data
+  const role = token.split(" ")[0]
+  var end;
+
+  switch (role) {
+    case "Corporate": end = endpoints.corporatetrainee.downloadCertificate; break;
+    case "Trainee": end = endpoints.trainee.downloadCertificate; break;
+    default: break;
+  }
+
+  notification.info({message: "Fetching Certificate..."})
+  getRequest({ courseId: courseId, responseType: 'blob' }, undefined, token, end)
+    .then((response) => {
+      console.log(response.headers)
+      download(response.data, response.headers["filename"], response.headers.getContentType)
+      notification.success({ message: "Certificate Downloaded" })
+    }).catch((err) => {
+      notification.error({ message: err?.response?.data?.message })
+      console.log(err);
     });
 };

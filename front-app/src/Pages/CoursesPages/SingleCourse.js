@@ -8,7 +8,7 @@ import { Typography, Box, Card, Container, CssBaseline, Button, FormHelperText, 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { NavLink, useNavigate, useParams } from 'react-router-dom';
-import { openCourse, viewCourse } from '../../app/store/actions/coursesActions';
+import { downloadCertificate, openCourse, viewCourse } from '../../app/store/actions/coursesActions';
 import moment from "moment";
 import { centered_flex_box, left_flex_box, main_button, right_flex_box, sec_button } from '../../app/components/Styles';
 import { ActionModal, RatingModal, SubCard, ReportModal } from '../../app/components';
@@ -20,7 +20,7 @@ import { requestRefund } from '../../app/store/actions/traineeActions';
 
 const theme = createTheme();
 
-export const SingleCourse = ({ auth, openCourse, course, isLoading, examSolutions, subtitles, postRating, requestRefund }) => {
+export const SingleCourse = ({ auth, openCourse, course, isLoading, examSolutions, subtitles, postRating, requestRefund, downloadCertificate }) => {
 
     const courseId = useParams().id
     const navigate = useNavigate()
@@ -115,7 +115,7 @@ export const SingleCourse = ({ auth, openCourse, course, isLoading, examSolution
                                 )
                             }
                             {parseInt(course?.progress) === 100 &&
-                                <Button onClick={() => navigate(`/course/watch/${course?._id}/${course?.videoId._id}`)} sx={{ ...sec_button, mt: 2, mr: 2 }}>
+                                <Button onClick={() => downloadCertificate({courseId: course?._id, token: auth?.token})} sx={{ ...sec_button, mt: 2, mr: 2 }}>
                                     <SchoolIcon /> Download Certificate
                                 </Button>
                             }
@@ -188,6 +188,6 @@ const mapStateToProps = (state) => ({
     isLoading: state?.courses?.isLoading
 });
 
-const mapDispatchToProps = { openCourse, postRating, requestRefund };
+const mapDispatchToProps = { openCourse, postRating, requestRefund, downloadCertificate };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SingleCourse);

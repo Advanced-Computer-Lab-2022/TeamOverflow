@@ -21,6 +21,8 @@ export const COURSE = "COURSE";
 export const CLEAR_COURSES = "CLEAR_COURSES";
 export const REGISTERED= "REGISTERED";
 export const REGISTERING = "REGISTERING";
+export const POPULAR_SUCCESS = "POPULAR_SUCCESS";
+export const POPULAR_FAIL = "POPULAR_FAIL";
 
 //Guest Dispatch
 export const GUEST = "GUEST";
@@ -80,3 +82,8 @@ export const CORPORATIONS = "CORPORATIONS";
 
 //Terms
 export const TERMS = "TERMS";
+
+//Waiting for response
+export const WAITING_SUCCESS = "WAITING_SUCCESS";
+export const WAITING_FAIL = "WAITING_FAIL";
+export const WAITING = "WAITING";

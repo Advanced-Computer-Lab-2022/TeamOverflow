@@ -1,4 +1,4 @@
-import { EXAM, EXAM_SUCCESS, EXAM_FAIL } from "./types";
+import { EXAM, EXAM_SUCCESS, EXAM_FAIL, WAITING, WAITING_SUCCESS, WAITING_FAIL } from "./types";
 import { postRequest, getRequest, putRequest } from "../../../core/network";
 import endpoints from "../../../constants/endPoints.json";
 import { notification } from "antd";
@@ -28,7 +28,7 @@ export const getExam = (data) => (dispatch) => {
 };
 
 export const submitSolution = (data, navigate) => (dispatch) => {
-    dispatch({ type: EXAM });
+    dispatch({ type: WAITING });
     var { solution, token } = data
 
     var role = token.split(" ")[0]
@@ -38,11 +38,13 @@ export const submitSolution = (data, navigate) => (dispatch) => {
         .then((response) => {
             const {data} = response
             notification.success({ message: data.message })
+            dispatch({ type: WAITING_SUCCESS });
             navigate(-1)
         })
         .catch((err) => {
             notification.error({ message: err?.response?.data?.message })
             console.log(err);
+            dispatch({ type: WAITING_FAIL });
         });
 };
 
