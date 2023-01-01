@@ -6,6 +6,7 @@
 - [Features](#features)
 - [Getting Started](#getting_started)
 - [Tech](#tech)
+- [APIs](#apis)
 - [Screenshots](#screenshots)
 - [Credits](#credits)
 
@@ -65,8 +66,9 @@ This project followed the Agile Methodology and was split into 3 Sprints
 
 ## Getting Started
 - Open the terminal in Visual Studio Code
-- Write the command npm run dev
-- The website will open automatically 
+- Install packages by running ```npm i```
+- Write the command ```npm run dev```
+- The website will open automatically on localhost:3000 
 
 ## Tech
 
@@ -79,6 +81,13 @@ Our Web application uses a number of open source projects to work properly:
 - [Express] - fast node.js network app framework 
 
 And our website itself is in a private repository on GitHub.
+
+## APIs
+
+Our website makes use of a couple APIs to handle data processing and display
+
+-[ExchangeRate API](https://www.exchangerate-api.com/) To fetch the latest currency exchange rates
+-[YouTube API](https://developers.google.com/youtube/iframe_api_reference) To display, play and track YouTube videos
 
 ## Credits
 - Mina Ehab 49-1644
@@ -171,9 +180,3 @@ And our website itself is in a private repository on GitHub.
 
 
 ![alt text](assets/images/Screenshot27.png)
-
-
-
-
-
-
