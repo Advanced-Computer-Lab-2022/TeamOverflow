@@ -185,6 +185,7 @@ export const AddUsers = ({ addUser, auth, addUsers }) => {
               label="User Type"
               name="type"
               input={<StyledInput />}
+              onChange={onUserTypeChange}
             >
               <MenuItem value={"Admin"}>Admin</MenuItem>
               <MenuItem value={"Instructor"}>Instructor</MenuItem>

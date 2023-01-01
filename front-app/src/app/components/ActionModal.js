@@ -16,10 +16,10 @@ export default function ActionModal({ message, open, handleClose, action }) {
             <Box sx={{ ...centered_flex_box, minHeight: "100vh" }}>
                 <Card sx={{display:"flex", p:3, flexDirection:"column"}}>
                         <Box sx={{ ...centered_flex_box, mb:1 }}>
-                            <Typography variant='h4'>Please confirm action!</Typography>
+                            <Typography variant='h4'>Please confirm action</Typography>
                         </Box>
                         <Box sx={{ ...centered_flex_box, mb:2 }}>
-                            <Typography>{message}</Typography>
+                            <Typography variant="h5">{message}</Typography>
                         </Box>
                         <Box sx={{ ...centered_flex_box }}>
                             <Button onClick={action} sx={{...confirm_button, mx:2}}>Confirm</Button>
