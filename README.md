@@ -86,9 +86,8 @@ And our website itself is in a private repository on GitHub.
 
 Our website makes use of a couple APIs to handle data processing and display
 
--[ExchangeRate API](https://www.exchangerate-api.com/) To fetch the latest currency exchange rates
-
--[YouTube API](https://developers.google.com/youtube/iframe_api_reference) To display, play and track YouTube videos
+- [ExchangeRate API](https://www.exchangerate-api.com/) To fetch the latest currency exchange rates
+- [YouTube API](https://developers.google.com/youtube/iframe_api_reference) To display, play and track YouTube videos
 
 ## Credits
 - Mina Ehab 49-1644
