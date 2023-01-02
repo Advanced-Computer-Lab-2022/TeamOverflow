@@ -43,6 +43,7 @@ export const AddUsers = ({ addUser, auth, addUsers }) => {
       type: data.get('type'),
       token: auth.token
     }
+    console.log(details)
     addUser(details, navigate)
   };
 

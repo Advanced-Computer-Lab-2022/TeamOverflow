@@ -5,7 +5,7 @@ import { notification } from "antd";
 
 export const addUser = (data, navigate) => (dispatch) => {
   dispatch({ type: CREATE });
-  var { type, username, password, corporation, token } = data
+  var { type, username, password, name, email, corporation, token } = data
   var end;
   switch (type) {
     case "Instructor": end = endpoints.auth.instructor.add; break;
@@ -17,6 +17,8 @@ export const addUser = (data, navigate) => (dispatch) => {
   const info = {
     username: username,
     password: password,
+    email: email,
+    name: name,
     corporation: corporation
   }
 

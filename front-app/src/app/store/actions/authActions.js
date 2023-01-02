@@ -36,7 +36,7 @@ export const createUser = (data) => (dispatch) => {
     username: data.username,
     password: data.password,
     corporation: data.corporation,
-    name: data.firstName + " " + data.lastName,
+    name: data.name,
     email: data.email,
     gender: data.gender,
     country: data.country,
