@@ -128,7 +128,7 @@ export const InstructorSingleCourse = ({ auth, viewCourse, course, isLoading, pu
                     course?.subtitles?.map((subtitle, i) => {
                         return (
                             <Grid item xs={12} sx={centered_flex_box}>
-                                <SubtitleCard subtitle={subtitle} key={i} />
+                                <SubtitleCard owner={true} subtitle={subtitle} key={i} />
                             </Grid>
                         )
                     })

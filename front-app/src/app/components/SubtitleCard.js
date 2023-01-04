@@ -9,7 +9,7 @@ import { Card } from '@mui/material';
 import { card_style, main_button } from './Styles';
 import moment from "moment"
 
-function SubtitleCard({ token, subtitle, examsSolved }) {
+function SubtitleCard({ token, subtitle, examsSolved, owner }) {
 
     const navigate = useNavigate();
     const role = token.split(" ")[0];
@@ -27,7 +27,7 @@ function SubtitleCard({ token, subtitle, examsSolved }) {
                 </Grid>
             </Grid>
             <br />
-            {role === "Instructor" && <Box display="flex" justifyContent="flex-start">
+            {role === "Instructor" && owner && <Box display="flex" justifyContent="flex-start">
                 {subtitle?.videoId ? (
                     <Button onClick={() => navigate(`/course/video/${subtitle?.videoId}`)} sx={{ ...main_button, mt: 2, mr:2 }}>
                         <VisibilityIcon/> View Subtitle Video
