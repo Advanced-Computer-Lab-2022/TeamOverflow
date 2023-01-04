@@ -214,7 +214,9 @@ router.post('/defineDiscount', verifyAdmin, async function (req, res) {
     if (moment(req.body.startDate).isBefore(req.body.deadline)) {
       const courses = req.body.courseIds
       for (let i = 0; i < courses.length; i++) {
-        await Course.findByIdAndUpdate(courses[i], { $set: { discount: req.body.discount, deadline: req.body.deadline, startDate: req.body.startDate } })
+        var result = await Course.findById(courses[i]);
+        var discounted = result.price * ((100-req.body.discount)/100)
+        await result.updateOne({ $set: { discount: req.body.discount, startDate: req.body.startDate, deadline: req.body.deadline, discountedPrice: discounted } })
       }
       res.status(200).json({ message: `Discount added to ${courses.length} course(s)` })
     } else {

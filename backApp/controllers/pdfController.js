@@ -39,8 +39,9 @@ async function downloadCertificate(req, res) {
         'Content-Transfer-Encoding': 'binary'
     })
     doc.pipe(res)
-    doc.image(`public/images/logo192.png`, 10, 10, { align: 'center', width: 100 })
-    doc.fontSize(42).font("Times-Bold").text(`Congratulations!`, 110, 200, { align: 'center' });
+    doc.image(`public/images/logo192.png`, doc.page.width/2 - 100, 10, { align: 'center', width: 200 })
+    doc.moveDown(12)
+    doc.fontSize(42).font("Times-Bold").text(`Congratulations!`, { align: 'center' });
     doc.fontSize(42).font("Times-Roman").text(`You have completed: ${course.title}`, { align: 'center' });
     doc.fontSize(30).text(`This Certificate Is Issued To ${req.user.name}`, { align: 'center' });
     doc.fontSize(16).text(`Issued on ${moment().format("DD/MM/yyyy")}`, 110, 500, { align: 'right', valign: 'bottom' });

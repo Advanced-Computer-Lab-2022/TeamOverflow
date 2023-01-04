@@ -106,7 +106,9 @@ router.get('/viewCourseRatings', verifyInstructor, async function (req, res) {
 router.post('/defineDiscount', verifyInstructor, async function (req, res) {
   try {
     if (moment(req.body.startDate).isBefore(req.body.deadline)) {
-      var result = await Course.findByIdAndUpdate(req.body.courseId, { $set: { discount: req.body.discount, startDate: req.body.startDate, deadline: req.body.deadline } }, { new: true })
+      var result = await Course.findById(req.body.courseId)
+      var discounted = result.price * ((100-req.body.discount)/100)
+      await result.updateOne({ $set: { discount: req.body.discount, startDate: req.body.startDate, deadline: req.body.deadline, discountedPrice: discounted } })
       res.status(200).json(result)
     } else {
       res.status(403).json({ message: "Deadline cannot be before start date" })

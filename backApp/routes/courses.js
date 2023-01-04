@@ -141,7 +141,7 @@ async function instructorSearchAndFilterCourse(data, user) {
   const currency = getCode(user?.country)
   var min = minPrice ? await forexBack(minPrice, currency) : 0
   var max = maxPrice ? await forexBack(maxPrice, currency) : 10000
-  const mongoQuery = { instructorId: user._id, subject: sub, price: { $gte: min, $lt: max }, ...search }
+  const mongoQuery = { instructorId: user._id, subject: sub, $or: [{price: { $gte: min, $lt: max }}, {discountedPrice: { $gte: min, $lt: max }, startDate: { $lte: moment() }, deadline: { $gte: moment() }}], ...search }
   var results = await Course.paginate(mongoQuery, { page: page, limit: 12 })
   var allResults = []
   for (let i = 0; i < results.docs.length; i++) {
@@ -168,7 +168,7 @@ async function searchAndFilterCourse(data, reqId) {
   var min = minPrice ? await forexBack(minPrice, currency) : 0
   var max = maxPrice ? await forexBack(maxPrice, currency) : 10000
   console.log(min, max)
-  const mongoQuery = { published: true, price: { $gte: min, $lt: max }, subject: sub, rating: { $gte: minRate, $lte: maxRate }, ...search }
+  const mongoQuery = { published: true, $or: [{price: { $gte: min, $lt: max }}, {discountedPrice: { $gte: min, $lt: max }, startDate: { $lte: moment() }, deadline: { $gte: moment() }}], subject: sub, rating: { $gte: minRate, $lte: maxRate }, ...search }
   var results = await Course.paginate(mongoQuery, { page: page, limit: 12 })
   var allResults = []
   for (let i = 0; i < results.docs.length; i++) {
