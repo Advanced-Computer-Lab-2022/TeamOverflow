@@ -94,7 +94,7 @@ router.get('/filter', verifyAllUsersCorp, async function (req, res) {
 router.get('/mostPopular', verifyAllUsersCorp, async function (req, res) {
   try {
     var user = (await Trainee.findById(req.reqId) || await Corporate.findById(req.reqId) || await Instructor.findById(req.reqId))
-    var results = await Course.paginate({published: true}, { page: 1, limit: 10, sort: { enrolled: -1, _id: 1 } })
+    var results = await Course.paginate({ published: true }, { page: 1, limit: 10, sort: { enrolled: -1, _id: 1 } })
     var allResults = []
     for (let i = 0; i < results.docs.length; i++) {
       var courseObj = JSON.parse(JSON.stringify(results.docs[i]))
@@ -141,7 +141,19 @@ async function instructorSearchAndFilterCourse(data, user) {
   const currency = getCode(user?.country)
   var min = minPrice ? await forexBack(minPrice, currency) : 0
   var max = maxPrice ? await forexBack(maxPrice, currency) : 10000
-  const mongoQuery = { instructorId: user._id, subject: sub, $or: [{price: { $gte: min, $lt: max }}, {discountedPrice: { $gte: min, $lt: max }, startDate: { $lte: moment() }, deadline: { $gte: moment() }}], ...search }
+  const priceQuery = {
+    $or: [
+      { price: { $gte: min, $lt: max } },
+      {
+        $and: [
+          { discountedPrice: { $gte: min, $lt: max } },
+          { startDate: { $lte: moment() } },
+          { deadline: { $gte: moment() } }
+        ]
+      }
+    ]
+  }
+  const mongoQuery = {published: true, subject: sub, rating: { $gte: minRate, $lte: maxRate }, ...search, ...priceQuery}
   var results = await Course.paginate(mongoQuery, { page: page, limit: 12 })
   var allResults = []
   for (let i = 0; i < results.docs.length; i++) {
@@ -167,8 +179,19 @@ async function searchAndFilterCourse(data, reqId) {
   const currency = getCode(user?.country)
   var min = minPrice ? await forexBack(minPrice, currency) : 0
   var max = maxPrice ? await forexBack(maxPrice, currency) : 10000
-  console.log(min, max)
-  const mongoQuery = { published: true, $or: [{price: { $gte: min, $lt: max }}, {discountedPrice: { $gte: min, $lt: max }, startDate: { $lte: moment() }, deadline: { $gte: moment() }}], subject: sub, rating: { $gte: minRate, $lte: maxRate }, ...search }
+  const priceQuery = {
+    $or: [
+      { price: { $gte: min, $lt: max } },
+      {
+        $and: [
+          { discountedPrice: { $gte: min, $lt: max } },
+          { startDate: { $lte: moment() } },
+          { deadline: { $gte: moment() } }
+        ]
+      }
+    ]
+  }
+  const mongoQuery = {published: true, subject: sub, rating: { $gte: minRate, $lte: maxRate }, ...search, ...priceQuery}
   var results = await Course.paginate(mongoQuery, { page: page, limit: 12 })
   var allResults = []
   for (let i = 0; i < results.docs.length; i++) {
