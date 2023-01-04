@@ -153,7 +153,7 @@ async function instructorSearchAndFilterCourse(data, user) {
       }
     ]
   }
-  const mongoQuery = {published: true, subject: sub, rating: { $gte: minRate, $lte: maxRate }, ...search, ...priceQuery}
+  const mongoQuery = {published: true, subject: sub, rating: { $gte: minRate, $lte: maxRate }, $and: [search, priceQuery]}
   var results = await Course.paginate(mongoQuery, { page: page, limit: 12 })
   var allResults = []
   for (let i = 0; i < results.docs.length; i++) {
@@ -191,7 +191,7 @@ async function searchAndFilterCourse(data, reqId) {
       }
     ]
   }
-  const mongoQuery = {published: true, subject: sub, rating: { $gte: minRate, $lte: maxRate }, ...search, ...priceQuery}
+  const mongoQuery = {published: true, subject: sub, rating: { $gte: minRate, $lte: maxRate }, $and: [search, priceQuery]}
   var results = await Course.paginate(mongoQuery, { page: page, limit: 12 })
   var allResults = []
   for (let i = 0; i < results.docs.length; i++) {
