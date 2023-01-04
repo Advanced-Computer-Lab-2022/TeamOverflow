@@ -20,7 +20,7 @@ import { ActionModal, SubtitleCard, WalletModal } from '../../app/components';
 import { closeCourse, deleteCourse, publishCourse } from '../../app/store/actions/instructorActions';
 import ReactPlayer from 'react-player/youtube';
 import { requestAccess } from '../../app/store/actions/corporateActions';
-import { getPaymentLink } from '../../app/store/actions/traineeActions';
+import { getPaymentLink, registerCourse } from '../../app/store/actions/traineeActions';
 import { getWallet } from '../../app/store/actions/authActions';
 import School from '@mui/icons-material/School';
 import Stars from '@mui/icons-material/Stars';
@@ -50,8 +50,17 @@ export const PreviewCourse = ({ auth, viewCourse, course, isLoading, getWallet, 
     }
 
     const handleOpenWallet = (event) => {
-        getWallet(auth?.token)
-        setWalletOpen(true)
+        if(parseInt(course?.price) === 0 || (course?.deadline && course?.startDate && moment().isBefore(course?.deadline) && moment().isAfter(course?.startDate) && course?.discountedPrice === 0)){
+            getPaymentLink({
+                courseId: courseId,
+                fromWallet: true,
+                token: auth?.token
+            })
+            navigate(-1);
+        } else {
+            getWallet(auth?.token)
+            setWalletOpen(true)
+        }
     }
 
     const handleRequest = (event) => {
