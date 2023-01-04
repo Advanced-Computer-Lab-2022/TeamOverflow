@@ -146,7 +146,7 @@ async function instructorSearchAndFilterCourse(data, user) {
       { price: { $gte: min, $lt: max } },
       {
         $and: [
-          { discountedPrice: { $gte: min, $lt: max } },
+          { discountedPrice: { $gte: min, $lte: max } },
           { startDate: { $lte: moment() } },
           { deadline: { $gte: moment() } }
         ]
@@ -184,7 +184,7 @@ async function searchAndFilterCourse(data, reqId) {
       { price: { $gte: min, $lt: max } },
       {
         $and: [
-          { discountedPrice: { $gte: min, $lt: max } },
+          { discountedPrice: { $gte: min, $lte: max } },
           { startDate: { $lte: moment() } },
           { deadline: { $gte: moment() } }
         ]
