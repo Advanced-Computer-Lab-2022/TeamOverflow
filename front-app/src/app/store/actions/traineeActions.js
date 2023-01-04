@@ -79,6 +79,7 @@ export const registerCourse = (data) => (dispatch) => {
       return notification.success({ message: "Registration Successful" })
     })
     .catch((err) => {
+      dispatch({type: WAITING_FAIL})
       return notification.error({ message: err?.response?.data?.message })
     });
 };
