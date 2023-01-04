@@ -12,7 +12,7 @@ async function getNotes(req, res) {
     const filename = `${notes[0].videoId.title} Notes`;
     doc.fontSize(42).text(`Notes for ${notes[0].videoId.title}`, { align: 'center' });
     notes.map((note) => {
-        doc.font("Times-Italic").fontSize(16).text(`${moment().startOf('day').seconds(note.timestamp).format('mm:ss')} :-`, { paragraphGap: 2 });
+        doc.font("Times-Italic").fontSize(16).text(`${moment().startOf('day').seconds(note.timestamp).format('hh:mm:ss')} :-`, { paragraphGap: 2 });
         doc.font("Times-Roman").fontSize(20).text(note.content, { align: "justify", indent: 10, paragraphGap: 8 });
     })
     res.append('Access-Control-Expose-Headers', 'Filename, Content-Transfer-Encoding')

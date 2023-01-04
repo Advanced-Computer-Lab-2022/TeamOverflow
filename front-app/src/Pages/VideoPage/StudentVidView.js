@@ -102,7 +102,7 @@ export const VideoView = ({ auth, getRegVideo, video, isLoading, addNote, downlo
         </Card>
         {noteOpen && (
           <Card sx={{ my: 2, padding: 1 }}>
-            <Typography>Add note at {moment().startOf('day').seconds(timestamp).format('mm:ss')}</Typography>
+            <Typography>Add note at {moment().startOf('day').seconds(timestamp).format('hh:mm:ss')}</Typography>
             <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
               <MainTextArea
                 required
