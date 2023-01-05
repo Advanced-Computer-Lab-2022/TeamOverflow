@@ -1,4 +1,4 @@
-import { UPDATE_USER, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL } from "./types";
+import { UPDATE_USER, UPDATE_USER_SUCCESS, UPDATE_USER_FAIL, WAITING, WAITING_SUCCESS, WAITING_FAIL } from "./types";
 import { COURSE, SINGLE_COURSE_SUCCESS, COURSE_SUCCESS, COURSE_FAIL, SUBJECT_SUCCESS } from "./types";
 import { CONTRACT, CONTRACT_SUCCESS, CONTRACT_FAIL } from "./types";
 
@@ -139,6 +139,7 @@ export const deleteCourse = (data, navigate) => (dispatch) => {
 
 export const createExercise = (data, navigate) => (dispatch) => {
   var {creation, token} = data
+  dispatch({type: WAITING})
   var end;
   if(creation.subtitleId){
     end = endpoints.instructor.createExercise
@@ -149,10 +150,12 @@ export const createExercise = (data, navigate) => (dispatch) => {
     .then((response) => {
       notification.success({message: "Exercise Added"})
       navigate(-1);
+      return dispatch({type: WAITING_SUCCESS})
     })
     .catch((err) => {
       notification.error({message: err?.response?.data?.message || "Network Error"})
       console.log(err);
+      return dispatch({type: WAITING_FAIL})
     });
 };
 

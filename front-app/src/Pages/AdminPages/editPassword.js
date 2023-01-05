@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { Typography, Box, Container, TextField, CssBaseline, Button, Avatar} from '@mui/material';
+import { Typography, Box, Container, TextField, CssBaseline, Button, Avatar, CircularProgress} from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { changePassword } from '../../app/store/actions/authActions';
 import LockIcon from '@mui/icons-material/Lock';
 import { useNavigate } from 'react-router-dom';
-import { MainInput, main_button } from '../../app/components/Styles';
+import { centered_flex_box, MainInput, main_button } from '../../app/components/Styles';
 
 
 
@@ -29,6 +29,13 @@ export const EditPassword = ({ auth,  changePassword }) => {
         navigate(path);
     };
   
+    if (auth?.isLoading) {
+        return (
+          <Box sx={{ ...centered_flex_box, minHeight: "100vh" }}>
+            <CircularProgress sx={{ color: "var(--secColor)" }} />
+          </Box>
+        )
+      }
 
     return (
         <ThemeProvider theme={theme}>

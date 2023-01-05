@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { logout } from '../store/actions/authActions';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@mui/material';
-import { card_style, centered_flex_box, main_button } from './Styles';
+import { card_style, centered_flex_box, left_flex_box, main_button } from './Styles';
 
 function RegisteredCourseCard({ token, courseData, isLoading }) {
 
@@ -27,12 +27,12 @@ function RegisteredCourseCard({ token, courseData, isLoading }) {
             }
             {!isLoading && (<>
                 <Grid container>
-                    <Grid item xs={11}>
+                    <Grid item xs={8}>
                         <Typography sx={{ fontSize: 24, fontWeight: "bold" }}>
                             {course?.title}
                         </Typography>
                     </Grid>
-                    <Grid item xs={1}>
+                    <Grid item xs={4} sx={left_flex_box}>
                         <Chip sx={{ color: "var(--secColor)", borderColor: "var(--secColor)" }} label={`${course?.totalHours}h`} variant="outlined" />
                     </Grid>
                 </Grid>
@@ -49,7 +49,7 @@ function RegisteredCourseCard({ token, courseData, isLoading }) {
                     Open Course
                 </Button>
                 <Box sx={{my:1, color:"var(--secColor)"}}>
-                    <LinearProgress sx={{bgcolor: "var(--terColor2)", borderRadius: 5, height: 8}} color="inherit" variant="determinate" value={progress} />
+                    <LinearProgress sx={{bgcolor: progress < 100 ? "var(--terColor2)":"green", borderRadius: 5, height: 8}} color="inherit" variant="determinate" value={progress} />
                 </Box>
             </>)}
         </Card>

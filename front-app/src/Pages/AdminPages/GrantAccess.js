@@ -17,7 +17,7 @@ import moment from 'moment';
 
 
 const theme = createTheme();
-export const AddAccess = ({ token, courses, filterCoursesAll, clearCourses, getSubjects, isLoading, addAccess, corporations, getCorporations, subjects }) => {
+export const AddAccess = ({ token, courses, filterCoursesAll, clearCourses, getSubjects, isLoading, addAccess, corporations, getCorporations, subjects, waiting }) => {
 
     React.useEffect(() => {
         clearCourses()
@@ -119,6 +119,14 @@ export const AddAccess = ({ token, courses, filterCoursesAll, clearCourses, getS
     }
 
     const [isAllSelected, setIsAllSelected] = React.useState(false)
+
+    if (waiting?.isLoading) {
+        return (
+            <Box sx={{ ...centered_flex_box, minHeight: "100vh" }}>
+                <CircularProgress sx={{ color: "var(--secColor)" }} />
+            </Box>
+        )
+    }
 
     return (
         <ThemeProvider theme={theme}>
@@ -299,7 +307,8 @@ const mapStateToProps = (state) => ({
     courses: state?.courses?.results,
     subjects: state?.courses?.subjects,
     isLoading: state?.courses?.isLoading,
-    corporations: state?.auth?.corporations
+    corporations: state?.auth?.corporations,
+    waiting: state?.waiting
 });
 
 const mapDispatchToProps = { filterCoursesAll, getSubjects, clearCourses, addAccess, getCorporations };

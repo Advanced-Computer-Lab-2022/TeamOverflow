@@ -3,7 +3,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import CancelIcon from '@mui/icons-material/Cancel';
 import { Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, FormHelperText, InputLabel, Card, Toolbar, CircularProgress } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
@@ -14,7 +14,7 @@ import { centered_flex_box, main_button } from '../../app/components/Styles';
 
 const theme = createTheme();
 
-export const Completed = ({ token, user, registerCourse, isLoading }) => {
+export const Completed = ({ token, user, registerCourse, isLoading, isError }) => {
   const navigate = useNavigate();
   const { session_id, courseId, fromWallet } = useParams()
 
@@ -31,17 +31,16 @@ export const Completed = ({ token, user, registerCourse, isLoading }) => {
 
   if (isLoading) {
     return (
-        <Box sx={{ ...centered_flex_box, minHeight: "100vh" }}>
-            <CircularProgress sx={{ color: "var(--secColor)" }} />
-        </Box>
+      <Box sx={{ ...centered_flex_box, minHeight: "100vh" }}>
+        <CircularProgress sx={{ color: "var(--secColor)" }} />
+      </Box>
     )
-}
+  }
 
   return (
-    <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xl">
-        <CssBaseline />
-        <Box sx={{ flexDirection: "column", ...centered_flex_box, mt:10}}>
+    <Container component="main" maxWidth="xl">
+      <Box sx={{ flexDirection: "column", ...centered_flex_box, mt: 10 }}>
+        {!isError && <>
           <CheckCircleIcon color="success" sx={{ fontSize: 60 }} />
           <Typography color={"var(--secColor)"} fontSize="30px" align="center">Payment Completed</Typography>
           <Button onClick={() => navigate(`/courses/student/single/${courseId}`)} type="submit"
@@ -49,16 +48,27 @@ export const Completed = ({ token, user, registerCourse, isLoading }) => {
             sx={{ mt: 4, ...main_button }}
           >
             Go to course </Button>
-        </Box>
-      </Container>
-    </ThemeProvider>
+        </>}
+        {isError && <>
+          <CancelIcon color="error" sx={{ fontSize: 60 }} />
+          <Typography color={"red"} fontSize="30px" align="center">Payment Failed</Typography>
+          <Button onClick={() => navigate(-1)}
+            variant="contained"
+            sx={{ mt: 4, ...main_button }}
+          >
+            Back </Button>
+        </>
+        }
+      </Box>
+    </Container>
   )
 }
 
 const mapStateToProps = (state) => ({
   user: state?.auth?.user,
   token: state?.auth?.token,
-  isLoading: state?.courses?.isLoading
+  isLoading: state?.courses?.isLoading,
+  isError: state?.waiting?.isError
 });
 
 const mapDispatchToProps = { registerCourse };

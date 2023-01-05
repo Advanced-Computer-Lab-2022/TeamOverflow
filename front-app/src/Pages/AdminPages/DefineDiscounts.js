@@ -17,7 +17,7 @@ import moment from 'moment';
 
 
 const theme = createTheme();
-export const DefineDiscount = ({ token, courses, filterCoursesAll, clearCourses, getSubjects, isLoading, defineDiscount }) => {
+export const DefineDiscount = ({ token, courses, filterCoursesAll, clearCourses, getSubjects, isLoading, defineDiscount, waiting }) => {
 
     React.useEffect(() => {
         clearCourses()
@@ -120,6 +120,14 @@ export const DefineDiscount = ({ token, courses, filterCoursesAll, clearCourses,
     }
 
     const [isAllSelected, setIsAllSelected] = React.useState(false)
+
+    if (waiting?.isLoading) {
+        return (
+            <Box sx={{ ...centered_flex_box, minHeight: "100vh" }}>
+                <CircularProgress sx={{ color: "var(--secColor)" }} />
+            </Box>
+        )
+    }
 
     return (
         <ThemeProvider theme={theme}>
@@ -286,7 +294,8 @@ export const DefineDiscount = ({ token, courses, filterCoursesAll, clearCourses,
 const mapStateToProps = (state) => ({
     token: state?.auth?.token,
     courses: state?.courses?.results,
-    isLoading: state?.courses?.isLoading
+    isLoading: state?.courses?.isLoading,
+    waiting: state?.waiting
 });
 
 const mapDispatchToProps = { filterCoursesAll, getSubjects, clearCourses, defineDiscount };

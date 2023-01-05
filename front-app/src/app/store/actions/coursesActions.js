@@ -68,12 +68,14 @@ export const viewCourse = (data) => (dispatch) => {
 
 export const filterCoursesInstructor = (data) => (dispatch) => {
   dispatch({ type: COURSE });
-  var { subject, minPrice, maxPrice, searchQuery, page, token } = data
+  var { subject, minPrice, maxPrice, minRating, maxRating, searchQuery, page, token } = data
 
   const info = {
     subject: subject,
     minPrice: minPrice,
     maxPrice: maxPrice,
+    minRating: minRating,
+    maxRating: maxRating,
     searchQuery: searchQuery,
     page: page
   }

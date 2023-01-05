@@ -132,7 +132,16 @@ router.post('/rate/course', verifyCorpTrainee, async function (req, res) {
 
 //submit the answers to the exercise after completing it
 router.post('/submitSolution', verifyCorpTrainee, async function (req, res) {
-  await submitSolution(req, res);
+  try {
+    var regCourse = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
+    if (regCourse) {
+      await submitSolution(req, res, regCourse)
+    } else {
+      res.status(403).json({ message: "You are not registered to this course" })
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message })
+  }
 });
 
 //delete student answer
@@ -164,8 +173,9 @@ router.get('/viewExercise', verifyCorpTrainee, async function (req, res) {
 //watch a video from a course he/she is registered for
 router.get('/watchVideo', verifyCorpTrainee, async function (req, res) {
   try {
-    if (await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })) {
-      await watchVideo(req, res)
+    var regCourse = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
+    if (regCourse) {
+      await watchVideo(req, res, regCourse)
     } else {
       res.status(403).json({ message: "You are not registered to this course" })
     }
