@@ -8,6 +8,9 @@
 ![MUI](https://img.shields.io/badge/Material%20UI-007FFF?style=for-the-badge&logo=mui&logoColor=white)
 ![Stripe](https://img.shields.io/badge/Stripe-626CD9?style=for-the-badge&logo=Stripe&logoColor=white)
 
+## Build Status
+- As far as the requirements, the projwct is complete and ready to run, however many improvements are still needed before we can go live
+
 ## Table of Contents
 
 - [Descrption](#descrption)
