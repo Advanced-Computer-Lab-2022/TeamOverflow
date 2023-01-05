@@ -12,9 +12,9 @@
 
 - [Descrption](#descrption)
 - [Features](#features)
-- [Getting Started](#getting_started)
+- [Getting Started](#getting-started)
 - [Tech](#tech)
-- [Code Style](#code_style)
+- [Code Style](#code-style)
 - [APIs](#apis)
 - [Screenshots](#screenshots)
 - [Credits](#credits)
