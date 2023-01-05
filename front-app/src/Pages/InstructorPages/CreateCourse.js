@@ -3,19 +3,19 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
-import { Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, FormHelperText, InputLabel, FormControl } from '@mui/material';
+import { Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, FormHelperText, InputLabel, FormControl, CircularProgress } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { createCourse } from '../../app/store/actions/instructorActions';
 import { getSubjects } from '../../app/store/actions/coursesActions';
-import { MainTextArea, MainInput, main_button, MainInputLabel, StyledInput } from '../../app/components/Styles';
+import { MainTextArea, MainInput, main_button, MainInputLabel, StyledInput, centered_flex_box } from '../../app/components/Styles';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { useNavigate } from 'react-router-dom';
 import { notification } from 'antd';
 
 const theme = createTheme();
 
-export const CreateCourse = ({ user, token, createCourse, subjects, getSubjects }) => {
+export const CreateCourse = ({ user, token, createCourse, subjects, getSubjects, isLoading }) => {
     const navigate = useNavigate()
 
     React.useEffect(() => {
@@ -58,6 +58,14 @@ export const CreateCourse = ({ user, token, createCourse, subjects, getSubjects 
         }
         createCourse(details, navigate)
     };
+
+    if (isLoading) {
+        return (
+          <Box sx={{ ...centered_flex_box, minHeight: "100vh" }}>
+            <CircularProgress sx={{ color: "var(--secColor)" }} />
+          </Box>
+        )
+      }
 
     return (
         <ThemeProvider theme={theme}>
@@ -183,7 +191,8 @@ export const CreateCourse = ({ user, token, createCourse, subjects, getSubjects 
 const mapStateToProps = (state) => ({
     user: state?.auth?.user,
     token: state?.auth?.token,
-    subjects: state?.courses?.subjects
+    subjects: state?.courses?.subjects,
+    isLoading: state?.courses?.isLoading
 });
 
 const mapDispatchToProps = { createCourse, getSubjects };

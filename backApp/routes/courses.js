@@ -134,11 +134,13 @@ router.post('/create', verifyInstructor, async function (req, res) {
 /* Functions */
 
 async function instructorSearchAndFilterCourse(data, user) {
-  var { subject, minPrice, maxPrice, data, searchQuery, page } = data
+  var { subject, minPrice, maxPrice, minRating, maxRating, data, searchQuery, page } = data
   var query = ".*" + searchQuery + ".*"
   const search = { $and: [{ instructorId: user._id }, { $or: [{ subject: { $regex: new RegExp(query, 'i') } }, { title: { $regex: new RegExp(query, 'i') } }] }] }
   var sub = subject || { $regex: ".*" }
   const currency = getCode(user?.country)
+  var minRate = minRating || 0
+  var maxRate = maxRating || 5
   var min = minPrice ? await forexBack(minPrice, currency) : 0
   var max = maxPrice ? await forexBack(maxPrice, currency) : 10000
   const priceQuery = {

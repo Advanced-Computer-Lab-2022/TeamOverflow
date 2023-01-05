@@ -4,15 +4,15 @@ import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import QuizIcon from '@mui/icons-material/Quiz';
-import { Typography, Radio, RadioGroup, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, FormHelperText, InputLabel, FormControl } from '@mui/material';
+import { Typography, Radio, RadioGroup, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, FormHelperText, InputLabel, FormControl, CircularProgress } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { useNavigate, useParams } from 'react-router-dom';
 import { createExercise } from '../../app/store/actions/instructorActions';
-import { main_button } from '../../app/components/Styles';
+import { centered_flex_box, main_button } from '../../app/components/Styles';
 const theme = createTheme();
 
-export const CreateExam = ({ token, createExercise }) => {
+export const CreateExam = ({ token, createExercise, isLoading }) => {
 
     const params = useParams().id.split("=");
     const id = params[1];
@@ -81,6 +81,14 @@ export const CreateExam = ({ token, createExercise }) => {
         }
         createExercise(details, navigate);
     };
+
+    if (isLoading) {
+        return (
+          <Box sx={{ ...centered_flex_box, minHeight: "100vh" }}>
+            <CircularProgress sx={{ color: "var(--secColor)" }} />
+          </Box>
+        )
+      }
 
     return (
         <ThemeProvider theme={theme}>
@@ -221,6 +229,7 @@ export const CreateExam = ({ token, createExercise }) => {
 const mapStateToProps = (state) => ({
     user: state?.auth?.user,
     token: state?.auth?.token,
+    isLoading: state?.waiting?.isLoading
 });
 
 const mapDispatchToProps = {createExercise};

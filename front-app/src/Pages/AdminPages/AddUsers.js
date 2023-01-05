@@ -6,11 +6,11 @@ import Grid from '@mui/material/Grid';
 import DownloadIcon from '@mui/icons-material/Download';
 import UploadIcon from '@mui/icons-material/Upload';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, InputLabel, FormHelperText, FormControl } from '@mui/material';
+import { Typography, Box, Container, TextField, CssBaseline, Button, Avatar, Select, MenuItem, InputLabel, FormHelperText, FormControl, CircularProgress } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from "react-redux";
 import { addUser, addUsers } from '../../app/store/actions/adminActions';
-import { MainInput, MainInputLabel, main_button, StyledInput } from '../../app/components/Styles';
+import { centered_flex_box, MainInput, MainInputLabel, main_button, StyledInput } from '../../app/components/Styles';
 import { useNavigate } from 'react-router-dom';
 import ReactFileReader from 'react-file-reader';
 import download from 'downloadjs';
@@ -94,7 +94,13 @@ export const AddUsers = ({ addUser, auth, addUsers }) => {
     }
   }
 
-
+  if (auth?.isLoading) {
+    return (
+      <Box sx={{ ...centered_flex_box, minHeight: "100vh" }}>
+        <CircularProgress sx={{ color: "var(--secColor)" }} />
+      </Box>
+    )
+  }
 
   return (
     <Container component="main" maxWidth="xs">
