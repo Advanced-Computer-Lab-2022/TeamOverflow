@@ -103,7 +103,7 @@ Our Web application uses a number of open source projects to work properly:
 Our website makes use of a couple APIs to handle data processing and display
 
 - [ExchangeRate API](https://www.exchangerate-api.com/) To fetch the latest currency exchange rates
-- [StripAPI](https://stripe.com/docs/api) To process payments via Card payment and other methods
+- [StripeAPI](https://stripe.com/docs/api) To process payments via Card payment and other methods
 - [YouTube API](https://developers.google.com/youtube/iframe_api_reference) To display, play and track YouTube video
 
 ## Credits
