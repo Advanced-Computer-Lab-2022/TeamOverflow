@@ -155,7 +155,7 @@ async function instructorSearchAndFilterCourse(data, user) {
       }
     ]
   }
-  const mongoQuery = {published: true, subject: sub, rating: { $gte: minRate, $lte: maxRate }, $and: [search, priceQuery]}
+  const mongoQuery = {subject: sub, rating: { $gte: minRate, $lte: maxRate }, $and: [search, priceQuery]}
   var results = await Course.paginate(mongoQuery, { page: page, limit: 12 })
   var allResults = []
   for (let i = 0; i < results.docs.length; i++) {

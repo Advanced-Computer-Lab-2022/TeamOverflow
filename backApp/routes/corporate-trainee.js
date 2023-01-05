@@ -133,7 +133,7 @@ router.post('/rate/course', verifyCorpTrainee, async function (req, res) {
 //submit the answers to the exercise after completing it
 router.post('/submitSolution', verifyCorpTrainee, async function (req, res) {
   try {
-    var regCourse = await StudentCourses.findOne({ courseId: req.query.courseId, traineeId: req.reqId })
+    var regCourse = await StudentCourses.findOne({ courseId: req.body.courseId, traineeId: req.reqId })
     if (regCourse) {
       await submitSolution(req, res, regCourse)
     } else {

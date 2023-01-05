@@ -46,7 +46,7 @@ const Terms = ({ getTerms, terms, user, acceptTerms, token }) => {
       >
         Back
       </Button>
-      {!user?.acceptedTerms &&
+      {user && !user?.acceptedTerms &&
         <Button
           variant="contained"
           sx={{ mx:1, mt: 3, mb: 2, ...confirm_button }}
