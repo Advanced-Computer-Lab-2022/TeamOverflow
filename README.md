@@ -1,5 +1,13 @@
 # CanCham Online Learning System
 
+## Badges
+![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white) 
+![Express Js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white) 
+![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=Postman&logoColor=white) 
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![MUI](https://img.shields.io/badge/Material%20UI-007FFF?style=for-the-badge&logo=mui&logoColor=white)
+![Stripe](https://img.shields.io/badge/Stripe-626CD9?style=for-the-badge&logo=Stripe&logoColor=white)
+
 ## Table of Contents
 
 - [Descrption](#descrption)
@@ -13,7 +21,6 @@
 ## Description
 This is an online platform ,for the Canadian Chamber of Commerce in the Middle East, for Individual students and Corporate trainees to enroll to new courses, solve the tests and earn a certificate for each completed course. In addition, it is a workspace for instructors to upload a tutoring video, some test questions and get an income from students registering to his courses.
 This project followed the Agile Methodology and was split into 3 Sprints
-
 
 ## Features
 
@@ -45,6 +52,7 @@ This project followed the Agile Methodology and was split into 3 Sprints
 - Create a new course
 - Delete a course
 - Publish Course
+- Close a published course
 - View Course Ratings
 - Add a discount to the course for a limited time
 - View your profile
@@ -63,12 +71,22 @@ This project followed the Agile Methodology and was split into 3 Sprints
 - Grant Course Access 
 - Add a discount to a course for a limited time
 - View Reported Problems with full details
+- *Add multiple users at once via .csv file upload*
 
 ## Getting Started
 - Open the terminal in Visual Studio Code
-- Install packages by running ```npm i```
-- Write the command ```npm run dev```
-- The website will open automatically on localhost:3000 
+- Install packages by running 
+```bash
+> npm i
+> cd backApp && npm i
+> cd ..
+> cd front-app && npm i
+```
+- Run the website using 
+```bash
+> npm run dev
+```
+- The client will open in localhost port 3000 and the server on port 8000
 
 ## Tech
 
@@ -80,14 +98,13 @@ Our Web application uses a number of open source projects to work properly:
 - [node.js] - evented I/O for the backend
 - [Express] - fast node.js network app framework 
 
-And our website itself is in a private repository on GitHub.
-
-## APIs
+## APIs Used
 
 Our website makes use of a couple APIs to handle data processing and display
 
 - [ExchangeRate API](https://www.exchangerate-api.com/) To fetch the latest currency exchange rates
-- [YouTube API](https://developers.google.com/youtube/iframe_api_reference) To display, play and track YouTube videos
+- [StripAPI](https://stripe.com/docs/api) To process payments via Card payment and other methods
+- [YouTube API](https://developers.google.com/youtube/iframe_api_reference) To display, play and track YouTube video
 
 ## Credits
 - Mina Ehab 49-1644
