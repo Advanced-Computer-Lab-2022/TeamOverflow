@@ -98,7 +98,7 @@ Our Web application uses a number of open source projects to work properly:
 - [node.js] - evented I/O for the backend
 - [Express] - fast node.js network app framework 
 
-## APIs Used
+## APIs
 
 Our website makes use of a couple APIs to handle data processing and display
 
