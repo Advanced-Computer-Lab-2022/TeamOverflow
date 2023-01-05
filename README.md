@@ -9,7 +9,11 @@
 ![Stripe](https://img.shields.io/badge/Stripe-626CD9?style=for-the-badge&logo=Stripe&logoColor=white)
 
 ## Build Status
-- As far as the requirements, the projwct is complete and ready to run, however many improvements are still needed before we can go live
+- As far as the requirements, the project is complete and ready to run, however many improvements are still needed before we can go live for example:-
+- - Error messages and handling in the Frontend
+- - Recommender System
+- - Language Localization
+- - Anything you can dream of...
 
 ## Table of Contents
 
