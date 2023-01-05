@@ -14,6 +14,7 @@
 - [Features](#features)
 - [Getting Started](#getting_started)
 - [Tech](#tech)
+- [Code Style](#code style)
 - [APIs](#apis)
 - [Screenshots](#screenshots)
 - [Credits](#credits)
@@ -97,6 +98,12 @@ Our Web application uses a number of open source projects to work properly:
 - [MUI] - great UI boilerplate for modern web apps
 - [node.js] - evented I/O for the backend
 - [Express] - fast node.js network app framework 
+
+## Code Style
+
+- The code style was beautified using `prettier` package on VS Code
+- We adhered to the DRY principle to the best of our ability in a short time
+- Backend design implemented the ideals of REST APIs
 
 ## APIs
 
