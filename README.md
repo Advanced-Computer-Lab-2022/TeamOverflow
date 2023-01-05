@@ -14,7 +14,7 @@
 - [Features](#features)
 - [Getting Started](#getting_started)
 - [Tech](#tech)
-- [Code Style](#code style)
+- [Code Style](#code_style)
 - [APIs](#apis)
 - [Screenshots](#screenshots)
 - [Credits](#credits)
