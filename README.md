@@ -101,7 +101,7 @@ Our Web application uses a number of open source projects to work properly:
 
 ## Code Style
 
-- The code style was beautified using `prettier` package on VS Code
+- The code was beautified using `prettier` package on VS Code
 - We adhered to the DRY principle to the best of our ability in a short time
 - Backend design implemented the ideals of REST APIs
 
